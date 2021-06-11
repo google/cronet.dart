@@ -3,3 +3,12 @@
 # BSD-style license that can be found in the LICENSE file.
 
 include: package:lints/recommended.yaml
+
+analyzer:
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+  exclude:
+    - example/**
+    - lib/third_party/**     # may not be fully migrated
+    - lib/src/generated_bindings.dart # ignore generated files

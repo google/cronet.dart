@@ -2,9 +2,6 @@
 
 # Files and directories created by pub.
 .dart_tool/
-build/
-# wrapper build directory
-lib/src/native/wrapper/out
 .packages
 pubspec.lock
 
@@ -42,6 +39,12 @@ cronet_binaries/
 
 *.jar
 *.cxx
+
+# Jar dependencies should be published to pub
+!android/libs/*
+
+# Cronet binaries for android should be published to pub
+!android/src/main/jniLibs/**
 
 *.flutter-plugins
 *.flutter-plugins-dependencies
