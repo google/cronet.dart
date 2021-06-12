@@ -119,6 +119,268 @@ class Cronet {
   late final _dart_removeRequest _removeRequest =
       _removeRequest_ptr.asFunction<_dart_removeRequest>();
 
+  int Cronet_UrlRequest_Init(
+    ffi.Pointer<Cronet_UrlRequest> self,
+    ffi.Pointer<Cronet_Engine> engine,
+    ffi.Pointer<ffi.Int8> url,
+    ffi.Pointer<Cronet_UrlRequestParams> params,
+    ffi.Pointer<ffi.Void> _executor,
+  ) {
+    return _Cronet_UrlRequest_Init(
+      self,
+      engine,
+      url,
+      params,
+      _executor,
+    );
+  }
+
+  late final _Cronet_UrlRequest_Init_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Init>>(
+          'Cronet_UrlRequest_Init');
+  late final _dart_Cronet_UrlRequest_Init _Cronet_UrlRequest_Init =
+      _Cronet_UrlRequest_Init_ptr.asFunction<_dart_Cronet_UrlRequest_Init>();
+
+  int Cronet_Buffer_GetSize(
+    ffi.Pointer<Cronet_Buffer> self,
+  ) {
+    return _Cronet_Buffer_GetSize(
+      self,
+    );
+  }
+
+  late final _Cronet_Buffer_GetSize_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Buffer_GetSize>>(
+          'Cronet_Buffer_GetSize');
+  late final _dart_Cronet_Buffer_GetSize _Cronet_Buffer_GetSize =
+      _Cronet_Buffer_GetSize_ptr.asFunction<_dart_Cronet_Buffer_GetSize>();
+
+  ffi.Pointer<ffi.Void> Cronet_Buffer_GetData(
+    ffi.Pointer<Cronet_Buffer> self,
+  ) {
+    return _Cronet_Buffer_GetData(
+      self,
+    );
+  }
+
+  late final _Cronet_Buffer_GetData_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Buffer_GetData>>(
+          'Cronet_Buffer_GetData');
+  late final _dart_Cronet_Buffer_GetData _Cronet_Buffer_GetData =
+      _Cronet_Buffer_GetData_ptr.asFunction<_dart_Cronet_Buffer_GetData>();
+
+  ffi.Pointer<Cronet_Engine> Cronet_Engine_Create() {
+    return _Cronet_Engine_Create();
+  }
+
+  late final _Cronet_Engine_Create_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Engine_Create>>(
+          'Cronet_Engine_Create');
+  late final _dart_Cronet_Engine_Create _Cronet_Engine_Create =
+      _Cronet_Engine_Create_ptr.asFunction<_dart_Cronet_Engine_Create>();
+
+  int Cronet_Engine_StartWithParams(
+    ffi.Pointer<Cronet_Engine> self,
+    ffi.Pointer<Cronet_EngineParams> params,
+  ) {
+    return _Cronet_Engine_StartWithParams(
+      self,
+      params,
+    );
+  }
+
+  late final _Cronet_Engine_StartWithParams_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Engine_StartWithParams>>(
+          'Cronet_Engine_StartWithParams');
+  late final _dart_Cronet_Engine_StartWithParams
+      _Cronet_Engine_StartWithParams = _Cronet_Engine_StartWithParams_ptr
+          .asFunction<_dart_Cronet_Engine_StartWithParams>();
+
+  bool Cronet_Engine_StartNetLogToFile(
+    ffi.Pointer<Cronet_Engine> self,
+    ffi.Pointer<ffi.Int8> file_name,
+    bool log_all,
+  ) {
+    return _Cronet_Engine_StartNetLogToFile(
+          self,
+          file_name,
+          log_all ? 1 : 0,
+        ) !=
+        0;
+  }
+
+  late final _Cronet_Engine_StartNetLogToFile_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Engine_StartNetLogToFile>>(
+          'Cronet_Engine_StartNetLogToFile');
+  late final _dart_Cronet_Engine_StartNetLogToFile
+      _Cronet_Engine_StartNetLogToFile = _Cronet_Engine_StartNetLogToFile_ptr
+          .asFunction<_dart_Cronet_Engine_StartNetLogToFile>();
+
+  void Cronet_Engine_StopNetLog(
+    ffi.Pointer<Cronet_Engine> self,
+  ) {
+    return _Cronet_Engine_StopNetLog(
+      self,
+    );
+  }
+
+  late final _Cronet_Engine_StopNetLog_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Engine_StopNetLog>>(
+          'Cronet_Engine_StopNetLog');
+  late final _dart_Cronet_Engine_StopNetLog _Cronet_Engine_StopNetLog =
+      _Cronet_Engine_StopNetLog_ptr.asFunction<
+          _dart_Cronet_Engine_StopNetLog>();
+
+  int Cronet_Engine_Shutdown(
+    ffi.Pointer<Cronet_Engine> self,
+  ) {
+    return _Cronet_Engine_Shutdown(
+      self,
+    );
+  }
+
+  late final _Cronet_Engine_Shutdown_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Engine_Shutdown>>(
+          'Cronet_Engine_Shutdown');
+  late final _dart_Cronet_Engine_Shutdown _Cronet_Engine_Shutdown =
+      _Cronet_Engine_Shutdown_ptr.asFunction<_dart_Cronet_Engine_Shutdown>();
+
+  ffi.Pointer<ffi.Int8> Cronet_Engine_GetVersionString(
+    ffi.Pointer<Cronet_Engine> self,
+  ) {
+    return _Cronet_Engine_GetVersionString(
+      self,
+    );
+  }
+
+  late final _Cronet_Engine_GetVersionString_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_Engine_GetVersionString>>(
+          'Cronet_Engine_GetVersionString');
+  late final _dart_Cronet_Engine_GetVersionString
+      _Cronet_Engine_GetVersionString = _Cronet_Engine_GetVersionString_ptr
+          .asFunction<_dart_Cronet_Engine_GetVersionString>();
+
+  /// ////////////////////
+  ffi.Pointer<Cronet_UrlRequest> Cronet_UrlRequest_Create() {
+    return _Cronet_UrlRequest_Create();
+  }
+
+  late final _Cronet_UrlRequest_Create_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Create>>(
+          'Cronet_UrlRequest_Create');
+  late final _dart_Cronet_UrlRequest_Create _Cronet_UrlRequest_Create =
+      _Cronet_UrlRequest_Create_ptr.asFunction<
+          _dart_Cronet_UrlRequest_Create>();
+
+  void Cronet_UrlRequest_Destroy(
+    ffi.Pointer<Cronet_UrlRequest> self,
+  ) {
+    return _Cronet_UrlRequest_Destroy(
+      self,
+    );
+  }
+
+  late final _Cronet_UrlRequest_Destroy_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Destroy>>(
+          'Cronet_UrlRequest_Destroy');
+  late final _dart_Cronet_UrlRequest_Destroy _Cronet_UrlRequest_Destroy =
+      _Cronet_UrlRequest_Destroy_ptr.asFunction<
+          _dart_Cronet_UrlRequest_Destroy>();
+
+  void Cronet_UrlRequest_SetClientContext(
+    ffi.Pointer<Cronet_UrlRequest> self,
+    ffi.Pointer<ffi.Void> client_context,
+  ) {
+    return _Cronet_UrlRequest_SetClientContext(
+      self,
+      client_context,
+    );
+  }
+
+  late final _Cronet_UrlRequest_SetClientContext_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_SetClientContext>>(
+          'Cronet_UrlRequest_SetClientContext');
+  late final _dart_Cronet_UrlRequest_SetClientContext
+      _Cronet_UrlRequest_SetClientContext =
+      _Cronet_UrlRequest_SetClientContext_ptr.asFunction<
+          _dart_Cronet_UrlRequest_SetClientContext>();
+
+  ffi.Pointer<ffi.Void> Cronet_UrlRequest_GetClientContext(
+    ffi.Pointer<Cronet_UrlRequest> self,
+  ) {
+    return _Cronet_UrlRequest_GetClientContext(
+      self,
+    );
+  }
+
+  late final _Cronet_UrlRequest_GetClientContext_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_GetClientContext>>(
+          'Cronet_UrlRequest_GetClientContext');
+  late final _dart_Cronet_UrlRequest_GetClientContext
+      _Cronet_UrlRequest_GetClientContext =
+      _Cronet_UrlRequest_GetClientContext_ptr.asFunction<
+          _dart_Cronet_UrlRequest_GetClientContext>();
+
+  int Cronet_UrlRequest_Start(
+    ffi.Pointer<Cronet_UrlRequest> self,
+  ) {
+    return _Cronet_UrlRequest_Start(
+      self,
+    );
+  }
+
+  late final _Cronet_UrlRequest_Start_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Start>>(
+          'Cronet_UrlRequest_Start');
+  late final _dart_Cronet_UrlRequest_Start _Cronet_UrlRequest_Start =
+      _Cronet_UrlRequest_Start_ptr.asFunction<_dart_Cronet_UrlRequest_Start>();
+
+  int Cronet_UrlRequest_FollowRedirect(
+    ffi.Pointer<Cronet_UrlRequest> self,
+  ) {
+    return _Cronet_UrlRequest_FollowRedirect(
+      self,
+    );
+  }
+
+  late final _Cronet_UrlRequest_FollowRedirect_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_FollowRedirect>>(
+          'Cronet_UrlRequest_FollowRedirect');
+  late final _dart_Cronet_UrlRequest_FollowRedirect
+      _Cronet_UrlRequest_FollowRedirect = _Cronet_UrlRequest_FollowRedirect_ptr
+          .asFunction<_dart_Cronet_UrlRequest_FollowRedirect>();
+
+  int Cronet_UrlRequest_Read(
+    ffi.Pointer<Cronet_UrlRequest> self,
+    ffi.Pointer<Cronet_Buffer> buffer,
+  ) {
+    return _Cronet_UrlRequest_Read(
+      self,
+      buffer,
+    );
+  }
+
+  late final _Cronet_UrlRequest_Read_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Read>>(
+          'Cronet_UrlRequest_Read');
+  late final _dart_Cronet_UrlRequest_Read _Cronet_UrlRequest_Read =
+      _Cronet_UrlRequest_Read_ptr.asFunction<_dart_Cronet_UrlRequest_Read>();
+
+  void Cronet_UrlRequest_Cancel(
+    ffi.Pointer<Cronet_UrlRequest> self,
+  ) {
+    return _Cronet_UrlRequest_Cancel(
+      self,
+    );
+  }
+
+  late final _Cronet_UrlRequest_Cancel_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Cancel>>(
+          'Cronet_UrlRequest_Cancel');
+  late final _dart_Cronet_UrlRequest_Cancel _Cronet_UrlRequest_Cancel =
+      _Cronet_UrlRequest_Cancel_ptr.asFunction<
+          _dart_Cronet_UrlRequest_Cancel>();
+
   /// ////////////////////
   ffi.Pointer<Cronet_QuicHint> Cronet_QuicHint_Create() {
     return _Cronet_QuicHint_Create();
@@ -196,31 +458,7 @@ class Cronet {
       _Cronet_QuicHint_alternate_port_set_ptr.asFunction<
           _dart_Cronet_QuicHint_alternate_port_set>();
 
-  ffi.Pointer<Cronet_Engine> Cronet_Engine_Create() {
-    return _Cronet_Engine_Create();
-  }
-
-  late final _Cronet_Engine_Create_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Engine_Create>>(
-          'Cronet_Engine_Create');
-  late final _dart_Cronet_Engine_Create _Cronet_Engine_Create =
-      _Cronet_Engine_Create_ptr.asFunction<_dart_Cronet_Engine_Create>();
-
-  ffi.Pointer<ffi.Int8> Cronet_Engine_GetVersionString(
-    ffi.Pointer<Cronet_Engine> self,
-  ) {
-    return _Cronet_Engine_GetVersionString(
-      self,
-    );
-  }
-
-  late final _Cronet_Engine_GetVersionString_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Engine_GetVersionString>>(
-          'Cronet_Engine_GetVersionString');
-  late final _dart_Cronet_Engine_GetVersionString
-      _Cronet_Engine_GetVersionString = _Cronet_Engine_GetVersionString_ptr
-          .asFunction<_dart_Cronet_Engine_GetVersionString>();
-
+  /// ////////////////////
   ffi.Pointer<Cronet_EngineParams> Cronet_EngineParams_Create() {
     return _Cronet_EngineParams_Create();
   }
@@ -247,6 +485,24 @@ class Cronet {
       _Cronet_EngineParams_Destroy_ptr.asFunction<
           _dart_Cronet_EngineParams_Destroy>();
 
+  void Cronet_EngineParams_enable_check_result_set(
+    ffi.Pointer<Cronet_EngineParams> self,
+    bool enable_check_result,
+  ) {
+    return _Cronet_EngineParams_enable_check_result_set(
+      self,
+      enable_check_result ? 1 : 0,
+    );
+  }
+
+  late final _Cronet_EngineParams_enable_check_result_set_ptr = _lookup<
+          ffi.NativeFunction<_c_Cronet_EngineParams_enable_check_result_set>>(
+      'Cronet_EngineParams_enable_check_result_set');
+  late final _dart_Cronet_EngineParams_enable_check_result_set
+      _Cronet_EngineParams_enable_check_result_set =
+      _Cronet_EngineParams_enable_check_result_set_ptr.asFunction<
+          _dart_Cronet_EngineParams_enable_check_result_set>();
+
   void Cronet_EngineParams_user_agent_set(
     ffi.Pointer<Cronet_EngineParams> self,
     ffi.Pointer<ffi.Int8> user_agent,
@@ -264,42 +520,6 @@ class Cronet {
       _Cronet_EngineParams_user_agent_set =
       _Cronet_EngineParams_user_agent_set_ptr.asFunction<
           _dart_Cronet_EngineParams_user_agent_set>();
-
-  void Cronet_EngineParams_enable_quic_set(
-    ffi.Pointer<Cronet_EngineParams> self,
-    bool enable_quic,
-  ) {
-    return _Cronet_EngineParams_enable_quic_set(
-      self,
-      enable_quic ? 1 : 0,
-    );
-  }
-
-  late final _Cronet_EngineParams_enable_quic_set_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_EngineParams_enable_quic_set>>(
-          'Cronet_EngineParams_enable_quic_set');
-  late final _dart_Cronet_EngineParams_enable_quic_set
-      _Cronet_EngineParams_enable_quic_set =
-      _Cronet_EngineParams_enable_quic_set_ptr.asFunction<
-          _dart_Cronet_EngineParams_enable_quic_set>();
-
-  void Cronet_EngineParams_quic_hints_add(
-    ffi.Pointer<Cronet_EngineParams> self,
-    ffi.Pointer<Cronet_QuicHint> element,
-  ) {
-    return _Cronet_EngineParams_quic_hints_add(
-      self,
-      element,
-    );
-  }
-
-  late final _Cronet_EngineParams_quic_hints_add_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_EngineParams_quic_hints_add>>(
-          'Cronet_EngineParams_quic_hints_add');
-  late final _dart_Cronet_EngineParams_quic_hints_add
-      _Cronet_EngineParams_quic_hints_add =
-      _Cronet_EngineParams_quic_hints_add_ptr.asFunction<
-          _dart_Cronet_EngineParams_quic_hints_add>();
 
   void Cronet_EngineParams_accept_language_set(
     ffi.Pointer<Cronet_EngineParams> self,
@@ -336,6 +556,24 @@ class Cronet {
       _Cronet_EngineParams_storage_path_set =
       _Cronet_EngineParams_storage_path_set_ptr.asFunction<
           _dart_Cronet_EngineParams_storage_path_set>();
+
+  void Cronet_EngineParams_enable_quic_set(
+    ffi.Pointer<Cronet_EngineParams> self,
+    bool enable_quic,
+  ) {
+    return _Cronet_EngineParams_enable_quic_set(
+      self,
+      enable_quic ? 1 : 0,
+    );
+  }
+
+  late final _Cronet_EngineParams_enable_quic_set_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_EngineParams_enable_quic_set>>(
+          'Cronet_EngineParams_enable_quic_set');
+  late final _dart_Cronet_EngineParams_enable_quic_set
+      _Cronet_EngineParams_enable_quic_set =
+      _Cronet_EngineParams_enable_quic_set_ptr.asFunction<
+          _dart_Cronet_EngineParams_enable_quic_set>();
 
   void Cronet_EngineParams_enable_http2_set(
     ffi.Pointer<Cronet_EngineParams> self,
@@ -409,226 +647,25 @@ class Cronet {
       _Cronet_EngineParams_http_cache_max_size_set_ptr.asFunction<
           _dart_Cronet_EngineParams_http_cache_max_size_set>();
 
-  int Cronet_Engine_StartWithParams(
-    ffi.Pointer<Cronet_Engine> self,
-    ffi.Pointer<Cronet_EngineParams> params,
+  void Cronet_EngineParams_quic_hints_add(
+    ffi.Pointer<Cronet_EngineParams> self,
+    ffi.Pointer<Cronet_QuicHint> element,
   ) {
-    return _Cronet_Engine_StartWithParams(
-      self,
-      params,
-    );
-  }
-
-  late final _Cronet_Engine_StartWithParams_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Engine_StartWithParams>>(
-          'Cronet_Engine_StartWithParams');
-  late final _dart_Cronet_Engine_StartWithParams
-      _Cronet_Engine_StartWithParams = _Cronet_Engine_StartWithParams_ptr
-          .asFunction<_dart_Cronet_Engine_StartWithParams>();
-
-  int Cronet_Engine_Shutdown(
-    ffi.Pointer<Cronet_Engine> self,
-  ) {
-    return _Cronet_Engine_Shutdown(
-      self,
-    );
-  }
-
-  late final _Cronet_Engine_Shutdown_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Engine_Shutdown>>(
-          'Cronet_Engine_Shutdown');
-  late final _dart_Cronet_Engine_Shutdown _Cronet_Engine_Shutdown =
-      _Cronet_Engine_Shutdown_ptr.asFunction<_dart_Cronet_Engine_Shutdown>();
-
-  ffi.Pointer<Cronet_UrlRequest> Cronet_UrlRequest_Create() {
-    return _Cronet_UrlRequest_Create();
-  }
-
-  late final _Cronet_UrlRequest_Create_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Create>>(
-          'Cronet_UrlRequest_Create');
-  late final _dart_Cronet_UrlRequest_Create _Cronet_UrlRequest_Create =
-      _Cronet_UrlRequest_Create_ptr.asFunction<
-          _dart_Cronet_UrlRequest_Create>();
-
-  void Cronet_UrlRequest_Destroy(
-    ffi.Pointer<Cronet_UrlRequest> self,
-  ) {
-    return _Cronet_UrlRequest_Destroy(
-      self,
-    );
-  }
-
-  late final _Cronet_UrlRequest_Destroy_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Destroy>>(
-          'Cronet_UrlRequest_Destroy');
-  late final _dart_Cronet_UrlRequest_Destroy _Cronet_UrlRequest_Destroy =
-      _Cronet_UrlRequest_Destroy_ptr.asFunction<
-          _dart_Cronet_UrlRequest_Destroy>();
-
-  void Cronet_UrlRequest_Cancel(
-    ffi.Pointer<Cronet_UrlRequest> self,
-  ) {
-    return _Cronet_UrlRequest_Cancel(
-      self,
-    );
-  }
-
-  late final _Cronet_UrlRequest_Cancel_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Cancel>>(
-          'Cronet_UrlRequest_Cancel');
-  late final _dart_Cronet_UrlRequest_Cancel _Cronet_UrlRequest_Cancel =
-      _Cronet_UrlRequest_Cancel_ptr.asFunction<
-          _dart_Cronet_UrlRequest_Cancel>();
-
-  void Cronet_UrlRequest_SetClientContext(
-    ffi.Pointer<Cronet_UrlRequest> self,
-    ffi.Pointer<ffi.Void> client_context,
-  ) {
-    return _Cronet_UrlRequest_SetClientContext(
-      self,
-      client_context,
-    );
-  }
-
-  late final _Cronet_UrlRequest_SetClientContext_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_SetClientContext>>(
-          'Cronet_UrlRequest_SetClientContext');
-  late final _dart_Cronet_UrlRequest_SetClientContext
-      _Cronet_UrlRequest_SetClientContext =
-      _Cronet_UrlRequest_SetClientContext_ptr.asFunction<
-          _dart_Cronet_UrlRequest_SetClientContext>();
-
-  ffi.Pointer<ffi.Void> Cronet_UrlRequest_GetClientContext(
-    ffi.Pointer<Cronet_UrlRequest> self,
-  ) {
-    return _Cronet_UrlRequest_GetClientContext(
-      self,
-    );
-  }
-
-  late final _Cronet_UrlRequest_GetClientContext_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_GetClientContext>>(
-          'Cronet_UrlRequest_GetClientContext');
-  late final _dart_Cronet_UrlRequest_GetClientContext
-      _Cronet_UrlRequest_GetClientContext =
-      _Cronet_UrlRequest_GetClientContext_ptr.asFunction<
-          _dart_Cronet_UrlRequest_GetClientContext>();
-
-  ffi.Pointer<Cronet_UrlRequestParams> Cronet_UrlRequestParams_Create() {
-    return _Cronet_UrlRequestParams_Create();
-  }
-
-  late final _Cronet_UrlRequestParams_Create_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequestParams_Create>>(
-          'Cronet_UrlRequestParams_Create');
-  late final _dart_Cronet_UrlRequestParams_Create
-      _Cronet_UrlRequestParams_Create = _Cronet_UrlRequestParams_Create_ptr
-          .asFunction<_dart_Cronet_UrlRequestParams_Create>();
-
-  void Cronet_UrlRequestParams_http_method_set(
-    ffi.Pointer<Cronet_UrlRequestParams> self,
-    ffi.Pointer<ffi.Int8> http_method,
-  ) {
-    return _Cronet_UrlRequestParams_http_method_set(
-      self,
-      http_method,
-    );
-  }
-
-  late final _Cronet_UrlRequestParams_http_method_set_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequestParams_http_method_set>>(
-          'Cronet_UrlRequestParams_http_method_set');
-  late final _dart_Cronet_UrlRequestParams_http_method_set
-      _Cronet_UrlRequestParams_http_method_set =
-      _Cronet_UrlRequestParams_http_method_set_ptr.asFunction<
-          _dart_Cronet_UrlRequestParams_http_method_set>();
-
-  void Cronet_UrlRequestParams_request_headers_add(
-    ffi.Pointer<Cronet_UrlRequestParams> self,
-    ffi.Pointer<Cronet_HttpHeader> element,
-  ) {
-    return _Cronet_UrlRequestParams_request_headers_add(
+    return _Cronet_EngineParams_quic_hints_add(
       self,
       element,
     );
   }
 
-  late final _Cronet_UrlRequestParams_request_headers_add_ptr = _lookup<
-          ffi.NativeFunction<_c_Cronet_UrlRequestParams_request_headers_add>>(
-      'Cronet_UrlRequestParams_request_headers_add');
-  late final _dart_Cronet_UrlRequestParams_request_headers_add
-      _Cronet_UrlRequestParams_request_headers_add =
-      _Cronet_UrlRequestParams_request_headers_add_ptr.asFunction<
-          _dart_Cronet_UrlRequestParams_request_headers_add>();
+  late final _Cronet_EngineParams_quic_hints_add_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_EngineParams_quic_hints_add>>(
+          'Cronet_EngineParams_quic_hints_add');
+  late final _dart_Cronet_EngineParams_quic_hints_add
+      _Cronet_EngineParams_quic_hints_add =
+      _Cronet_EngineParams_quic_hints_add_ptr.asFunction<
+          _dart_Cronet_EngineParams_quic_hints_add>();
 
-  int Cronet_UrlRequest_Start(
-    ffi.Pointer<Cronet_UrlRequest> self,
-  ) {
-    return _Cronet_UrlRequest_Start(
-      self,
-    );
-  }
-
-  late final _Cronet_UrlRequest_Start_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Start>>(
-          'Cronet_UrlRequest_Start');
-  late final _dart_Cronet_UrlRequest_Start _Cronet_UrlRequest_Start =
-      _Cronet_UrlRequest_Start_ptr.asFunction<_dart_Cronet_UrlRequest_Start>();
-
-  int Cronet_UrlRequest_FollowRedirect(
-    ffi.Pointer<Cronet_UrlRequest> self,
-  ) {
-    return _Cronet_UrlRequest_FollowRedirect(
-      self,
-    );
-  }
-
-  late final _Cronet_UrlRequest_FollowRedirect_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_FollowRedirect>>(
-          'Cronet_UrlRequest_FollowRedirect');
-  late final _dart_Cronet_UrlRequest_FollowRedirect
-      _Cronet_UrlRequest_FollowRedirect = _Cronet_UrlRequest_FollowRedirect_ptr
-          .asFunction<_dart_Cronet_UrlRequest_FollowRedirect>();
-
-  int Cronet_UrlRequest_Read(
-    ffi.Pointer<Cronet_UrlRequest> self,
-    ffi.Pointer<Cronet_Buffer> buffer,
-  ) {
-    return _Cronet_UrlRequest_Read(
-      self,
-      buffer,
-    );
-  }
-
-  late final _Cronet_UrlRequest_Read_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Read>>(
-          'Cronet_UrlRequest_Read');
-  late final _dart_Cronet_UrlRequest_Read _Cronet_UrlRequest_Read =
-      _Cronet_UrlRequest_Read_ptr.asFunction<_dart_Cronet_UrlRequest_Read>();
-
-  int Cronet_UrlRequest_Init(
-    ffi.Pointer<Cronet_UrlRequest> self,
-    ffi.Pointer<Cronet_Engine> engine,
-    ffi.Pointer<ffi.Int8> url,
-    ffi.Pointer<Cronet_UrlRequestParams> params,
-    ffi.Pointer<ffi.Void> _executor,
-  ) {
-    return _Cronet_UrlRequest_Init(
-      self,
-      engine,
-      url,
-      params,
-      _executor,
-    );
-  }
-
-  late final _Cronet_UrlRequest_Init_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_Init>>(
-          'Cronet_UrlRequest_Init');
-  late final _dart_Cronet_UrlRequest_Init _Cronet_UrlRequest_Init =
-      _Cronet_UrlRequest_Init_ptr.asFunction<_dart_Cronet_UrlRequest_Init>();
-
+  /// ////////////////////
   ffi.Pointer<Cronet_HttpHeader> Cronet_HttpHeader_Create() {
     return _Cronet_HttpHeader_Create();
   }
@@ -721,69 +758,75 @@ class Cronet {
       _Cronet_UrlResponseInfo_http_status_text_get_ptr.asFunction<
           _dart_Cronet_UrlResponseInfo_http_status_text_get>();
 
-  int Cronet_Buffer_GetSize(
-    ffi.Pointer<Cronet_Buffer> self,
+  /// ////////////////////
+  ffi.Pointer<Cronet_UrlRequestParams> Cronet_UrlRequestParams_Create() {
+    return _Cronet_UrlRequestParams_Create();
+  }
+
+  late final _Cronet_UrlRequestParams_Create_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequestParams_Create>>(
+          'Cronet_UrlRequestParams_Create');
+  late final _dart_Cronet_UrlRequestParams_Create
+      _Cronet_UrlRequestParams_Create = _Cronet_UrlRequestParams_Create_ptr
+          .asFunction<_dart_Cronet_UrlRequestParams_Create>();
+
+  void Cronet_UrlRequestParams_Destroy(
+    ffi.Pointer<Cronet_UrlRequestParams> self,
   ) {
-    return _Cronet_Buffer_GetSize(
+    return _Cronet_UrlRequestParams_Destroy(
       self,
     );
   }
 
-  late final _Cronet_Buffer_GetSize_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Buffer_GetSize>>(
-          'Cronet_Buffer_GetSize');
-  late final _dart_Cronet_Buffer_GetSize _Cronet_Buffer_GetSize =
-      _Cronet_Buffer_GetSize_ptr.asFunction<_dart_Cronet_Buffer_GetSize>();
+  late final _Cronet_UrlRequestParams_Destroy_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequestParams_Destroy>>(
+          'Cronet_UrlRequestParams_Destroy');
+  late final _dart_Cronet_UrlRequestParams_Destroy
+      _Cronet_UrlRequestParams_Destroy = _Cronet_UrlRequestParams_Destroy_ptr
+          .asFunction<_dart_Cronet_UrlRequestParams_Destroy>();
 
-  ffi.Pointer<ffi.Void> Cronet_Buffer_GetData(
-    ffi.Pointer<Cronet_Buffer> self,
+  void Cronet_UrlRequestParams_http_method_set(
+    ffi.Pointer<Cronet_UrlRequestParams> self,
+    ffi.Pointer<ffi.Int8> http_method,
   ) {
-    return _Cronet_Buffer_GetData(
+    return _Cronet_UrlRequestParams_http_method_set(
       self,
+      http_method,
     );
   }
 
-  late final _Cronet_Buffer_GetData_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Buffer_GetData>>(
-          'Cronet_Buffer_GetData');
-  late final _dart_Cronet_Buffer_GetData _Cronet_Buffer_GetData =
-      _Cronet_Buffer_GetData_ptr.asFunction<_dart_Cronet_Buffer_GetData>();
+  late final _Cronet_UrlRequestParams_http_method_set_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequestParams_http_method_set>>(
+          'Cronet_UrlRequestParams_http_method_set');
+  late final _dart_Cronet_UrlRequestParams_http_method_set
+      _Cronet_UrlRequestParams_http_method_set =
+      _Cronet_UrlRequestParams_http_method_set_ptr.asFunction<
+          _dart_Cronet_UrlRequestParams_http_method_set>();
 
-  bool Cronet_Engine_StartNetLogToFile(
-    ffi.Pointer<Cronet_Engine> self,
-    ffi.Pointer<ffi.Int8> file_name,
-    bool log_all,
+  void Cronet_UrlRequestParams_request_headers_add(
+    ffi.Pointer<Cronet_UrlRequestParams> self,
+    ffi.Pointer<Cronet_HttpHeader> element,
   ) {
-    return _Cronet_Engine_StartNetLogToFile(
-          self,
-          file_name,
-          log_all ? 1 : 0,
-        ) !=
-        0;
-  }
-
-  late final _Cronet_Engine_StartNetLogToFile_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Engine_StartNetLogToFile>>(
-          'Cronet_Engine_StartNetLogToFile');
-  late final _dart_Cronet_Engine_StartNetLogToFile
-      _Cronet_Engine_StartNetLogToFile = _Cronet_Engine_StartNetLogToFile_ptr
-          .asFunction<_dart_Cronet_Engine_StartNetLogToFile>();
-
-  void Cronet_Engine_StopNetLog(
-    ffi.Pointer<Cronet_Engine> self,
-  ) {
-    return _Cronet_Engine_StopNetLog(
+    return _Cronet_UrlRequestParams_request_headers_add(
       self,
+      element,
     );
   }
 
-  late final _Cronet_Engine_StopNetLog_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Engine_StopNetLog>>(
-          'Cronet_Engine_StopNetLog');
-  late final _dart_Cronet_Engine_StopNetLog _Cronet_Engine_StopNetLog =
-      _Cronet_Engine_StopNetLog_ptr.asFunction<
-          _dart_Cronet_Engine_StopNetLog>();
+  late final _Cronet_UrlRequestParams_request_headers_add_ptr = _lookup<
+          ffi.NativeFunction<_c_Cronet_UrlRequestParams_request_headers_add>>(
+      'Cronet_UrlRequestParams_request_headers_add');
+  late final _dart_Cronet_UrlRequestParams_request_headers_add
+      _Cronet_UrlRequestParams_request_headers_add =
+      _Cronet_UrlRequestParams_request_headers_add_ptr.asFunction<
+          _dart_Cronet_UrlRequestParams_request_headers_add>();
 }
+
+class Cronet_Engine extends ffi.Opaque {}
+
+class Cronet_UrlRequest extends ffi.Opaque {}
+
+class Cronet_UrlRequestParams extends ffi.Opaque {}
 
 class Cronet_Buffer extends ffi.Opaque {}
 
@@ -793,8 +836,6 @@ class Cronet_Runnable extends ffi.Opaque {}
 
 class Cronet_Executor extends ffi.Opaque {}
 
-class Cronet_Engine extends ffi.Opaque {}
-
 class Cronet_UrlRequestStatusListener extends ffi.Opaque {}
 
 class Cronet_UrlRequestCallback extends ffi.Opaque {}
@@ -802,8 +843,6 @@ class Cronet_UrlRequestCallback extends ffi.Opaque {}
 class Cronet_UploadDataSink extends ffi.Opaque {}
 
 class Cronet_UploadDataProvider extends ffi.Opaque {}
-
-class Cronet_UrlRequest extends ffi.Opaque {}
 
 class Cronet_RequestFinishedInfoListener extends ffi.Opaque {}
 
@@ -818,8 +857,6 @@ class Cronet_EngineParams extends ffi.Opaque {}
 class Cronet_HttpHeader extends ffi.Opaque {}
 
 class Cronet_UrlResponseInfo extends ffi.Opaque {}
-
-class Cronet_UrlRequestParams extends ffi.Opaque {}
 
 class Cronet_DateTime extends ffi.Opaque {}
 
@@ -1005,6 +1042,154 @@ typedef _dart_removeRequest = void Function(
   ffi.Pointer<Cronet_UrlRequest> rp,
 );
 
+typedef _c_Cronet_UrlRequest_Init = ffi.Int32 Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+  ffi.Pointer<Cronet_Engine> engine,
+  ffi.Pointer<ffi.Int8> url,
+  ffi.Pointer<Cronet_UrlRequestParams> params,
+  ffi.Pointer<ffi.Void> _executor,
+);
+
+typedef _dart_Cronet_UrlRequest_Init = int Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+  ffi.Pointer<Cronet_Engine> engine,
+  ffi.Pointer<ffi.Int8> url,
+  ffi.Pointer<Cronet_UrlRequestParams> params,
+  ffi.Pointer<ffi.Void> _executor,
+);
+
+typedef _c_Cronet_Buffer_GetSize = ffi.Uint64 Function(
+  ffi.Pointer<Cronet_Buffer> self,
+);
+
+typedef _dart_Cronet_Buffer_GetSize = int Function(
+  ffi.Pointer<Cronet_Buffer> self,
+);
+
+typedef _c_Cronet_Buffer_GetData = ffi.Pointer<ffi.Void> Function(
+  ffi.Pointer<Cronet_Buffer> self,
+);
+
+typedef _dart_Cronet_Buffer_GetData = ffi.Pointer<ffi.Void> Function(
+  ffi.Pointer<Cronet_Buffer> self,
+);
+
+typedef _c_Cronet_Engine_Create = ffi.Pointer<Cronet_Engine> Function();
+
+typedef _dart_Cronet_Engine_Create = ffi.Pointer<Cronet_Engine> Function();
+
+typedef _c_Cronet_Engine_StartWithParams = ffi.Int32 Function(
+  ffi.Pointer<Cronet_Engine> self,
+  ffi.Pointer<Cronet_EngineParams> params,
+);
+
+typedef _dart_Cronet_Engine_StartWithParams = int Function(
+  ffi.Pointer<Cronet_Engine> self,
+  ffi.Pointer<Cronet_EngineParams> params,
+);
+
+typedef _c_Cronet_Engine_StartNetLogToFile = ffi.Uint8 Function(
+  ffi.Pointer<Cronet_Engine> self,
+  ffi.Pointer<ffi.Int8> file_name,
+  ffi.Uint8 log_all,
+);
+
+typedef _dart_Cronet_Engine_StartNetLogToFile = int Function(
+  ffi.Pointer<Cronet_Engine> self,
+  ffi.Pointer<ffi.Int8> file_name,
+  int log_all,
+);
+
+typedef _c_Cronet_Engine_StopNetLog = ffi.Void Function(
+  ffi.Pointer<Cronet_Engine> self,
+);
+
+typedef _dart_Cronet_Engine_StopNetLog = void Function(
+  ffi.Pointer<Cronet_Engine> self,
+);
+
+typedef _c_Cronet_Engine_Shutdown = ffi.Int32 Function(
+  ffi.Pointer<Cronet_Engine> self,
+);
+
+typedef _dart_Cronet_Engine_Shutdown = int Function(
+  ffi.Pointer<Cronet_Engine> self,
+);
+
+typedef _c_Cronet_Engine_GetVersionString = ffi.Pointer<ffi.Int8> Function(
+  ffi.Pointer<Cronet_Engine> self,
+);
+
+typedef _dart_Cronet_Engine_GetVersionString = ffi.Pointer<ffi.Int8> Function(
+  ffi.Pointer<Cronet_Engine> self,
+);
+
+typedef _c_Cronet_UrlRequest_Create = ffi.Pointer<Cronet_UrlRequest> Function();
+
+typedef _dart_Cronet_UrlRequest_Create = ffi.Pointer<Cronet_UrlRequest>
+    Function();
+
+typedef _c_Cronet_UrlRequest_Destroy = ffi.Void Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _dart_Cronet_UrlRequest_Destroy = void Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _c_Cronet_UrlRequest_SetClientContext = ffi.Void Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+  ffi.Pointer<ffi.Void> client_context,
+);
+
+typedef _dart_Cronet_UrlRequest_SetClientContext = void Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+  ffi.Pointer<ffi.Void> client_context,
+);
+
+typedef _c_Cronet_UrlRequest_GetClientContext = ffi.Pointer<ffi.Void> Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _dart_Cronet_UrlRequest_GetClientContext = ffi.Pointer<ffi.Void>
+    Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _c_Cronet_UrlRequest_Start = ffi.Int32 Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _dart_Cronet_UrlRequest_Start = int Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _c_Cronet_UrlRequest_FollowRedirect = ffi.Int32 Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _dart_Cronet_UrlRequest_FollowRedirect = int Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _c_Cronet_UrlRequest_Read = ffi.Int32 Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+  ffi.Pointer<Cronet_Buffer> buffer,
+);
+
+typedef _dart_Cronet_UrlRequest_Read = int Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+  ffi.Pointer<Cronet_Buffer> buffer,
+);
+
+typedef _c_Cronet_UrlRequest_Cancel = ffi.Void Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
+typedef _dart_Cronet_UrlRequest_Cancel = void Function(
+  ffi.Pointer<Cronet_UrlRequest> self,
+);
+
 typedef _c_Cronet_QuicHint_Create = ffi.Pointer<Cronet_QuicHint> Function();
 
 typedef _dart_Cronet_QuicHint_Create = ffi.Pointer<Cronet_QuicHint> Function();
@@ -1047,18 +1232,6 @@ typedef _dart_Cronet_QuicHint_alternate_port_set = void Function(
   int alternate_port,
 );
 
-typedef _c_Cronet_Engine_Create = ffi.Pointer<Cronet_Engine> Function();
-
-typedef _dart_Cronet_Engine_Create = ffi.Pointer<Cronet_Engine> Function();
-
-typedef _c_Cronet_Engine_GetVersionString = ffi.Pointer<ffi.Int8> Function(
-  ffi.Pointer<Cronet_Engine> self,
-);
-
-typedef _dart_Cronet_Engine_GetVersionString = ffi.Pointer<ffi.Int8> Function(
-  ffi.Pointer<Cronet_Engine> self,
-);
-
 typedef _c_Cronet_EngineParams_Create = ffi.Pointer<Cronet_EngineParams>
     Function();
 
@@ -1073,6 +1246,16 @@ typedef _dart_Cronet_EngineParams_Destroy = void Function(
   ffi.Pointer<Cronet_EngineParams> self,
 );
 
+typedef _c_Cronet_EngineParams_enable_check_result_set = ffi.Void Function(
+  ffi.Pointer<Cronet_EngineParams> self,
+  ffi.Uint8 enable_check_result,
+);
+
+typedef _dart_Cronet_EngineParams_enable_check_result_set = void Function(
+  ffi.Pointer<Cronet_EngineParams> self,
+  int enable_check_result,
+);
+
 typedef _c_Cronet_EngineParams_user_agent_set = ffi.Void Function(
   ffi.Pointer<Cronet_EngineParams> self,
   ffi.Pointer<ffi.Int8> user_agent,
@@ -1081,26 +1264,6 @@ typedef _c_Cronet_EngineParams_user_agent_set = ffi.Void Function(
 typedef _dart_Cronet_EngineParams_user_agent_set = void Function(
   ffi.Pointer<Cronet_EngineParams> self,
   ffi.Pointer<ffi.Int8> user_agent,
-);
-
-typedef _c_Cronet_EngineParams_enable_quic_set = ffi.Void Function(
-  ffi.Pointer<Cronet_EngineParams> self,
-  ffi.Uint8 enable_quic,
-);
-
-typedef _dart_Cronet_EngineParams_enable_quic_set = void Function(
-  ffi.Pointer<Cronet_EngineParams> self,
-  int enable_quic,
-);
-
-typedef _c_Cronet_EngineParams_quic_hints_add = ffi.Void Function(
-  ffi.Pointer<Cronet_EngineParams> self,
-  ffi.Pointer<Cronet_QuicHint> element,
-);
-
-typedef _dart_Cronet_EngineParams_quic_hints_add = void Function(
-  ffi.Pointer<Cronet_EngineParams> self,
-  ffi.Pointer<Cronet_QuicHint> element,
 );
 
 typedef _c_Cronet_EngineParams_accept_language_set = ffi.Void Function(
@@ -1121,6 +1284,16 @@ typedef _c_Cronet_EngineParams_storage_path_set = ffi.Void Function(
 typedef _dart_Cronet_EngineParams_storage_path_set = void Function(
   ffi.Pointer<Cronet_EngineParams> self,
   ffi.Pointer<ffi.Int8> storage_path,
+);
+
+typedef _c_Cronet_EngineParams_enable_quic_set = ffi.Void Function(
+  ffi.Pointer<Cronet_EngineParams> self,
+  ffi.Uint8 enable_quic,
+);
+
+typedef _dart_Cronet_EngineParams_enable_quic_set = void Function(
+  ffi.Pointer<Cronet_EngineParams> self,
+  int enable_quic,
 );
 
 typedef _c_Cronet_EngineParams_enable_http2_set = ffi.Void Function(
@@ -1163,130 +1336,14 @@ typedef _dart_Cronet_EngineParams_http_cache_max_size_set = void Function(
   int http_cache_max_size,
 );
 
-typedef _c_Cronet_Engine_StartWithParams = ffi.Int32 Function(
-  ffi.Pointer<Cronet_Engine> self,
-  ffi.Pointer<Cronet_EngineParams> params,
+typedef _c_Cronet_EngineParams_quic_hints_add = ffi.Void Function(
+  ffi.Pointer<Cronet_EngineParams> self,
+  ffi.Pointer<Cronet_QuicHint> element,
 );
 
-typedef _dart_Cronet_Engine_StartWithParams = int Function(
-  ffi.Pointer<Cronet_Engine> self,
-  ffi.Pointer<Cronet_EngineParams> params,
-);
-
-typedef _c_Cronet_Engine_Shutdown = ffi.Int32 Function(
-  ffi.Pointer<Cronet_Engine> self,
-);
-
-typedef _dart_Cronet_Engine_Shutdown = int Function(
-  ffi.Pointer<Cronet_Engine> self,
-);
-
-typedef _c_Cronet_UrlRequest_Create = ffi.Pointer<Cronet_UrlRequest> Function();
-
-typedef _dart_Cronet_UrlRequest_Create = ffi.Pointer<Cronet_UrlRequest>
-    Function();
-
-typedef _c_Cronet_UrlRequest_Destroy = ffi.Void Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _dart_Cronet_UrlRequest_Destroy = void Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _c_Cronet_UrlRequest_Cancel = ffi.Void Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _dart_Cronet_UrlRequest_Cancel = void Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _c_Cronet_UrlRequest_SetClientContext = ffi.Void Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-  ffi.Pointer<ffi.Void> client_context,
-);
-
-typedef _dart_Cronet_UrlRequest_SetClientContext = void Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-  ffi.Pointer<ffi.Void> client_context,
-);
-
-typedef _c_Cronet_UrlRequest_GetClientContext = ffi.Pointer<ffi.Void> Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _dart_Cronet_UrlRequest_GetClientContext = ffi.Pointer<ffi.Void>
-    Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _c_Cronet_UrlRequestParams_Create = ffi.Pointer<Cronet_UrlRequestParams>
-    Function();
-
-typedef _dart_Cronet_UrlRequestParams_Create
-    = ffi.Pointer<Cronet_UrlRequestParams> Function();
-
-typedef _c_Cronet_UrlRequestParams_http_method_set = ffi.Void Function(
-  ffi.Pointer<Cronet_UrlRequestParams> self,
-  ffi.Pointer<ffi.Int8> http_method,
-);
-
-typedef _dart_Cronet_UrlRequestParams_http_method_set = void Function(
-  ffi.Pointer<Cronet_UrlRequestParams> self,
-  ffi.Pointer<ffi.Int8> http_method,
-);
-
-typedef _c_Cronet_UrlRequestParams_request_headers_add = ffi.Void Function(
-  ffi.Pointer<Cronet_UrlRequestParams> self,
-  ffi.Pointer<Cronet_HttpHeader> element,
-);
-
-typedef _dart_Cronet_UrlRequestParams_request_headers_add = void Function(
-  ffi.Pointer<Cronet_UrlRequestParams> self,
-  ffi.Pointer<Cronet_HttpHeader> element,
-);
-
-typedef _c_Cronet_UrlRequest_Start = ffi.Int32 Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _dart_Cronet_UrlRequest_Start = int Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _c_Cronet_UrlRequest_FollowRedirect = ffi.Int32 Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _dart_Cronet_UrlRequest_FollowRedirect = int Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-);
-
-typedef _c_Cronet_UrlRequest_Read = ffi.Int32 Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-  ffi.Pointer<Cronet_Buffer> buffer,
-);
-
-typedef _dart_Cronet_UrlRequest_Read = int Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-  ffi.Pointer<Cronet_Buffer> buffer,
-);
-
-typedef _c_Cronet_UrlRequest_Init = ffi.Int32 Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-  ffi.Pointer<Cronet_Engine> engine,
-  ffi.Pointer<ffi.Int8> url,
-  ffi.Pointer<Cronet_UrlRequestParams> params,
-  ffi.Pointer<ffi.Void> _executor,
-);
-
-typedef _dart_Cronet_UrlRequest_Init = int Function(
-  ffi.Pointer<Cronet_UrlRequest> self,
-  ffi.Pointer<Cronet_Engine> engine,
-  ffi.Pointer<ffi.Int8> url,
-  ffi.Pointer<Cronet_UrlRequestParams> params,
-  ffi.Pointer<ffi.Void> _executor,
+typedef _dart_Cronet_EngineParams_quic_hints_add = void Function(
+  ffi.Pointer<Cronet_EngineParams> self,
+  ffi.Pointer<Cronet_QuicHint> element,
 );
 
 typedef _c_Cronet_HttpHeader_Create = ffi.Pointer<Cronet_HttpHeader> Function();
@@ -1340,38 +1397,36 @@ typedef _dart_Cronet_UrlResponseInfo_http_status_text_get
   ffi.Pointer<Cronet_UrlResponseInfo> self,
 );
 
-typedef _c_Cronet_Buffer_GetSize = ffi.Uint64 Function(
-  ffi.Pointer<Cronet_Buffer> self,
+typedef _c_Cronet_UrlRequestParams_Create = ffi.Pointer<Cronet_UrlRequestParams>
+    Function();
+
+typedef _dart_Cronet_UrlRequestParams_Create
+    = ffi.Pointer<Cronet_UrlRequestParams> Function();
+
+typedef _c_Cronet_UrlRequestParams_Destroy = ffi.Void Function(
+  ffi.Pointer<Cronet_UrlRequestParams> self,
 );
 
-typedef _dart_Cronet_Buffer_GetSize = int Function(
-  ffi.Pointer<Cronet_Buffer> self,
+typedef _dart_Cronet_UrlRequestParams_Destroy = void Function(
+  ffi.Pointer<Cronet_UrlRequestParams> self,
 );
 
-typedef _c_Cronet_Buffer_GetData = ffi.Pointer<ffi.Void> Function(
-  ffi.Pointer<Cronet_Buffer> self,
+typedef _c_Cronet_UrlRequestParams_http_method_set = ffi.Void Function(
+  ffi.Pointer<Cronet_UrlRequestParams> self,
+  ffi.Pointer<ffi.Int8> http_method,
 );
 
-typedef _dart_Cronet_Buffer_GetData = ffi.Pointer<ffi.Void> Function(
-  ffi.Pointer<Cronet_Buffer> self,
+typedef _dart_Cronet_UrlRequestParams_http_method_set = void Function(
+  ffi.Pointer<Cronet_UrlRequestParams> self,
+  ffi.Pointer<ffi.Int8> http_method,
 );
 
-typedef _c_Cronet_Engine_StartNetLogToFile = ffi.Uint8 Function(
-  ffi.Pointer<Cronet_Engine> self,
-  ffi.Pointer<ffi.Int8> file_name,
-  ffi.Uint8 log_all,
+typedef _c_Cronet_UrlRequestParams_request_headers_add = ffi.Void Function(
+  ffi.Pointer<Cronet_UrlRequestParams> self,
+  ffi.Pointer<Cronet_HttpHeader> element,
 );
 
-typedef _dart_Cronet_Engine_StartNetLogToFile = int Function(
-  ffi.Pointer<Cronet_Engine> self,
-  ffi.Pointer<ffi.Int8> file_name,
-  int log_all,
-);
-
-typedef _c_Cronet_Engine_StopNetLog = ffi.Void Function(
-  ffi.Pointer<Cronet_Engine> self,
-);
-
-typedef _dart_Cronet_Engine_StopNetLog = void Function(
-  ffi.Pointer<Cronet_Engine> self,
+typedef _dart_Cronet_UrlRequestParams_request_headers_add = void Function(
+  ffi.Pointer<Cronet_UrlRequestParams> self,
+  ffi.Pointer<Cronet_HttpHeader> element,
 );

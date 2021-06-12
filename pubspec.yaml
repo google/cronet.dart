@@ -50,14 +50,18 @@ ffigen:
   headers:
     entry-points:
       - 'lib/src/native/wrapper/wrapper.h'
+      - 'lib/src/native/include/cronet/cronet.idl_c.h'
     include-directives:
       - 'lib/src/native/wrapper/wrapper.h'
+      - 'lib/src/native/include/cronet/cronet.idl_c.h'
       - 'dart_api.h'
       - 'dart_native_api.h'
       - 'dart_api_dl.h'
       - 'lib/src/native/wrapper/wrapper_export.h'
   compiler-opts:
-    - '-Ilib/src/native/include/dart/ -DDART_SHARED_LIB'
+    - '-Ilib/src/native/include/dart/'
+    - '-Ilib/src/native/include/cronet/'
+    - '-DDART_SHARED_LIB'
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

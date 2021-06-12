@@ -27,6 +27,7 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/../include/dart"
   "${CMAKE_CURRENT_SOURCE_DIR}/../include/dart/runtime"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../include/cronet"
 
 )
 
