@@ -60,6 +60,9 @@ jobs:
       - id: install
         name: Install dependencies
         run: dart pub get
+      - id: get_binaries
+        name: Download Cronet Binaries
+        run: pub run cronet linux64
       - name: Run VM tests
         run: dart test --platform vm
         if: always() && steps.install.outcome == 'success'
