@@ -12,10 +12,6 @@ pubspec.lock
 .vscode
 compile_commands.json
 
-# Directory created by dartdoc.
-# If you don't generate documentation locally you can remove this line.
-doc/api/
-
 # Avoid committing generated Javascript files:
 *.dart.js
 *.info.json      # Produced by the --dump-info flag.

@@ -7,41 +7,41 @@ import 'dart:io' show Directory, File, Link, Platform;
 
 import 'package:path/path.dart';
 
-/// Checks if [File]/[Link] exists for an [uri]
+/// Checks if [File]/[Link] exists for an [uri].
 bool _doesFileExist(Uri uri) {
   return File.fromUri(uri).existsSync() || Link.fromUri(uri).existsSync();
 }
 
-/// Checks if a dynamic library is located in
-/// 1. Present Working Directory
-/// 2. Current script's/executable's directory
-/// 3. Current script's/executable's directory's parent
-/// and returns the absolute path
+/// Resolves the absolute path of a resource (usually a dylib).
 ///
-/// Returns [null] if can't be resolved.
+/// Checks if a dynamic library is located in -
+///   1. Present Working Directory
+///   2. Current script's/executable's directory
+///   3. Current script's/executable's directory's parent
+/// and returns the absolute path or [null] if can't be resolved.
 String? _resolveLibUri(String name) {
   var libUri = Directory.current.uri.resolve(name);
 
-  // If lib is in Present Working Directory
+  // If lib is in Present Working Directory.
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
 
-  // If lib is in script's directory
+  // If lib is in script's directory.
   libUri = Uri.directory(dirname(Platform.script.path)).resolve(name);
 
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
 
-  // If lib is in executable's directory
+  // If lib is in executable's directory.
   libUri = Uri.directory(dirname(Platform.resolvedExecutable)).resolve(name);
 
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
 
-  // If lib is in script's directory's parent
+  // If lib is in script's directory's parent.
 
   libUri = Uri.directory(dirname(Platform.script.path)).resolve('../$name');
 
@@ -49,7 +49,7 @@ String? _resolveLibUri(String name) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
 
-  // If lib is in executable's directory's parent
+  // If lib is in executable's directory's parent.
 
   libUri =
       Uri.directory(dirname(Platform.resolvedExecutable)).resolve('../$name');
@@ -62,8 +62,8 @@ String? _resolveLibUri(String name) {
 }
 
 /// Loads [wrapper] dynamic library depending on the platform.
-/// This loaded [wrapper] will then load [cronet]
 ///
+/// This loaded [wrapper] will then load [cronet].
 /// Throws an [ArgumentError] if library can't be loaded.
 DynamicLibrary loadWrapper() {
   const fileName = 'wrapper';
@@ -83,8 +83,8 @@ DynamicLibrary loadWrapper() {
 
   var wrapperName = prefix + fileName + ext;
 
-  /// [_resolveLibUri()] will try to resolve [wrapper]'s absolute path
-  /// If it can't find it, try looking at search paths provided by the system
+  // _resolveLibUri() will try to resolve wrapper's absolute path.
+  // If it can't find it, try looking at search paths provided by the system.
   wrapperName = _resolveLibUri(wrapperName) ?? wrapperName;
 
   return Platform.isIOS

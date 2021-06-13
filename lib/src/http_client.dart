@@ -15,7 +15,7 @@ import 'generated_bindings.dart';
 import 'quic_hint.dart';
 import 'http_client_request.dart';
 
-// Cronet library is loaded in global scope
+// Cronet library is loaded in global scope.
 final _cronet = Cronet(loadWrapper());
 
 /// A client that receives content, such as web pages,
@@ -27,10 +27,6 @@ final _cronet = Cronet(loadWrapper());
 /// but not limited to receiving the raw bytes sent by the server.
 /// For example, you can use the
 /// [get], [getUrl], [post], and [postUrl] methods for GET and POST requests, respectively.
-///
-///
-/// TODO: Implement other functions
-///
 ///
 /// Example Usage:
 /// ```dart
@@ -53,11 +49,12 @@ class HttpClient {
   // TODO: Migrate enableTimelineLogging API here
 
   final Pointer<Cronet_Engine> _cronetEngine;
-  // Keep all the request reference in a list so if the client is being explicitly closed, we can clean up the requests.
+  // Keep all the request reference in a list so if the client is being explicitly closed,
+  // we can clean up the requests.
   final _requests = List<HttpClientRequest>.empty(growable: true);
   var _stop = false;
 
-  Uri? _temp;
+  // Uri? _temp;
 
   static const int defaultHttpPort = 80;
   static const int defaultHttpsPort = 443;
@@ -71,10 +68,10 @@ class HttpClient {
   /// 4. [acceptLanguage] - Default - 'en_US'
   /// 5. [cacheMode] - Choose from [CacheMode]. Default - [CacheMode.inMemory] (TODO)
   /// 6. [maxCache] - Set maximum cache size in bytes. Set to `null` to let the system decide. Default - `10KB`. (TODO)
-  /// NOTE: For [CacheMode.inMemory], [maxCache] must not be null. For any other mode, it can be.
-  ///
   /// 7. If caches and cookies should persist, provide a directory using [cronetStorage]. Keeping it null will use
   /// a temporary, non persistant storage.
+  ///
+  /// NOTE: For [CacheMode.inMemory], [maxCache] must not be null. For any other mode, it can be.
   ///
   /// Throws [CronetException] if [HttpClient] can't be created.
   ///
@@ -89,11 +86,11 @@ class HttpClient {
     this.brotli = true,
     this.acceptLanguage = 'en_US',
   }) : _cronetEngine = _cronet.Cronet_Engine_Create() {
-    // Initialize Dart Native API dynamically
+    // Initialize Dart Native API dynamically.
     _cronet.InitDartApiDL(NativeApi.initializeApiDLData);
     _cronet.registerHttpClient(this, _cronetEngine);
 
-    // starting the engine with parameters
+    // Starting the engine with parameters.
     final engineParams = _cronet.Cronet_EngineParams_Create();
     _cronet.Cronet_EngineParams_user_agent_set(
         engineParams, userAgent.toNativeUtf8().cast<Int8>());
@@ -133,11 +130,15 @@ class HttpClient {
 
   /// Shuts down the HTTP client.
   ///
-  /// If [force] is `false` (the default) the HttpClient will be kept alive until all active connections are done. If [force] is `true` any active connections will be closed to immediately release all resources. These closed connections will receive an ~error~ cancel event to indicate that the client was shut down. In both cases trying to establish a new connection after calling close will throw an exception.
-  /// NOTE: Temporary storage files (cache, cookies and logs if no explicit path is mentioned) are only deleted if you [close] the engine.
+  /// If [force] is `false` (the default) the HttpClient will be kept alive until all
+  /// active connections are done. If [force] is `true` any active connections
+  /// will be closed to immediately release all resources. These closed connections
+  /// will receive an ~error~ cancel event to indicate that the client was shut down.
+  /// In both cases trying to establish a new connection after calling close,
+  /// will throw an exception.
   void close({bool force = false}) {
     if (_stop) {
-      // if already stopped, return immediately
+      // If already stopped, return immediately.
       return;
     }
     _stop = true;
@@ -169,7 +170,8 @@ class HttpClient {
     });
   }
 
-  /// Opens a request on the basis of [method], [host], [port] and [path] using GET, PUT, POST, HEAD, PATCH, DELETE method
+  /// Opens a request on the basis of [method], [host], [port] and [path] using
+  /// GET, PUT, POST, HEAD, PATCH, DELETE or any other method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> open(
@@ -184,7 +186,7 @@ class HttpClient {
     return openUrl('GET', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using GET method
+  /// Opens a request on the basis of [host], [port] and [path] using GET method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> get(String host, int port, String path) {
@@ -198,7 +200,7 @@ class HttpClient {
     return openUrl('HEAD', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using HEAD method
+  /// Opens a request on the basis of [host], [port] and [path] using HEAD method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> head(String host, int port, String path) {
@@ -212,7 +214,7 @@ class HttpClient {
     return openUrl('PUT', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using PUT method
+  /// Opens a request on the basis of [host], [port] and [path] using PUT method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> put(String host, int port, String path) {
@@ -226,7 +228,7 @@ class HttpClient {
     return openUrl('POST', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using POST method
+  /// Opens a request on the basis of [host], [port] and [path] using POST method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> post(String host, int port, String path) {
@@ -240,7 +242,7 @@ class HttpClient {
     return openUrl('PATCH', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using PATCH method
+  /// Opens a request on the basis of [host], [port] and [path] using PATCH method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> patch(String host, int port, String path) {
@@ -254,16 +256,17 @@ class HttpClient {
     return openUrl('DELETE', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using DELETE method
+  /// Opens a request on the basis of [host], [port] and [path] using DELETE method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> delete(String host, int port, String path) {
     return deleteUrl(_getUri(host, port, path));
   }
 
-  /// Function for resolving the proxy server to be used for a HTTP connection from the proxy configuration specified through environment variables.
+  /// Function for resolving the proxy server to be used for a HTTP connection from
+  /// the proxy configuration specified through environment variables.
   ///
-  /// Note: It just returns [io.HttpClient.findProxyFromEnvironment].
+  /// Note: It just returns `dart:io` [HttpClient.findProxyFromEnvironment].
   static String findProxyFromEnvironment(Uri url,
       {Map<String, String>? environment}) {
     return io.HttpClient.findProxyFromEnvironment(url,

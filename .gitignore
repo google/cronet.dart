@@ -1,22 +1,15 @@
-# See https://dart.dev/guides/libraries/private-files
+# See https://www.dartlang.org/guides/libraries/private-files
 
 # Files and directories created by pub.
 .dart_tool/
-build/
-# wrapper build directory
-lib/src/native/wrapper/out
 .packages
+build/
 pubspec.lock
 
-# IDE and debugger files.
-.clangd
-.gdb_history
-.history
-.vscode
-compile_commands.json
+# wrapper build directory
+lib/src/native/wrapper/out
 
 # Directory created by dartdoc.
-# If you don't generate documentation locally you can remove this line.
 doc/api/
 
 # Avoid committing generated Javascript files:
@@ -27,6 +20,22 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+
+# IDE and debugger files.
+.clangd
+.gdb_history
+.history
+.vscode
+compile_commands.json
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Mac
+.DS_Store
 
 # Cronet pre-built binaries
 cronet_binaries/

@@ -8,14 +8,14 @@
 import 'dart:convert';
 import 'dart:io' show File, Directory;
 
-/// Finds the root [Uri] of our package
+/// Finds the root [Uri] of our package.
 Uri? findPackageRoot() {
   var root = Directory.current.uri;
   do {
-    // Traverse up till .dart_tool/package_config.json is found
+    // Traverse up till .dart_tool/package_config.json is found.
     final file = File.fromUri(root.resolve('.dart_tool/package_config.json'));
     if (file.existsSync()) {
-      // get package path from package_config.json
+      // get package path from package_config.json.
       try {
         final packageMap =
             jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
@@ -39,10 +39,8 @@ Uri? findPackageRoot() {
   return null;
 }
 
-/// Gets the [wrapper]'s source code's path
-/// Throws [Exception] if not found
+/// Gets the [wrapper]'s source code's path, throws [Exception] if not found.
 String wrapperSourcePath() {
-  // Finds this package's location
   final packagePath = findPackageRoot();
   if (packagePath == null) {
     throw Exception("Cannot resolve package:cronet's rootUri");
@@ -54,7 +52,7 @@ String wrapperSourcePath() {
   return wrapperSource.toFilePath();
 }
 
-/// Is cronet binaries are already available in the project
+/// Checks if cronet binaries are already available in the project.
 bool isCronetAvailable(String platform) {
   final cronetDir = Directory.current.uri.resolve('cronet_binaries/$platform/');
   return Directory.fromUri(cronetDir).existsSync();

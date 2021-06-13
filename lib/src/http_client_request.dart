@@ -28,7 +28,7 @@ typedef RedirectReceivedCallback = void Function(
     String newLocationUrl, int responseCode);
 typedef ResponseStartedCallback = void Function(int responseCode);
 typedef ReadDataCallback = void Function(List<int> data, int bytesRead,
-    int responseCode, Function next); // onReadComplete may confuse people
+    int responseCode, Function next); // onReadComplete may confuse people.
 typedef FailedCallabck = void Function(HttpException exception);
 typedef CanceledCallabck = void Function();
 typedef SuccessCallabck = void Function(int responseCode);
@@ -36,12 +36,9 @@ typedef SuccessCallabck = void Function(int responseCode);
 /// HTTP request for a client connection.
 ///
 /// It handles all of the Http Requests made by [HttpClient].
-///
 /// Provides two ways to get data from the request.
 /// [registerCallbacks] or a [HttpClientResponse] which is a [Stream<List<int>>].
-///
 /// Either of them can be used at a time.
-///
 ///
 /// Example Usage:
 /// ```dart
@@ -54,9 +51,7 @@ typedef SuccessCallabck = void Function(int responseCode);
 ///   // Use it as you like.
 /// });
 /// ```
-///
-///
-/// TODO: Implement other functions
+// TODO: Implement other functions
 class HttpClientRequest implements IOSink {
   final Uri _uri;
   final String _method;
@@ -64,9 +59,9 @@ class HttpClientRequest implements IOSink {
   final Pointer<Cronet_Engine> _cronetEngine;
   final _CallbackHandler _cbh;
   final Pointer<Cronet_UrlRequest> _request;
-  // final Function _clientCleanup;  // Holds the function to clean up storage after
-  //                                 // request is done (if nessesary)
-  //                                 // implemented in: http_client.dart
+  // final Function _clientCleanup; // Holds the function to clean up storage after
+  //                                // the request is done (if nessesary).
+  //                                // implemented in: http_client.dart
   // TODO: Enable with abort API
   // bool _isAborted = false;
 
@@ -77,20 +72,19 @@ class HttpClientRequest implements IOSink {
   @override
   Encoding encoding;
 
-  /// Initiates a [HttpClientRequest]. It is meant to be used by
-  /// [HttpClient]. Takes in [_uri], [_method], [_cronet] instance
+  /// Initiates a [HttpClientRequest]. It is meant to be used by a [HttpClient].
   HttpClientRequest(this._uri, this._method, this._cronet, this._cronetEngine,
       // this._clientCleanup,
       {this.encoding = utf8})
       : _cbh =
             _CallbackHandler(_cronet, _cronet.Create_Executor(), ReceivePort()),
         _request = _cronet.Cronet_UrlRequest_Create() {
-    // Register the native port to C side
+    // Register the native port to C side.
     _cronet.registerCallbackHandler(
         _cbh.receivePort.sendPort.nativePort, _request);
   }
 
-  // Starts the request
+  // Starts the request.
   void _startRequest() {
     // TODO: Enable with abort API
     // if (_isAborted) {
@@ -123,13 +117,13 @@ class HttpClientRequest implements IOSink {
     // _cbh.listen(_request, () => _clientCleanup(this));
   }
 
-  /// This is one of the methods to get data out of [HttpClientRequest].
-  /// Accepted callbacks are [RedirectReceivedCallback],
-  /// [ResponseStartedCallback], [ReadDataCallback], [FailedCallabck],
-  /// [CanceledCallabck] and [SuccessCallabck].
+  /// Registers callbacks for all network events.
   ///
+  /// This is one of the methods to get data out of [HttpClientRequest].
+  /// Accepted callbacks are [RedirectReceivedCallback], [ResponseStartedCallback],
+  /// [ReadDataCallback], [FailedCallabck], [CanceledCallabck] and [SuccessCallabck].
   /// Callbacks will be called as per sequence of the events.
-  ///If callbacks are registered, the [Stream] returned by [close] will be closed.
+  /// If callbacks are registered, the [Stream] returned by [close] will be closed.
   Future<void> registerCallbacks(ReadDataCallback onReadData,
       {RedirectReceivedCallback? onRedirectReceived,
       ResponseStartedCallback? onResponseStarted,
@@ -142,15 +136,11 @@ class HttpClientRequest implements IOSink {
     return rc;
   }
 
-  /// Returns the [Stream] responsible for
-  /// emitting data received from the server
-  /// by cronet.
+  /// Returns [Future] of [HttpClientResponse] which can be listened for server response.
   ///
   /// Throws [Exception] if request is already aborted using [abort].
-  ///
   /// Throws [UrlRequestException] if request can't be initiated.
-  ///
-  /// Consumable similar to [HttpClientResponse]
+  /// Consumable similar to [HttpClientResponse].
   @override
   Future<HttpClientResponse> close() {
     return Future(() {
@@ -167,7 +157,6 @@ class HttpClientRequest implements IOSink {
   /// [StackTrace] is printed. If there is no [StackTrace] provided,
   /// [StackTrace.empty] will be shown. If no [Exception] is provided,
   /// no exception is thrown.
-  ///
   /// If the [Stream] is closed, aborting has no effect.
   void abort([Object? exception, StackTrace? stackTrace]) {
     // TODO: Migrate abort code
@@ -204,7 +193,7 @@ class HttpClientRequest implements IOSink {
     throw UnimplementedError();
   }
 
-  // Implementation taken from `dart:io`
+  // Implementation taken from `dart:io`.
   @override
   void write(Object? object) {
     final string = '$object';
@@ -212,7 +201,7 @@ class HttpClientRequest implements IOSink {
     add(encoding.encode(string));
   }
 
-  // Implementation taken from `dart:io`
+  // Implementation taken from `dart:io`.
   @override
   void writeAll(Iterable objects, [String separator = '']) {
     final iterator = objects.iterator;
@@ -230,20 +219,20 @@ class HttpClientRequest implements IOSink {
     }
   }
 
-  // Implementation taken from `dart:io`
+  // Implementation taken from `dart:io`.
   @override
   void writeCharCode(int charCode) {
     write(String.fromCharCode(charCode));
   }
 
-  // Implementation taken from `dart:io`
+  // Implementation taken from `dart:io`.
   @override
   void writeln([Object? object = '']) {
     write(object);
     write('\n');
   }
 
-  /// Follow the redirects
+  /// Follow the redirects.
   bool get followRedirects => _cbh.followRedirects;
   set followRedirects(bool follow) {
     _cbh.followRedirects = follow;

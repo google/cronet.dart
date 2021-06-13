@@ -4,40 +4,32 @@ This package binds to Cronet's [native API](https://chromium.googlesource.com/ch
 
 This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757095741652992).
 
-
-
 ## Usage
 
-1. Add this to `pubspec.yaml`
+1. Add package as a dependency in your `pubspec.yaml`.
 
-```pubspec
-dependencies:
-  cronet:
-    git:
-      url: https://github.com/google/cronet.dart.git
+2. Run this from the `root` of your project.
 
-```
+   Desktop Platforms
 
-2. Run this from the `root` of your project
+   ```bash
+   pub get
+   pub run cronet <platform>
+   ```
 
-Desktop Platforms
-
-```bash
-pub get
-pub run cronet <platform>
-```
-Supported platforms: `linux64` and `windows64`
+   Supported platforms: `linux64` and `windows64`
 
 3. Import
 
-```dart
-import 'package:cronet/cronet.dart';
-```
+   ```dart
+   import 'package:cronet/cronet.dart';
+   ```
 
-**Internet connection is required to download cronet binaries**
-
+**Note:** Internet connection is required to download cronet binaries
 
 ## Example
+
+### `dart:io` style API
 
 ```dart
   final client = HttpClient();
@@ -72,7 +64,6 @@ import 'package:cronet/cronet.dart';
   });
 ```
 
-
 ## Run Example
 
 ```bash
@@ -83,5 +74,15 @@ dart run
 
 replace `<platform>` with `linux64` or `windows64`
 
-**Wrapper & Cronet binaries build guide**: [BUILD.md](lib/src/native/wrapper/BUILD.md)
+## Run Tests
 
+```bash
+pub get
+pub run cronet <platform>
+dart test --platform vm
+```
+
+**Note:** Make sure that `52XX` ports are not reserved by any other process.
+As some of the tests use ports in this range.
+
+**Wrapper & Cronet binaries build guide**: [BUILD.md](lib/src/native/wrapper/BUILD.md)

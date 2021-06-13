@@ -9,6 +9,5 @@ analyzer:
     implicit-casts: false
     implicit-dynamic: false
   exclude:
-    - example/**
-    - lib/third_party/**     # may not be fully migrated
-    - lib/src/generated_bindings.dart # ignore generated files
+    - example/lib/main.dart # Ignore placeholder example file.
+    - lib/src/generated_bindings.dart # Ignore generated files.
