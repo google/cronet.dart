@@ -4,12 +4,12 @@
 
 part of 'http_client_request.dart';
 
-// Deserializes the message sent by cronet and it's wrapper.
+/// Deserializes the message sent by cronet and it's wrapper.
 class _CallbackRequestMessage {
   final String method;
   final Uint8List data;
 
-  // Constructs [method] and [data] from [message].
+  /// Constructs [method] and [data] from [message].
   factory _CallbackRequestMessage.fromCppMessage(List<dynamic> message) {
     return _CallbackRequestMessage._(
         message[0] as String, message[1] as Uint8List);
@@ -21,8 +21,8 @@ class _CallbackRequestMessage {
   String toString() => 'CppRequest(method: $method)';
 }
 
-// Handles every kind of callbacks that are invoked by messages and
-// data that are sent by [NativePort] from native cronet library.
+/// Handles every kind of callbacks that are invoked by messages and
+/// data that are sent by [NativePort] from native cronet library.
 class _CallbackHandler {
   final ReceivePort receivePort;
   final Cronet cronet;
@@ -32,10 +32,10 @@ class _CallbackHandler {
   bool followRedirects = true;
   int maxRedirects = 5;
 
-  // Stream controller to allow consumption of data like [HttpClientResponse].
+  /// Stream controller to allow consumption of data like [HttpClientResponse].
   final _controller = StreamController<List<int>>();
 
-  // If callback based api is used, completes when receiving data is done.
+  /// If callback based api is used, completes when receiving data is done.
   Completer<void>? _callBackCompleter;
 
   RedirectReceivedCallback? _onRedirectReceived;
@@ -45,32 +45,36 @@ class _CallbackHandler {
   CanceledCallabck? _onCanceled;
   SuccessCallabck? _onSuccess;
 
-  // Registers the [NativePort] to the cronet side.
+  /// Registers the [NativePort] to the cronet side.
   _CallbackHandler(this.cronet, this.executor, this.receivePort);
 
+  /// [Stream] controller for [HttpClientResponse]
   Stream<List<int>> get stream => _controller.stream;
 
   /// Sets callbacks that are registered using [HttpClientRequest.registerCallbacks].
   ///
-  /// If called, the [Stream] returned by [HttpClientResponse.close] will be closed.
+  /// If called, the [StreamController] for [HttpClientRequest.close] will be closed.
+  /// Resolves with error if [Stream] already has a listener.
   Future<void> registerCallbacks(ReadDataCallback onReadData,
       [RedirectReceivedCallback? onRedirectReceived,
       ResponseStartedCallback? onResponseStarted,
       FailedCallabck? onFailed,
       CanceledCallabck? onCanceled,
       SuccessCallabck? onSuccess]) {
+    _callBackCompleter = Completer<void>();
+    // If stream based api is already under use, resolve with error.
+    if (_controller.hasListener) {
+      _callBackCompleter!.completeError(ResponseListenerException());
+    }
     _onRedirectReceived = onRedirectReceived;
     _onResponseStarted = onResponseStarted;
     _onReadData = onReadData;
-
     // If callbacks are registered, close the contoller.
-    // Responsible the sream for close() method (dart:io style API).
     _controller.close();
 
     _onFailed = onFailed;
     _onCanceled = onCanceled;
     _onSuccess = onSuccess;
-    _callBackCompleter = Completer<void>();
     return _callBackCompleter!.future;
   }
 
@@ -85,7 +89,7 @@ class _CallbackHandler {
     // cleanUpClient();
   }
 
-  // Checks status of an URL response.
+  /// Checks status of an URL response.
   int statusChecker(Pointer<Cronet_UrlResponseInfo> respInfoPtr, int lBound,
       int uBound, Function callback) {
     final respCode =

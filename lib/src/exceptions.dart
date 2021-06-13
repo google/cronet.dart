@@ -41,3 +41,7 @@ class CronetException implements Exception {
 class UrlRequestException extends CronetException {
   const UrlRequestException(int val) : super(val);
 }
+
+class ResponseListenerException implements Exception {
+  ResponseListenerException();
+}

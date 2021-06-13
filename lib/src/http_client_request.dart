@@ -119,11 +119,12 @@ class HttpClientRequest implements IOSink {
 
   /// Registers callbacks for all network events.
   ///
+  /// Throws [Exception] if callbacks are registered after listening to response [Stream].
+  ///
   /// This is one of the methods to get data out of [HttpClientRequest].
   /// Accepted callbacks are [RedirectReceivedCallback], [ResponseStartedCallback],
   /// [ReadDataCallback], [FailedCallabck], [CanceledCallabck] and [SuccessCallabck].
   /// Callbacks will be called as per sequence of the events.
-  /// If callbacks are registered, the [Stream] returned by [close] will be closed.
   Future<void> registerCallbacks(ReadDataCallback onReadData,
       {RedirectReceivedCallback? onRedirectReceived,
       ResponseStartedCallback? onResponseStarted,
@@ -138,12 +139,16 @@ class HttpClientRequest implements IOSink {
 
   /// Returns [Future] of [HttpClientResponse] which can be listened for server response.
   ///
-  /// Throws [Exception] if request is already aborted using [abort].
+  /// Throws [Exception] if callback based api is in use.
   /// Throws [UrlRequestException] if request can't be initiated.
   /// Consumable similar to [HttpClientResponse].
   @override
   Future<HttpClientResponse> close() {
     return Future(() {
+      // If callback based API is being used, throw Exception.
+      if (_cbh._onReadData != null) {
+        throw ResponseListenerException();
+      }
       _startRequest();
       return HttpClientResponse._(_cbh.stream);
     });

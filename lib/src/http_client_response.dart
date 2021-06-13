@@ -4,6 +4,8 @@
 
 part of '../src/http_client_request.dart';
 
+/// The body of a [HttpClientResponse] object is a [Stream] of data from the server.
+/// Listen to the body to handle the data and be notified when the entire body is received.
 abstract class HttpClientResponse extends Stream<List<int>> {
   HttpClientResponse();
 
@@ -12,6 +14,9 @@ abstract class HttpClientResponse extends Stream<List<int>> {
   }
 }
 
+/// Implementation of [HttpClientResponse].
+///
+/// Takes instance of callback handler and registers [listen] callbacks to the stream.
 class _HttpClientResponse extends HttpClientResponse {
   final Stream<List<int>> cbhStream;
   _HttpClientResponse(this.cbhStream);

@@ -10,11 +10,18 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 2. Run this from the `root` of your project.
 
-   Desktop Platforms
+   **Dart CLI**
 
    ```bash
-   pub get
-   pub run cronet <platform>
+   dart pub get
+   dart run cronet <platform> # Downloads the cronet binaries.
+   ```
+
+   **Flutter**
+
+   ```bash
+   flutter pub get
+   flutter run cronet <platform> # Downloads the cronet binaries.
    ```
 
    Supported platforms: `linux64` and `windows64`
@@ -68,17 +75,17 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 ```bash
 cd example_dart
-pub run cronet <platform>
+dart run cronet <platform> # Downloads the cronet binaries.
 dart run
 ```
 
-replace `<platform>` with `linux64` or `windows64`
+Replace `<platform>` with `linux64` or `windows64`
 
 ## Run Tests
 
 ```bash
-pub get
-pub run cronet <platform>
+dart pub get
+dart run cronet <platform> # Downloads the cronet binaries.
 dart test --platform vm
 ```
 

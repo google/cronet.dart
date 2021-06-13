@@ -31,7 +31,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize `dart_api_dl.h`
 intptr_t InitDartApiDL(void* data) {
-  printf("Initializing");
   return Dart_InitializeApiDL(data);
 }
 
@@ -201,7 +200,6 @@ void Cronet_Engine_StopNetLog(Cronet_EnginePtr self) {return _Cronet_Engine_Stop
 /* Engine Cleanup Tasks */
 static void HttpClientDestroy(void* isolate_callback_data,
                          void* peer) {
-  std::cout << "Engine Destroy" << std::endl;
   Cronet_EnginePtr ce = reinterpret_cast<Cronet_EnginePtr>(peer);
   _Cronet_Engine_Shutdown(ce);
   _Cronet_Engine_Destroy(ce);
@@ -270,8 +268,6 @@ void OnReadCompleted(
 
 
 void OnSucceeded(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request, Cronet_UrlResponseInfoPtr info) {
-  printf("OnSucceeded");
-  std::cout << "OnSucceeded called." << std::endl;
   dispatchCallback("OnSucceeded",request, callbackArgBuilder(1, info));
 }
 
@@ -280,7 +276,6 @@ void OnFailed(
     Cronet_UrlRequestPtr request,
     Cronet_UrlResponseInfoPtr info,
     Cronet_ErrorPtr error) {
-      printf("OnFailed");
   dispatchCallback("OnFailed",request, callbackArgBuilder(1, _Cronet_Error_message_get(error)));
 }
 
@@ -288,7 +283,6 @@ void OnCanceled(
     Cronet_UrlRequestCallbackPtr self,
     Cronet_UrlRequestPtr request,
     Cronet_UrlResponseInfoPtr info) {
-      printf("OnCanceled");
       dispatchCallback("OnCanceled",request, callbackArgBuilder(0));
 }
 
@@ -296,7 +290,6 @@ void OnCanceled(
 /* Interface */
 
 Cronet_EnginePtr Cronet_Engine_Create() {
-  printf("Cronet_Engine_Create");
   // Checks if cronet is loaded properly
   // As this is the first function to call,
   // if this succeeds, every subsequent use

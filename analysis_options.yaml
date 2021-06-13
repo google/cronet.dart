@@ -8,6 +8,3 @@ analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-  exclude:
-    - example/lib/main.dart # Ignore placeholder example file.
-    - lib/src/generated_bindings.dart # Ignore generated files.

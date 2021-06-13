@@ -27,7 +27,6 @@ IMPORT(Cronet_ClientContext, Cronet_Executor_GetClientContext, Cronet_ExecutorPt
 SampleExecutor::SampleExecutor()
     : executor_thread_(SampleExecutor::ThreadLoop, this) {}
 SampleExecutor::~SampleExecutor() {
-  std::cout << "SampleExec Destructor" << std::endl;
   ShutdownExecutor();
   Cronet_Executor_Destroy(executor_);
 }
@@ -41,7 +40,6 @@ Cronet_ExecutorPtr SampleExecutor::GetExecutor() {
   return executor_;
 }
 void SampleExecutor::ShutdownExecutor() {
-  printf("Executor shut down\n");
   // Break tasks loop.
   {
     std::lock_guard<std::mutex> lock(lock_);
@@ -52,25 +50,20 @@ void SampleExecutor::ShutdownExecutor() {
   executor_thread_.join();
 }
 void SampleExecutor::RunTasksInQueue() {
-  printf("Running tasks");
   // Process runnables in |task_queue_|.
   while (true) {
-    printf("loop\n");
     Cronet_RunnablePtr runnable = nullptr;
     {
       
       // Wait for a task to run or stop signal.
       std::unique_lock<std::mutex> lock(lock_);
       while (task_queue_.empty() && !stop_thread_loop_) {
-        printf("waiting\n");
         task_available_.wait(lock);
       }
       if (stop_thread_loop_) {
-        printf("stop thread\n");
         break;
       }
       if (task_queue_.empty()) {
-        printf("task queue empty\n");
         continue;
       }
       runnable = task_queue_.front();
@@ -96,7 +89,6 @@ void SampleExecutor::ThreadLoop(SampleExecutor* executor) {
   executor->RunTasksInQueue();
 }
 void SampleExecutor::Execute(Cronet_RunnablePtr runnable) {
-  // printf("Execute\n");
   {
     std::lock_guard<std::mutex> lock(lock_);
     if (!stop_thread_loop_) {
