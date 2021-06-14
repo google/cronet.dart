@@ -31,13 +31,13 @@ void main(List<String> args) {
   client2
       .getUrl(Uri.parse('http://info.cern.ch/'))
       .then((HttpClientRequest request) {
-    request.registerCallbacks((data, bytesRead, responseCode, next) {
+    request.registerCallbacks((data, bytesRead, responseCode) {
       print(utf8.decoder.convert(data));
       print('Status: $responseCode');
-      next();
     },
         onSuccess: (responseCode) =>
-            print('Done with status: $responseCode')).catchError(
-        (Object e) => print(e));
+            print('Done with status: $responseCode')).catchError((Object e) {
+      print(e);
+    });
   });
 }

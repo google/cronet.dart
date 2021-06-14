@@ -24,7 +24,7 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
    flutter run cronet <platform> # Downloads the cronet binaries.
    ```
 
-   Supported platforms: `linux64` and `windows64`
+   Supported platforms: `linux64` and `windows64`.
 
 3. Import
 
@@ -32,7 +32,7 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
    import 'package:cronet/cronet.dart';
    ```
 
-**Note:** Internet connection is required to download cronet binaries
+**Note:** Internet connection is required to download cronet binaries.
 
 ## Example
 
@@ -60,14 +60,13 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
   client
       .getUrl(Uri.parse('http://info.cern.ch/'))
       .then((HttpClientRequest request) {
-    request.registerCallbacks((data, bytesRead, responseCode, next) {
+    request.registerCallbacks((data, bytesRead, responseCode) {
       print(utf8.decoder.convert(data));
       print('Status: $responseCode');
-      next();
     },
         onSuccess: (responseCode) =>
             print('Done with status: $responseCode')).catchError(
-        (e) => print(e));
+        (Object e) {print(e);});
   });
 ```
 
@@ -79,7 +78,7 @@ dart run cronet <platform> # Downloads the cronet binaries.
 dart run
 ```
 
-Replace `<platform>` with `linux64` or `windows64`
+Replace `<platform>` with `linux64` or `windows64`.
 
 ## Run Tests
 

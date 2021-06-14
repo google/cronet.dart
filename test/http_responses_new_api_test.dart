@@ -30,9 +30,8 @@ void main() {
         () async {
       String resp = '';
       final request = await client.getUrl(Uri.parse('http://localhost:5256'));
-      await request.registerCallbacks((data, bytesRead, responseCode, next) {
+      await request.registerCallbacks((data, bytesRead, responseCode) {
         resp += utf8.decoder.convert(data);
-        next();
       });
       expect(resp, equals(sentData));
     });

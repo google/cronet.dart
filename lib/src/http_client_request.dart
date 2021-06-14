@@ -24,13 +24,30 @@ part 'http_client_response.dart';
 part 'http_callback_handler.dart';
 
 // Type definitions for various callbacks
+
+/// Called when a redirect is received. Gets new location and response code as
+/// arguments.
 typedef RedirectReceivedCallback = void Function(
     String newLocationUrl, int responseCode);
+
+/// Called when server sends a response for the first time. Gets the response code
+/// as an argument.
 typedef ResponseStartedCallback = void Function(int responseCode);
+
+/// Called when a chunk of data is received from the server. Gets raw bytes as
+/// [List<int>], number of bytes read and response code as arguments.
 typedef ReadDataCallback = void Function(List<int> data, int bytesRead,
-    int responseCode, Function next); // onReadComplete may confuse people.
+    int responseCode); // onReadComplete may confuse people.
+
+/// Called when request is failed due to some reason. Gets [HttpException] as
+/// an argument which also contains the reason of failure.
 typedef FailedCallabck = void Function(HttpException exception);
+
+/// Called when a request is cancelled.
 typedef CanceledCallabck = void Function();
+
+/// Called when a request is finished with success. Gets the response code as
+/// an argument.
 typedef SuccessCallabck = void Function(int responseCode);
 
 /// HTTP request for a client connection.
@@ -120,12 +137,13 @@ class HttpClientRequest implements IOSink {
   /// Registers callbacks for all network events.
   ///
   /// Throws [Exception] if callbacks are registered after listening to response [Stream].
+  /// Resolves with `true` if request finished successfully and `false` otherwise.
   ///
   /// This is one of the methods to get data out of [HttpClientRequest].
   /// Accepted callbacks are [RedirectReceivedCallback], [ResponseStartedCallback],
   /// [ReadDataCallback], [FailedCallabck], [CanceledCallabck] and [SuccessCallabck].
   /// Callbacks will be called as per sequence of the events.
-  Future<void> registerCallbacks(ReadDataCallback onReadData,
+  Future<bool> registerCallbacks(ReadDataCallback onReadData,
       {RedirectReceivedCallback? onRedirectReceived,
       ResponseStartedCallback? onResponseStarted,
       FailedCallabck? onFailed,
@@ -146,7 +164,7 @@ class HttpClientRequest implements IOSink {
   Future<HttpClientResponse> close() {
     return Future(() {
       // If callback based API is being used, throw Exception.
-      if (_cbh._onReadData != null) {
+      if (_cbh._newApi) {
         throw ResponseListenerException();
       }
       _startRequest();

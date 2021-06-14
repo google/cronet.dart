@@ -36,7 +36,10 @@ class _CallbackHandler {
   final _controller = StreamController<List<int>>();
 
   /// If callback based api is used, completes when receiving data is done.
-  Completer<void>? _callBackCompleter;
+  Completer<bool>? _callBackCompleter;
+
+  /// Whether callback based api is being used.
+  bool _newApi = false;
 
   RedirectReceivedCallback? _onRedirectReceived;
   ResponseStartedCallback? _onResponseStarted;
@@ -55,17 +58,19 @@ class _CallbackHandler {
   ///
   /// If called, the [StreamController] for [HttpClientRequest.close] will be closed.
   /// Resolves with error if [Stream] already has a listener.
-  Future<void> registerCallbacks(ReadDataCallback onReadData,
+  Future<bool> registerCallbacks(ReadDataCallback onReadData,
       [RedirectReceivedCallback? onRedirectReceived,
       ResponseStartedCallback? onResponseStarted,
       FailedCallabck? onFailed,
       CanceledCallabck? onCanceled,
       SuccessCallabck? onSuccess]) {
-    _callBackCompleter = Completer<void>();
+    _callBackCompleter = Completer<bool>();
     // If stream based api is already under use, resolve with error.
     if (_controller.hasListener) {
       _callBackCompleter!.completeError(ResponseListenerException());
+      return _callBackCompleter!.future;
     }
+    _newApi = true;
     _onRedirectReceived = onRedirectReceived;
     _onResponseStarted = onResponseStarted;
     _onReadData = onReadData;
@@ -75,6 +80,7 @@ class _CallbackHandler {
     _onFailed = onFailed;
     _onCanceled = onCanceled;
     _onSuccess = onSuccess;
+
     return _callBackCompleter!.future;
   }
 
@@ -177,10 +183,9 @@ class _CallbackHandler {
           break;
         // Read a chunk of data.
         //
-        // This is where we actually read the response from the server.
-        // Data gets added to the stream here.
-        // ReadDataCallback is invoked here with data received, no of bytes read,
-        // and a function which can be called to continue reading.
+        // This is where we actually read the response from the server. Data gets added
+        // to the stream here. ReadDataCallback is invoked here with data received and no
+        // of bytes read.
         case 'OnReadCompleted':
           {
             final request = Pointer<Cronet_UrlRequest>.fromAddress(args[0]);
@@ -202,16 +207,14 @@ class _CallbackHandler {
 
             // Invoke the callback.
             if (_onReadData != null) {
-              _onReadData!(data.toList(growable: false), bytesRead, respCode,
-                  () {
-                final res = cronet.Cronet_UrlRequest_Read(request, buffer);
-                if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-                  cleanUpRequest(
-                    reqPtr,
-                  );
-                  _callBackCompleter!.completeError(UrlRequestException(res));
-                }
-              });
+              _onReadData!(data.toList(growable: false), bytesRead, respCode);
+              final res = cronet.Cronet_UrlRequest_Read(request, buffer);
+              if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
+                cleanUpRequest(
+                  reqPtr,
+                );
+                _callBackCompleter!.completeError(UrlRequestException(res));
+              }
             } else {
               // Or, add data to the stream.
               _controller.sink.add(data.toList(growable: false));
@@ -234,17 +237,18 @@ class _CallbackHandler {
             cleanUpRequest(
               reqPtr,
             );
-            if (_onFailed != null) {
-              _onFailed!(HttpException(error));
-              _callBackCompleter!.complete();
-            }
-            if (_onReadData == null) {
-              // If callbacks are not registered, stream isn't closed before. So, close here.
+
+            if (_newApi) {
+              if (_onFailed != null) {
+                _onFailed!(HttpException(error));
+                _callBackCompleter!.complete(false);
+              } else {
+                // If callback is registed but onFailed callback is not.
+                _callBackCompleter!.completeError(HttpException(error));
+              }
+            } else {
               _controller.addError(HttpException(error));
               _controller.close();
-            } else {
-              // If callback is registed but onFailed callback is not.
-              _callBackCompleter!.completeError(HttpException(error));
             }
           }
           break;
@@ -254,14 +258,14 @@ class _CallbackHandler {
             cleanUpRequest(
               reqPtr,
             );
-            if (_onCanceled != null) {
-              _onCanceled!();
-            }
-            if (_onReadData == null) {
+            if (_newApi) {
+              if (_onCanceled != null) {
+                _onCanceled!();
+              }
+              _callBackCompleter!.complete(false);
+            } else {
               // If callbacks are not registered, stream isn't closed before. So, close here.
               _controller.close();
-            } else {
-              _callBackCompleter!.complete();
             }
           }
           break;
@@ -271,17 +275,17 @@ class _CallbackHandler {
             cleanUpRequest(
               reqPtr,
             );
-            if (_onSuccess != null) {
-              final respInfoPtr =
-                  Pointer.fromAddress(args[0]).cast<Cronet_UrlResponseInfo>();
-              _onSuccess!(cronet.Cronet_UrlResponseInfo_http_status_code_get(
-                  respInfoPtr));
-            }
-            if (_onReadData == null) {
+            if (_newApi) {
+              if (_onSuccess != null) {
+                final respInfoPtr =
+                    Pointer.fromAddress(args[0]).cast<Cronet_UrlResponseInfo>();
+                _onSuccess!(cronet.Cronet_UrlResponseInfo_http_status_code_get(
+                    respInfoPtr));
+              }
+              _callBackCompleter!.complete(true);
+            } else {
               // If callbacks are not registered, stream isn't closed before. So, close here.
               _controller.close();
-            } else {
-              _callBackCompleter!.complete();
             }
           }
           break;

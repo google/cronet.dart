@@ -4,11 +4,11 @@ Want to build your own?
 
 For building cronet: <https://www.chromium.org/developers/how-tos/get-the-code> & <https://chromium.googlesource.com/chromium/src/+/master/components/cronet/build_instructions.md>
 
-For building wrapper:
+## For building wrapper
 
 *Paths mentioned are relative to project root.*
 
-## For Linux
+### For Linux
 
 ```bash
 cd lib/src/native/wrapper
@@ -20,7 +20,7 @@ Copy the cronet's binary to the `cronet_binaries/<platform><arch>` folder from p
 
 *If you are in 64bit linux system, `cronet_binaries/<platform><arch>` will be `cronet_binaries/linux64`.*
 
-## For Windows
+### For Windows
 
 Required: Visual Studio 2019 with C++ Desktop Development tools.
 
@@ -34,4 +34,4 @@ Required: Visual Studio 2019 with C++ Desktop Development tools.
    cmake --build out
    ```
 
-3. From there, go to `out\Debug` folder to get `wrapper.dll`
+3. From there, go to `out\Debug` folder to get `wrapper.dll`.
