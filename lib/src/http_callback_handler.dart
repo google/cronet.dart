@@ -34,12 +34,10 @@ class _CallbackHandler {
 
   /// Stream controller to allow consumption of data like [HttpClientResponse].
   final _controller = StreamController<List<int>>();
+  bool _isStreamClaimed = false; // Stream instance should be claimed once.
 
   /// If callback based api is used, completes when receiving data is done.
   Completer<bool>? _callBackCompleter;
-
-  /// Whether callback based api is being used.
-  bool _newApi = false;
 
   RedirectReceivedCallback? _onRedirectReceived;
   ResponseStartedCallback? _onResponseStarted;
@@ -52,7 +50,13 @@ class _CallbackHandler {
   _CallbackHandler(this.cronet, this.executor, this.receivePort);
 
   /// [Stream] controller for [HttpClientResponse]
-  Stream<List<int>> get stream => _controller.stream;
+  Stream<List<int>> get stream {
+    if (_isStreamClaimed) {
+      throw ResponseListenerException();
+    }
+    _isStreamClaimed = true;
+    return _controller.stream;
+  }
 
   /// Sets callbacks that are registered using [HttpClientRequest.registerCallbacks].
   ///
@@ -66,11 +70,10 @@ class _CallbackHandler {
       SuccessCallabck? onSuccess]) {
     _callBackCompleter = Completer<bool>();
     // If stream based api is already under use, resolve with error.
-    if (_controller.hasListener) {
+    if (_isStreamClaimed) {
       _callBackCompleter!.completeError(ResponseListenerException());
       return _callBackCompleter!.future;
     }
-    _newApi = true;
     _onRedirectReceived = onRedirectReceived;
     _onResponseStarted = onResponseStarted;
     _onReadData = onReadData;
@@ -110,7 +113,12 @@ class _CallbackHandler {
 
       if (_callBackCompleter != null) {
         // If callbacks are registered.
-        _callBackCompleter!.completeError(exception);
+        if (_onFailed != null) {
+          _onFailed!(exception);
+          _callBackCompleter!.complete(false);
+        } else {
+          _callBackCompleter!.completeError(exception);
+        }
       } else {
         _controller.addError(exception);
         _controller.close();
@@ -238,7 +246,7 @@ class _CallbackHandler {
               reqPtr,
             );
 
-            if (_newApi) {
+            if (_callBackCompleter != null) {
               if (_onFailed != null) {
                 _onFailed!(HttpException(error));
                 _callBackCompleter!.complete(false);
@@ -258,7 +266,7 @@ class _CallbackHandler {
             cleanUpRequest(
               reqPtr,
             );
-            if (_newApi) {
+            if (_callBackCompleter != null) {
               if (_onCanceled != null) {
                 _onCanceled!();
               }
@@ -275,7 +283,7 @@ class _CallbackHandler {
             cleanUpRequest(
               reqPtr,
             );
-            if (_newApi) {
+            if (_callBackCompleter != null) {
               if (_onSuccess != null) {
                 final respInfoPtr =
                     Pointer.fromAddress(args[0]).cast<Cronet_UrlResponseInfo>();

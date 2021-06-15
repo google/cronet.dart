@@ -62,6 +62,19 @@ void main() {
           ]));
     });
 
+    test('New API: 503, Service Unavailable', () async {
+      final request =
+          await client.getUrl(Uri.parse('http://localhost:5255/503'));
+      final success = await request.registerCallbacks(
+          (data, bytesRead, responseCode) {}, onFailed: (reason) {
+        expect(
+            reason,
+            isA<HttpException>().having((exception) => exception.message,
+                'message', 'Service Unavailable'));
+      });
+      expect(success, equals(false));
+    });
+
     tearDown(() {
       client.close();
       server.close();

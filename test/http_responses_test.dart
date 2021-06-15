@@ -67,6 +67,13 @@ void main() {
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
     });
 
+    test('response.close after registering callbacks will throw error',
+        () async {
+      final request = await client.postUrl(Uri.parse('http://localhost:5252'));
+      request.registerCallbacks((data, bytesRead, responseCode) {});
+      expect(request.close(), throwsA(isA<ResponseListenerException>()));
+    });
+
     tearDown(() {
       client.close();
       server.close();

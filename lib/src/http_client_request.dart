@@ -149,6 +149,9 @@ class HttpClientRequest implements IOSink {
       FailedCallabck? onFailed,
       CanceledCallabck? onCanceled,
       SuccessCallabck? onSuccess}) {
+    if (_cbh._isStreamClaimed) {
+      return Future.error(ResponseListenerException());
+    }
     final rc = _cbh.registerCallbacks(onReadData, onRedirectReceived,
         onResponseStarted, onFailed, onCanceled, onSuccess);
     _startRequest();
@@ -164,7 +167,7 @@ class HttpClientRequest implements IOSink {
   Future<HttpClientResponse> close() {
     return Future(() {
       // If callback based API is being used, throw Exception.
-      if (_cbh._newApi) {
+      if (_cbh._callBackCompleter != null) {
         throw ResponseListenerException();
       }
       _startRequest();
