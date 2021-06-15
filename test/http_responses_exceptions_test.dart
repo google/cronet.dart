@@ -6,14 +6,17 @@ import 'dart:io';
 
 import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
+import 'test_utils.dart';
 
 void main() {
   group('response_HttpException_test', () {
     late HttpClient client;
     late HttpServer server;
+    late int port;
     setUp(() async {
       client = HttpClient();
-      server = await HttpServer.bind(InternetAddress.anyIPv6, 5255);
+      server = await HttpServer.bind(InternetAddress.anyIPv6, 0);
+      port = server.port;
       server.listen((HttpRequest request) {
         final paths = request.uri.pathSegments;
         request.response.statusCode = int.parse(paths[0]);
@@ -23,7 +26,7 @@ void main() {
 
     test('404, Not Found', () async {
       final request =
-          await client.getUrl(Uri.parse('http://localhost:5255/404'));
+          await client.getUrl(Uri.parse('http://$host:$port/404'));
       final resp = await request.close();
       expect(
           resp,
@@ -36,7 +39,7 @@ void main() {
 
     test('401, Unauthorized', () async {
       final request =
-          await client.getUrl(Uri.parse('http://localhost:5255/401'));
+          await client.getUrl(Uri.parse('http://$host:$port/401'));
       final resp = await request.close();
       expect(
           resp,
@@ -49,7 +52,7 @@ void main() {
 
     test('503, Service Unavailable', () async {
       final request =
-          await client.getUrl(Uri.parse('http://localhost:5255/503'));
+          await client.getUrl(Uri.parse('http://$host:$port/503'));
       final resp = await request.close();
       expect(
           resp,
@@ -64,7 +67,7 @@ void main() {
 
     test('New API: 503, Service Unavailable', () async {
       final request =
-          await client.getUrl(Uri.parse('http://localhost:5255/503'));
+          await client.getUrl(Uri.parse('http://$host:$port/503'));
       final success = await request.registerCallbacks(
           (data, bytesRead, responseCode) {}, onFailed: (reason) {
         expect(

@@ -88,7 +88,4 @@ dart run cronet <platform> # Downloads the cronet binaries.
 dart test --platform vm
 ```
 
-**Note:** Make sure that `52XX` ports are not reserved by any other process.
-As some of the tests use ports in this range.
-
 **Wrapper & Cronet binaries build guide**: [BUILD.md](lib/src/native/wrapper/BUILD.md)

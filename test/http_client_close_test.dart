@@ -7,13 +7,15 @@ import 'dart:io';
 
 import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
+import 'test_utils.dart';
 
 void main() {
   group('client_close_test', () {
     late HttpServer server;
-    final sentData = 'Hello, world!';
+    late int port;
     setUp(() async {
-      server = await HttpServer.bind(InternetAddress.anyIPv6, 5253);
+      server = await HttpServer.bind(InternetAddress.anyIPv6, 0);
+      port = server.port;
       server.listen((HttpRequest request) {
         request.response.write(sentData);
         request.response.close();
@@ -25,14 +27,14 @@ void main() {
       client.close();
       expect(
           () async =>
-              await client.openUrl('GET', Uri.parse('http://localhost:5253')),
+              await client.openUrl('GET', Uri.parse('http://$host:$port')),
           throwsException);
     });
 
     test('Keeps the previous connection alive, if closed afterwards', () async {
       final client = HttpClient();
       final request =
-          await client.openUrl('GET', Uri.parse('http://localhost:5253'));
+          await client.openUrl('GET', Uri.parse('http://$host:$port'));
       final resp = await request.close();
       client.close();
       final dataStream = resp.transform(utf8.decoder);

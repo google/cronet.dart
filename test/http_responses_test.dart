@@ -7,15 +7,17 @@ import 'dart:io';
 
 import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
+import 'test_utils.dart';
 
 void main() {
   group('http_responses_test', () {
     late HttpClient client;
     late HttpServer server;
-    final sentData = 'Hello, world!';
+    late int port;
     setUp(() async {
       client = HttpClient();
-      server = await HttpServer.bind(InternetAddress.anyIPv6, 5252);
+      server = await HttpServer.bind(InternetAddress.anyIPv6, 0);
+      port = server.port;
       server.listen((HttpRequest request) {
         if (request.method == 'CUSTOM') {
           request.response.write(request.method);
@@ -27,14 +29,14 @@ void main() {
     });
 
     test('Gets Hello, world response from server using getUrl', () async {
-      final request = await client.getUrl(Uri.parse('http://localhost:5252'));
+      final request = await client.getUrl(Uri.parse('http://$host:$port'));
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
     });
 
     test('Gets Hello, world response from server using get method', () async {
-      final request = await client.get('localhost', 5252, '/');
+      final request = await client.get(host, port, '/');
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
@@ -43,7 +45,7 @@ void main() {
     test('Gets Hello, world response from server using openUrl method',
         () async {
       final request =
-          await client.openUrl('GET', Uri.parse('http://localhost:5252'));
+          await client.openUrl('GET', Uri.parse('http://$host:$port'));
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
@@ -53,7 +55,7 @@ void main() {
         'Fetch Hello, world response from server using openUrl, custom method method',
         () async {
       final request =
-          await client.openUrl('CUSTOM', Uri.parse('http://localhost:5252'));
+          await client.openUrl('CUSTOM', Uri.parse('http://$host:$port'));
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals('CUSTOM'), emitsDone]));
@@ -61,7 +63,7 @@ void main() {
 
     test('Fetch Hello, world response from server using POST request',
         () async {
-      final request = await client.postUrl(Uri.parse('http://localhost:5252'));
+      final request = await client.postUrl(Uri.parse('http://$host:$port'));
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
@@ -69,7 +71,7 @@ void main() {
 
     test('response.close after registering callbacks will throw error',
         () async {
-      final request = await client.postUrl(Uri.parse('http://localhost:5252'));
+      final request = await client.postUrl(Uri.parse('http://$host:$port'));
       request.registerCallbacks((data, bytesRead, responseCode) {});
       expect(request.close(), throwsA(isA<ResponseListenerException>()));
     });
