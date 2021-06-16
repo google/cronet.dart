@@ -59,8 +59,7 @@ void main() {
 
     test('URL redirect on 301 and fetch data', () async {
       String resp = '';
-      final request =
-          await client.getUrl(Uri.parse('http://$host:$port'));
+      final request = await client.getUrl(Uri.parse('http://$host:$port'));
       final success =
           await request.registerCallbacks((data, bytesRead, responseCode) {
         resp += utf8.decoder.convert(data);

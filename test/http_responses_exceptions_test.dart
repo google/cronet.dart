@@ -25,8 +25,7 @@ void main() {
     });
 
     test('404, Not Found', () async {
-      final request =
-          await client.getUrl(Uri.parse('http://$host:$port/404'));
+      final request = await client.getUrl(Uri.parse('http://$host:$port/404'));
       final resp = await request.close();
       expect(
           resp,
@@ -38,8 +37,7 @@ void main() {
     });
 
     test('401, Unauthorized', () async {
-      final request =
-          await client.getUrl(Uri.parse('http://$host:$port/401'));
+      final request = await client.getUrl(Uri.parse('http://$host:$port/401'));
       final resp = await request.close();
       expect(
           resp,
@@ -51,8 +49,7 @@ void main() {
     });
 
     test('503, Service Unavailable', () async {
-      final request =
-          await client.getUrl(Uri.parse('http://$host:$port/503'));
+      final request = await client.getUrl(Uri.parse('http://$host:$port/503'));
       final resp = await request.close();
       expect(
           resp,
@@ -66,8 +63,7 @@ void main() {
     });
 
     test('New API: 503, Service Unavailable', () async {
-      final request =
-          await client.getUrl(Uri.parse('http://$host:$port/503'));
+      final request = await client.getUrl(Uri.parse('http://$host:$port/503'));
       final success = await request.registerCallbacks(
           (data, bytesRead, responseCode) {}, onFailed: (reason) {
         expect(

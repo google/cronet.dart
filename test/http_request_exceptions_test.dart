@@ -28,8 +28,8 @@ void main() {
     });
 
     test('The port is wrong', () async {
-      final request = await client.openUrl('GET',
-          Uri.parse('http://$host:$port')); // port 9999 should be close
+      final request = await client.openUrl(
+          'GET', Uri.parse('http://$host:$port')); // port 9999 should be close
       final resp = await request.close();
       expect(resp,
           emitsInOrder(<Matcher>[emitsError(isA<HttpException>()), emitsDone]));

@@ -36,7 +36,7 @@ void main() {
     });
 
     test('Gets Hello, world response from server using get method', () async {
-      final request = await client.get(host, port, '/');
+      final request = await client.get(host, port, '/path');
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
@@ -45,7 +45,7 @@ void main() {
     test('Gets Hello, world response from server using openUrl method',
         () async {
       final request =
-          await client.openUrl('GET', Uri.parse('http://$host:$port'));
+          await client.openUrl('GET', Uri.parse('http://$host:$port/random'));
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
