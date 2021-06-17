@@ -14,6 +14,7 @@ environment:
 dependencies:
   ffi: ^1.0.0
   path: ^1.8.0
+  cli_util: ^0.3.0
 
 dev_dependencies:
   ffigen: ^2.4.2

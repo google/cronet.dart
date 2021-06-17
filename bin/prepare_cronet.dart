@@ -6,31 +6,18 @@
 
 import 'dart:io' show Directory, File, Process, ProcessResult, ProcessStartMode;
 
-// import 'package:path/path.dart';
+import 'package:cronet/src/find_resource.dart';
 
-import 'find_resource.dart';
+import 'package:cronet/src/constants.dart';
 
-// TODO: Change URL and Version
-
-const _release = '1.0.0';
-const _cronetBinaryUrl =
-    'https://github.com/unsuitable001/dart_cronet_sample/releases/download/$_release/';
-final _cBinExtMap = {
-  'linux64': '.tar.xz',
-  'windows64': '.tar.gz',
-  'androidarm64-v8a': '.tar.xz',
-};
-
-const _cronetVersion = '"86.0.4240.198"';
-
-/// Builds the [wrapper] shared library
-/// according to [build.sh] file
+/// Builds the [wrapper] shared library according to [build.sh] file.
 void buildWrapper() {
   final wrapperPath = wrapperSourcePath();
 
   print('Building Wrapper...');
+  Process.runSync('chmod', ['+x', '$wrapperPath/build.sh']);
   var result =
-      Process.runSync('$wrapperPath/build.sh', [wrapperPath, _cronetVersion]);
+      Process.runSync('$wrapperPath/build.sh', [wrapperPath, cronetVersion]);
   print(result.stdout);
   print(result.stderr);
   print('Copying wrapper to project root...');
@@ -39,7 +26,7 @@ void buildWrapper() {
   print(result.stderr);
 }
 
-/// Place downloaded binaries to proper location
+/// Places downloaded binaries to proper location.
 void placeBinaries(String platform, String fileName) {
   print('Extracting Cronet for $platform');
   ProcessResult res;
@@ -49,8 +36,7 @@ void placeBinaries(String platform, String fileName) {
   } else {
     Directory('cronet_binaries').createSync();
 
-    // Do we have tar extraction capability
-    // in dart's built-in libraries?
+    // Do we have tar extraction capability in dart's built-in libraries?
     res = Process.runSync('tar', ['-xvf', fileName, '-C', 'cronet_binaries']);
   }
 
@@ -64,13 +50,12 @@ void placeBinaries(String platform, String fileName) {
   print('Done! Cronet support for $platform is now available!');
 }
 
-/// Download [cronet] library
-/// from Github Releases
+/// Download [cronet] library from Github Releases.
 Future<void> downloadCronetBinaries(String platform) async {
   if (!isCronetAvailable(platform)) {
-    final fileName = platform + (_cBinExtMap[platform] ?? '');
+    final fileName = platform + (cBinExtMap[platform] ?? '');
     print('Downloading Cronet for $platform');
-    final downloadUrl = _cronetBinaryUrl + fileName;
+    final downloadUrl = cronetBinaryUrl + fileName;
     print(downloadUrl);
     final dProcess = await Process.start('curl', ['-OL', downloadUrl],
         mode: ProcessStartMode.inheritStdio);

@@ -5,7 +5,10 @@
 import 'dart:ffi' show DynamicLibrary;
 import 'dart:io' show Directory, File, Link, Platform;
 
+import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:path/path.dart';
+
+import 'constants.dart';
 
 /// Checks if [File]/[Link] exists for an [uri].
 bool _doesFileExist(Uri uri) {
@@ -73,12 +76,13 @@ DynamicLibrary loadWrapper() {
   // When gradle builds the wrapper, it automatically prepends lib.
   if (Platform.isAndroid) {
     prefix = 'lib';
-  }
-
-  if (Platform.isWindows) {
+  } else if (Platform.isWindows) {
     ext = '.dll';
   } else if (Platform.isMacOS) {
     ext = '.dylib';
+  } else if (!Platform.isLinux) {
+    // If NOT even linux, then unsupported.
+    throw Exception('Unsupported Platform.');
   }
 
   var wrapperName = prefix + fileName + ext;
@@ -87,7 +91,24 @@ DynamicLibrary loadWrapper() {
   // If it can't find it, try looking at search paths provided by the system.
   wrapperName = _resolveLibUri(wrapperName) ?? wrapperName;
 
-  return Platform.isIOS
-      ? DynamicLibrary.process()
-      : DynamicLibrary.open(wrapperName);
+  try {
+    return Platform.isIOS
+        ? DynamicLibrary.process()
+        : DynamicLibrary.open(wrapperName);
+  } catch (exception) {
+    final logger = Logger.standard();
+    final ansi = Ansi(Ansi.terminalSupportsAnsi);
+
+    logger.stderr(
+        '${ansi.red}Failed to open the library. Make sure that required binaries are in place.${ansi.none}');
+    logger.stdout(
+        'To download the binaries, please run the following from the root of your project:');
+    logger.stdout('${ansi.yellow}dart run cronet <platform>${ansi.none}');
+    logger.stdout('${ansi.green}Valid platforms are:');
+    for (final platform in validPlatforms) {
+      logger.stdout(platform);
+    }
+    logger.stdout(ansi.none);
+    rethrow;
+  }
 }
