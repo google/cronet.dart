@@ -17,15 +17,6 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
    dart run cronet <platform> # Downloads the cronet binaries.
    ```
 
-   **Flutter**
-
-   ```bash
-   flutter pub get
-   flutter run cronet <platform> # Downloads the cronet binaries.
-   ```
-
-   Supported platforms: `linux64` and `windows64`.
-
 3. Import
 
    ```dart
