@@ -8,4 +8,4 @@ const release = '1.0.0';
 const cronetBinaryUrl =
     'https://github.com/unsuitable001/dart_cronet_sample/releases/download/$release/';
 const cBinExtMap = {'linux64': '.tar.xz', 'windows64': '.tar.gz'};
-const cronetVersion = '"86.0.4240.198"';
+const cronetVersion = "86.0.4240.198";

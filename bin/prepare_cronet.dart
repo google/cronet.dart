@@ -7,19 +7,47 @@
 import 'dart:io' show Directory, File, Process, ProcessResult, ProcessStartMode;
 
 import 'package:cronet/src/find_resource.dart';
-
 import 'package:cronet/src/constants.dart';
 
-/// Builds the [wrapper] shared library according to [build.sh] file.
+/// Builds the [wrapper] shared library for linux.
 void buildWrapper() {
   final wrapperPath = wrapperSourcePath();
+  final pwd = Directory.current;
 
+  const compiler = 'g++';
+  const cppV = '-std=c++11';
+  const options = [
+    '-DCRONET_VERSION="$cronetVersion"',
+    '-fPIC',
+    '-rdynamic',
+    '-shared',
+    '-W',
+    '-ldl',
+    '-DDART_SHARED_LIB',
+    '-Wl,-z,origin',
+    "-Wl,-rpath,\$ORIGIN",
+    "-Wl,-rpath,\$ORIGIN/cronet_binaries/linux64/"
+  ];
+  const outputName = 'wrapper.so';
+  const sources = [
+    'wrapper.cc',
+    '../third_party/cronet_impl/sample_executor.cc',
+    '../third_party/dart-sdk/dart_api_dl.c',
+  ];
+  const includes = [
+    '-I../third_party/cronet/',
+    '-I../third_party/dart-sdk/',
+  ];
+  Directory.current = Directory(wrapperPath);
+  var result = Process.runSync(
+      compiler, [cppV] + options + sources + ['-o', outputName] + includes);
   print('Building Wrapper...');
-  Process.runSync('chmod', ['+x', '$wrapperPath/build.sh']);
-  var result =
-      Process.runSync('$wrapperPath/build.sh', [wrapperPath, cronetVersion]);
+  // Process.runSync('chmod', ['+x', '$wrapperPath/build.sh']);
+  // var result =
+  //     Process.runSync('$wrapperPath/build.sh', [wrapperPath, cronetVersion]);
   print(result.stdout);
   print(result.stderr);
+  Directory.current = pwd;
   print('Copying wrapper to project root...');
   result = Process.runSync('cp', ['$wrapperPath/wrapper.so', '.']);
   print(result.stdout);
