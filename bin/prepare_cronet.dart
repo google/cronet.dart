@@ -4,20 +4,20 @@
 
 // Contains the nessesary setup code only. Not meant to be exposed.
 
-import 'dart:io' show Directory, File, Process, ProcessResult, ProcessStartMode;
+import 'dart:io' show Directory, File, HttpClient, Process, ProcessResult;
 
 import 'package:cronet/src/find_resource.dart';
 import 'package:cronet/src/constants.dart';
 
-/// Builds the [wrapper] shared library for linux.
-void buildWrapper() {
+import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
+
+/// Builds the `wrapper` shared library for linux.
+bool buildWrapperLinux([String? version]) {
   final wrapperPath = wrapperSourcePath();
   final pwd = Directory.current;
-
   const compiler = 'g++';
   const cppV = '-std=c++11';
   const options = [
-    '-DCRONET_VERSION="$cronetVersion"',
     '-fPIC',
     '-rdynamic',
     '-shared',
@@ -40,25 +40,60 @@ void buildWrapper() {
   ];
   Directory.current = Directory(wrapperPath);
   var result = Process.runSync(
-      compiler, [cppV] + options + sources + ['-o', outputName] + includes);
+      compiler,
+      [cppV] +
+          ['-DCRONET_VERSION="${version ?? cronetVersion}"'] +
+          options +
+          sources +
+          ['-o', outputName] +
+          includes);
   print('Building Wrapper...');
-  // Process.runSync('chmod', ['+x', '$wrapperPath/build.sh']);
-  // var result =
-  //     Process.runSync('$wrapperPath/build.sh', [wrapperPath, cronetVersion]);
   print(result.stdout);
   print(result.stderr);
+  if (result.exitCode != 0) return false;
   Directory.current = pwd;
   print('Copying wrapper to project root...');
-  result = Process.runSync('cp', ['$wrapperPath/wrapper.so', '.']);
+  File('$wrapperPath/wrapper.so').copySync('wrapper.so');
+  if (result.exitCode != 0) return false;
+  return true;
+}
+
+/// Builds the `wrapper` shared library for windows.
+bool buildWrapperWindows([String? version]) {
+  final logger = Logger.standard();
+  final ansi = Ansi(Ansi.terminalSupportsAnsi);
+  final wrapperPath = wrapperSourcePath();
+  final pwd = Directory.current;
+  final environment = {
+    'CL': '/DCRONET_VERSION="""${version ?? cronetVersion}"""'
+  };
+  Directory.current = Directory(wrapperPath);
+  try {
+    final result = Process.runSync('cmake', ['CMakeLists.txt', '-B', 'out'],
+        environment: environment);
+    print(result.stdout);
+    print(result.stderr);
+  } catch (error) {
+    logger.stdout("${ansi.red}Build failed.${ansi.none}");
+    logger.stdout(
+        'Open ${ansi.yellow}x64 Native Tools Command Prompt for VS 2019.${ansi.none} Then run:\n');
+    logger.stdout('cd ${pwd.path}\nbuild_cronet ${version ?? cronetVersion}');
+    return false;
+  }
+  var result =
+      Process.runSync('cmake', ['--build', 'out'], environment: environment);
   print(result.stdout);
   print(result.stderr);
+  if (result.exitCode != 0) return false;
+  Directory.current = pwd;
+  File('$wrapperPath\\out\\Debug\\wrapper.dll').copySync('wrapper.dll');
+  return true;
 }
 
 /// Places downloaded binaries to proper location.
 void placeBinaries(String platform, String fileName) {
   print('Extracting Cronet for $platform');
   ProcessResult res;
-  // Process.runSync('mkdir', ['-p', 'cronet_binaries']);
   if (platform.startsWith('windows')) {
     res = Process.runSync('tar', ['-xvf', fileName]);
   } else {
@@ -85,11 +120,14 @@ Future<void> downloadCronetBinaries(String platform) async {
     print('Downloading Cronet for $platform');
     final downloadUrl = cronetBinaryUrl + fileName;
     print(downloadUrl);
-    final dProcess = await Process.start('curl', ['-OL', downloadUrl],
-        mode: ProcessStartMode.inheritStdio);
-    if (await dProcess.exitCode != 0) {
-      throw Exception("Can't download. Check your network connection!");
+    try {
+      final request = await HttpClient().getUrl(Uri.parse(downloadUrl));
+      final response = await request.close();
+      await response.pipe(File(fileName).openWrite());
+    } catch (error) {
+      Exception("Can't download. Check your network connection!");
     }
+
     placeBinaries(platform, fileName);
   } else {
     print("Cronet $platform is already available. No need to download.");

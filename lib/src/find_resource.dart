@@ -6,7 +6,7 @@
 // This code is a modified version from ffigen package's old commit.
 
 import 'dart:convert';
-import 'dart:io' show File, Directory;
+import 'dart:io' show Directory, File, Platform;
 
 /// Finds the root [Uri] of our package.
 Uri? findPackageRoot() {
@@ -49,7 +49,7 @@ String wrapperSourcePath() {
   if (!Directory.fromUri(wrapperSource).existsSync()) {
     throw Exception('Cannot find wrapper source!');
   }
-  return wrapperSource.toFilePath();
+  return wrapperSource.toFilePath(windows: Platform.isWindows);
 }
 
 /// Checks if cronet binaries are already available in the project.

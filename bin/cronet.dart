@@ -10,7 +10,11 @@ import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 Future<void> main(List<String> platforms) async {
   final logger = Logger.standard();
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
-
+  if (platforms.isEmpty || platforms.contains('-h')) {
+    logger.stderr(
+        'Please run: dart run cronet ${ansi.red}<platform>.${ansi.none}');
+    return;
+  }
   for (final platform in platforms) {
     if (!validPlatforms.contains(platform)) {
       logger
@@ -24,7 +28,7 @@ Future<void> main(List<String> platforms) async {
     }
 
     if (platform.startsWith('linux')) {
-      buildWrapper();
+      if (!buildWrapperLinux()) return;
     }
     await downloadCronetBinaries(platform);
   }
