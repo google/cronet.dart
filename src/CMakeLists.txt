@@ -1,7 +1,7 @@
 # CMAKE file for windows build.
 
 cmake_minimum_required(VERSION 3.15)
-set(PROJECT_NAME "cronet_sample")
+set(PROJECT_NAME "cronet")
 project(${PROJECT_NAME} LANGUAGES C CXX)
 
 # This value is used when generating builds using this plugin, so it must
@@ -14,8 +14,8 @@ add_compile_definitions(DART_SHARED_LIB)
 
 add_library(${PLUGIN_NAME} SHARED
   "wrapper.cc"
-  "sample_executor.cc"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../include/dart/dart_api_dl.c"
+  "../third_party/cronet_impl/sample_executor.cc"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk/dart_api_dl.c"
 )
 
 # apply_standard_settings(${PLUGIN_NAME})
@@ -25,9 +25,9 @@ set_target_properties(${PLUGIN_NAME} PROPERTIES
 
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../include/dart"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../include/dart/runtime"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../include/cronet"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk/runtime"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/cronet"
 
 )
 

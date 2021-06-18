@@ -2,12 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-#include "../include/dart/dart_api.h"
-#include "../include/dart/dart_native_api.h"
-#include "../include/dart/dart_tools_api.h"
+#include "../third_party/dart-sdk/dart_api.h"
+#include "../third_party/dart-sdk/dart_native_api.h"
+#include "../third_party/dart-sdk/dart_tools_api.h"
 // #include"dart_api_dl.c"
 #include "wrapper.h"
-#include "sample_executor.h"
+#include "../third_party/cronet_impl/sample_executor.h"
 #include <iostream>
 #include <stdarg.h>
 #include <unordered_map>

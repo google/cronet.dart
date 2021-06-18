@@ -45,7 +45,7 @@ String wrapperSourcePath() {
   if (packagePath == null) {
     throw Exception("Cannot resolve package:cronet's rootUri");
   }
-  final wrapperSource = packagePath.resolve('lib/src/native/wrapper');
+  final wrapperSource = packagePath.resolve('src');
   if (!Directory.fromUri(wrapperSource).existsSync()) {
     throw Exception('Cannot find wrapper source!');
   }

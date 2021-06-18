@@ -79,4 +79,4 @@ dart run cronet <platform> # Downloads the cronet binaries.
 dart test --platform vm
 ```
 
-**Wrapper & Cronet binaries build guide**: [BUILD.md](lib/src/native/wrapper/BUILD.md)
+**Wrapper & Cronet binaries build guide**: [BUILD.md](src/BUILD.md)

@@ -9,7 +9,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
-#include "wrapper.h"
+#include "../../src/wrapper.h"
 // Sample implementation of Cronet_Executor interface using static
 // methods to map C API into instance of C++ class.
 class SampleExecutor {

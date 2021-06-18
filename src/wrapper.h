@@ -5,8 +5,8 @@
 #ifndef WRAPPER_H_
 #define WRAPPER_H_
 
-#include "../include/dart/dart_api_dl.h"
-#include "../include/cronet/cronet.idl_c.h"
+#include "../third_party/dart-sdk/dart_api_dl.h"
+#include "../third_party/cronet/cronet.idl_c.h"
 
 
 #include"wrapper_export.h"

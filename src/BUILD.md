@@ -6,13 +6,13 @@ For building cronet: <https://www.chromium.org/developers/how-tos/get-the-code> 
 
 ## For building wrapper
 
-*Paths mentioned are relative to project root.*
+*Paths mentioned are relative to the repository root.*
 
 ### For Linux
 
 ```bash
-cd lib/src/native/wrapper
-./build.sh . '"cronet_version"'
+cd src
+./build.sh . '"86.0.4240.198"' # Replace version string with own
 ```
 
 Copy the `wrapper` binary to your project's `root` folder.
@@ -29,7 +29,7 @@ Required: Visual Studio 2019 with C++ Desktop Development tools.
 2. In the command prompt do -
 
    ```dosbatch
-   cd <path_to_repo>\lib\src\native\wrapper
+   cd <path_to_repo>\src
    cmake CMakeLists.txt -B out
    cmake --build out
    ```

@@ -7,7 +7,7 @@ build/
 pubspec.lock
 
 # wrapper build directory
-lib/src/native/wrapper/out
+src/out
 
 # Directory created by dartdoc.
 doc/api/
