@@ -295,6 +295,8 @@ Cronet_EnginePtr Cronet_Engine_Create() {
   // if this succeeds, every subsequent use
   // of cronet [handle] should.
   if (!handle) {
+    std::cout << "Can't locate cronet library. Make sure that they are available." << std::endl;
+    std::cout << "Try Running this from the root of your project:\ndart run cronet <platform>" << std::endl;
     std::clog << dlerror() << std::endl;
     exit(EXIT_FAILURE);
   }
