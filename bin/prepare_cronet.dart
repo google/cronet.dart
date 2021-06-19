@@ -4,8 +4,10 @@
 
 // Contains the nessesary setup code only. Not meant to be exposed.
 
-import 'dart:io' show Directory, File, HttpClient, Process, ProcessResult;
+import 'dart:io' show Directory, File, HttpClient, Process;
 
+import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 import 'package:cronet/src/find_resource.dart';
 import 'package:cronet/src/constants.dart';
 
@@ -39,6 +41,7 @@ bool buildWrapperLinux([String? version]) {
     '-I../third_party/dart-sdk/',
   ];
   Directory.current = Directory(wrapperPath);
+  print('Building Wrapper...');
   var result = Process.runSync(
       compiler,
       [cppV] +
@@ -47,11 +50,10 @@ bool buildWrapperLinux([String? version]) {
           sources +
           ['-o', outputName] +
           includes);
-  print('Building Wrapper...');
+  Directory.current = pwd;
   print(result.stdout);
   print(result.stderr);
   if (result.exitCode != 0) return false;
-  Directory.current = pwd;
   print('Copying wrapper to project root...');
   File('$wrapperPath/wrapper.so').copySync('wrapper.so');
   if (result.exitCode != 0) return false;
@@ -68,6 +70,7 @@ bool buildWrapperWindows([String? version]) {
     'CL': '/DCRONET_VERSION="""${version ?? cronetVersion}"""'
   };
   Directory.current = Directory(wrapperPath);
+  logger.stdout('Building Wrapper...');
   try {
     final result = Process.runSync('cmake', ['CMakeLists.txt', '-B', 'out'],
         environment: environment);
@@ -78,6 +81,7 @@ bool buildWrapperWindows([String? version]) {
     logger.stdout(
         'Open ${ansi.yellow}x64 Native Tools Command Prompt for VS 2019.${ansi.none} Then run:\n');
     logger.stdout('cd ${pwd.path}\nbuild_cronet ${version ?? cronetVersion}');
+    Directory.current = pwd;
     return false;
   }
   var result =
@@ -90,22 +94,33 @@ bool buildWrapperWindows([String? version]) {
   return true;
 }
 
+// Extracts a tar.gz file.
+void extract(String fileName, [String dir = '']) {
+  final tarGzFile = File(fileName).readAsBytesSync();
+  final archive = GZipDecoder().decodeBytes(tarGzFile, verify: true);
+  final tarData = TarDecoder().decodeBytes(archive, verify: true);
+  for (final file in tarData) {
+    final filename = file.name;
+    if (file.isFile) {
+      final data = file.content as List<int>;
+      File(dir + filename)
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(data);
+    } else {
+      Directory(dir + filename).create(recursive: true);
+    }
+  }
+}
+
 /// Places downloaded binaries to proper location.
 void placeBinaries(String platform, String fileName) {
   print('Extracting Cronet for $platform');
-  ProcessResult res;
+
   if (platform.startsWith('windows')) {
-    res = Process.runSync('tar', ['-xvf', fileName]);
+    extract(fileName);
   } else {
     Directory('cronet_binaries').createSync();
-
-    // Do we have tar extraction capability in dart's built-in libraries?
-    res = Process.runSync('tar', ['-xvf', fileName, '-C', 'cronet_binaries']);
-  }
-
-  if (res.exitCode != 0) {
-    throw Exception(
-        "Can't unzip. Check if the downloaded file isn't corrupted");
+    extract(fileName, 'cronet_binaries/');
   }
   print('Done! Cleaning up...');
 
@@ -113,17 +128,20 @@ void placeBinaries(String platform, String fileName) {
   print('Done! Cronet support for $platform is now available!');
 }
 
-/// Download [cronet] library from Github Releases.
+/// Download `cronet` library from Github Releases.
 Future<void> downloadCronetBinaries(String platform) async {
   if (!isCronetAvailable(platform)) {
-    final fileName = platform + (cBinExtMap[platform] ?? '');
+    final fileName = platform + '.tar.gz';
     print('Downloading Cronet for $platform');
     final downloadUrl = cronetBinaryUrl + fileName;
     print(downloadUrl);
     try {
       final request = await HttpClient().getUrl(Uri.parse(downloadUrl));
       final response = await request.close();
-      await response.pipe(File(fileName).openWrite());
+      final fileSink = File(fileName).openWrite();
+      await response.pipe(fileSink);
+      await fileSink.flush();
+      await fileSink.close();
     } catch (error) {
       Exception("Can't download. Check your network connection!");
     }

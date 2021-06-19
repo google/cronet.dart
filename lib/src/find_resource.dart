@@ -8,6 +8,8 @@
 import 'dart:convert';
 import 'dart:io' show Directory, File, Platform;
 
+import 'package:cronet/src/constants.dart';
+
 /// Finds the root [Uri] of our package.
 Uri? findPackageRoot() {
   var root = Directory.current.uri;
@@ -54,6 +56,13 @@ String wrapperSourcePath() {
 
 /// Checks if cronet binaries are already available in the project.
 bool isCronetAvailable(String platform) {
-  final cronetDir = Directory.current.uri.resolve('cronet_binaries/$platform/');
-  return Directory.fromUri(cronetDir).existsSync();
+  final cronetBinaries = Directory.fromUri(
+          Directory.current.uri.resolve('cronet_binaries/$platform/'))
+      .existsSync();
+  final inRoot =
+      File.fromUri(Directory.current.uri.resolve(getWrapperName(platform)))
+              .existsSync() &&
+          File.fromUri(Directory.current.uri.resolve(getCronetName(platform)))
+              .existsSync();
+  return cronetBinaries || inRoot;
 }

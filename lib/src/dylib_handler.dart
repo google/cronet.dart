@@ -69,23 +69,7 @@ String? _resolveLibUri(String name) {
 /// This loaded [wrapper] will then load [cronet].
 /// Throws an [ArgumentError] if library can't be loaded.
 DynamicLibrary loadWrapper() {
-  const fileName = 'wrapper';
-  var ext = '.so';
-  var prefix = '';
-
-  // When gradle builds the wrapper, it automatically prepends lib.
-  if (Platform.isAndroid) {
-    prefix = 'lib';
-  } else if (Platform.isWindows) {
-    ext = '.dll';
-  } else if (Platform.isMacOS) {
-    ext = '.dylib';
-  } else if (!Platform.isLinux) {
-    // If NOT even linux, then unsupported.
-    throw Exception('Unsupported Platform.');
-  }
-
-  var wrapperName = prefix + fileName + ext;
+  var wrapperName = getWrapperName();
 
   // _resolveLibUri() will try to resolve wrapper's absolute path.
   // If it can't find it, try looking at search paths provided by the system.
