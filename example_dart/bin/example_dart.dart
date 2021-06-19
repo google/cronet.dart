@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:cronet/cronet.dart';
 
 /* Trying to re-impliment: https://chromium.googlesource.com/chromium/src/+/master/components/cronet/native/sample/main.cc */
