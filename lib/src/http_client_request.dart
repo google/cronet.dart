@@ -76,7 +76,7 @@ class HttpClientRequest implements IOSink {
   final Pointer<Cronet_Engine> _cronetEngine;
   final _CallbackHandler _cbh;
   final Pointer<Cronet_UrlRequest> _request;
-  // final Function _clientCleanup; // Holds the function to clean up storage after
+  final Function _clientCleanup; // Holds the function to clean up after
   //                                // the request is done (if nessesary).
   //                                // implemented in: http_client.dart
   // TODO: Enable with abort API
@@ -91,7 +91,7 @@ class HttpClientRequest implements IOSink {
 
   /// Initiates a [HttpClientRequest]. It is meant to be used by a [HttpClient].
   HttpClientRequest(this._uri, this._method, this._cronet, this._cronetEngine,
-      // this._clientCleanup,
+      this._clientCleanup,
       {this.encoding = utf8})
       : _cbh =
             _CallbackHandler(_cronet, _cronet.Create_Executor(), ReceivePort()),
@@ -129,9 +129,7 @@ class HttpClientRequest implements IOSink {
     if (res2 != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
       throw UrlRequestException(res2);
     }
-    _cbh.listen(_request);
-    // TODO: Enable with storage and logging api
-    // _cbh.listen(_request, () => _clientCleanup(this));
+    _cbh.listen(_request, () => _clientCleanup(this));
   }
 
   /// Registers callbacks for all network events.

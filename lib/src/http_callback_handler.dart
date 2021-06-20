@@ -90,12 +90,11 @@ class _CallbackHandler {
   // Clean up tasks for a request.
   //
   // We need to call this then whenever we are done with the request.
-
-  // TODO: Take cleanup client as param. (to be implemented by htto_client)
-  void cleanUpRequest(Pointer<Cronet_UrlRequest> reqPtr) {
+  void cleanUpRequest(
+      Pointer<Cronet_UrlRequest> reqPtr, Function cleanUpClient) {
     receivePort.close();
     cronet.removeRequest(reqPtr);
-    // cleanUpClient();
+    cleanUpClient();
   }
 
   /// Checks status of an URL response.
@@ -131,9 +130,7 @@ class _CallbackHandler {
   ///
   /// This also invokes the appropriate callbacks that are registered,
   /// according to the network events sent from cronet side.
-  void listen(Pointer<Cronet_UrlRequest> reqPtr) {
-    // TODO: add Function cleanUpClient when logging and storage api is implemneted
-
+  void listen(Pointer<Cronet_UrlRequest> reqPtr, Function cleanUpClient) {
     // Registers the listener on the receivePort.
     //
     // The message parameter contains both the name of the event and
@@ -154,12 +151,12 @@ class _CallbackHandler {
                 Pointer.fromAddress(args[1]).cast<Cronet_UrlResponseInfo>(),
                 300,
                 399,
-                () => cleanUpRequest(
-                    reqPtr)); // If NOT a 3XX status code, throw Exception.
+                () => cleanUpRequest(reqPtr,
+                    cleanUpClient)); // If NOT a 3XX status code, throw Exception.
             if (followRedirects && maxRedirects > 0) {
               final res = cronet.Cronet_UrlRequest_FollowRedirect(reqPtr);
               if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-                cleanUpRequest(reqPtr);
+                cleanUpRequest(reqPtr, cleanUpClient);
                 throw UrlRequestException(res);
               }
               maxRedirects--;
@@ -181,8 +178,8 @@ class _CallbackHandler {
                 Pointer.fromAddress(args[0]).cast<Cronet_UrlResponseInfo>(),
                 100,
                 299,
-                () => cleanUpRequest(
-                    reqPtr)); // If NOT a 1XX or 2XX status code, throw Exception.
+                () => cleanUpRequest(reqPtr,
+                    cleanUpClient)); // If NOT a 1XX or 2XX status code, throw Exception.
             log('Response started');
             if (_onResponseStarted != null) {
               _onResponseStarted!(respCode);
@@ -206,9 +203,8 @@ class _CallbackHandler {
                 info,
                 100,
                 299,
-                () => cleanUpRequest(
-                      reqPtr,
-                    )); // If NOT a 1XX or 2XX status code, throw Exception.
+                () => cleanUpRequest(reqPtr,
+                    cleanUpClient)); // If NOT a 1XX or 2XX status code, throw Exception.
             final data = cronet.Cronet_Buffer_GetData(buffer)
                 .cast<Uint8>()
                 .asTypedList(bytesRead);
@@ -218,9 +214,7 @@ class _CallbackHandler {
               _onReadData!(data.toList(growable: false), bytesRead, respCode);
               final res = cronet.Cronet_UrlRequest_Read(request, buffer);
               if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-                cleanUpRequest(
-                  reqPtr,
-                );
+                cleanUpRequest(reqPtr, cleanUpClient);
                 _callBackCompleter!.completeError(UrlRequestException(res));
               }
             } else {
@@ -228,9 +222,7 @@ class _CallbackHandler {
               _controller.sink.add(data.toList(growable: false));
               final res = cronet.Cronet_UrlRequest_Read(request, buffer);
               if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-                cleanUpRequest(
-                  reqPtr,
-                );
+                cleanUpRequest(reqPtr, cleanUpClient);
                 _controller.addError(UrlRequestException(res));
                 _controller.close();
               }
@@ -242,9 +234,7 @@ class _CallbackHandler {
           {
             final error =
                 Pointer.fromAddress(args[0]).cast<Utf8>().toDartString();
-            cleanUpRequest(
-              reqPtr,
-            );
+            cleanUpRequest(reqPtr, cleanUpClient);
 
             if (_callBackCompleter != null) {
               if (_onFailed != null) {
@@ -258,14 +248,13 @@ class _CallbackHandler {
               _controller.addError(HttpException(error));
               _controller.close();
             }
+            cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
         // when the request is cancelled, we will shut everything down after this.
         case 'OnCanceled':
           {
-            cleanUpRequest(
-              reqPtr,
-            );
+            cleanUpRequest(reqPtr, cleanUpClient);
             if (_callBackCompleter != null) {
               if (_onCanceled != null) {
                 _onCanceled!();
@@ -275,14 +264,13 @@ class _CallbackHandler {
               // If callbacks are not registered, stream isn't closed before. So, close here.
               _controller.close();
             }
+            cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
         // When the request is succesfully done, we will shut everything down after this.
         case 'OnSucceeded':
           {
-            cleanUpRequest(
-              reqPtr,
-            );
+            cleanUpRequest(reqPtr, cleanUpClient);
             if (_callBackCompleter != null) {
               if (_onSuccess != null) {
                 final respInfoPtr =
@@ -295,6 +283,7 @@ class _CallbackHandler {
               // If callbacks are not registered, stream isn't closed before. So, close here.
               _controller.close();
             }
+            cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
         default:

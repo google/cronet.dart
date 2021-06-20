@@ -124,9 +124,9 @@ class HttpClient {
     _cronet.Cronet_EngineParams_Destroy(engineParams);
   }
 
-  // void _cleanUpRequests(HttpClientRequest hcr) {
-  //   _requests.remove(hcr);
-  // }
+  void _cleanUpRequests(HttpClientRequest hcr) {
+    _requests.remove(hcr);
+  }
 
   /// Shuts down the HTTP client.
   ///
@@ -164,8 +164,8 @@ class HttpClient {
       if (_stop) {
         throw Exception("Client is closed. Can't open new connections");
       }
-      // TODO: Add clean up function when logging and storage apis are migrated
-      _requests.add(HttpClientRequest(url, method, _cronet, _cronetEngine));
+      _requests.add(HttpClientRequest(
+          url, method, _cronet, _cronetEngine, _cleanUpRequests));
       return _requests.last;
     });
   }

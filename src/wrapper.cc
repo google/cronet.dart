@@ -40,73 +40,6 @@ intptr_t InitDartApiDL(void* data) {
 LIBTYPE handle = OPENLIB(CRONET_LIB_NAME);
 std::unordered_map<Cronet_UrlRequestPtr, Dart_Port> requestNativePorts;
 
-static void FreeFinalizer(void*, void* value) {
-  free(value);
-}
-
-
-/* Callback Helpers */
-
-// Registers the Dart side's
-// ReceievePort's NativePort component
-//
-// This is required to send the data
-void registerCallbackHandler(Dart_Port send_port, Cronet_UrlRequestPtr rp) {
-  requestNativePorts[rp] = send_port;
-}
-
-// This sends the callback name and the associated data
-// with it to the Dart side via NativePort
-//
-// Sent data is broken into 3 parts.
-// message[0] is the method name, which is a string
-// message[1] contains all the data to pass to that method
-void dispatchCallback(const char* methodname, Cronet_UrlRequestPtr request, Dart_CObject args) {
-  Dart_CObject c_method_name;
-  c_method_name.type = Dart_CObject_kString;
-  c_method_name.value.as_string = const_cast<char *>(methodname);
-
-  Dart_CObject* c_request_arr[] = {&c_method_name, &args};
-  Dart_CObject c_request;
-
-  c_request.type = Dart_CObject_kArray;
-  c_request.value.as_array.values = c_request_arr;
-  c_request.value.as_array.length =
-      sizeof(c_request_arr) / sizeof(c_request_arr[0]);
-  
-  Dart_PostCObject_DL(requestNativePorts[request], &c_request);
-}
-
-// Builds the arguments to pass to the Dart side
-// as a parameter to the callbacks
-// Data processed here are
-// consumed as from message[2] if
-// message is the name of the data
-// receieved by the ReceievePort
-Dart_CObject callbackArgBuilder(int num, ...) {
-  Dart_CObject c_request_data;
-  va_list valist;
-  va_start(valist, num);
-  void* request_buffer = malloc(sizeof(uint64_t) * num);
-  uint64_t* buf =  reinterpret_cast<uint64_t*>(request_buffer);
-
-  for(int i = 0; i < num; i++) {
-    buf[i] = va_arg(valist,uint64_t);
-  }
-
-  c_request_data.type = Dart_CObject_kExternalTypedData;
-  c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint64;
-  c_request_data.value.as_external_typed_data.length = sizeof(uint64_t) * num;  // 4 args to pass
-  c_request_data.value.as_external_typed_data.data = static_cast<uint8_t*>(request_buffer);
-  c_request_data.value.as_external_typed_data.peer = request_buffer;
-  c_request_data.value.as_external_typed_data.callback = FreeFinalizer;
-
-  va_end(valist);
-
-  return c_request_data;
-}
-
-
 /* Getting Cronet's Functions */
 P_IMPORT(Cronet_EnginePtr,Cronet_Engine_Create , void);
 P_IMPORT(void, Cronet_Engine_Destroy, Cronet_EnginePtr);
@@ -197,31 +130,6 @@ bool Cronet_Engine_StartNetLogToFile(Cronet_EnginePtr self,
 
 void Cronet_Engine_StopNetLog(Cronet_EnginePtr self) {return _Cronet_Engine_StopNetLog(self);}
 
-/* Engine Cleanup Tasks */
-static void HttpClientDestroy(void* isolate_callback_data,
-                         void* peer) {
-  Cronet_EnginePtr ce = reinterpret_cast<Cronet_EnginePtr>(peer);
-  _Cronet_Engine_Shutdown(ce);
-  _Cronet_Engine_Destroy(ce);
-}
-
-void unloadCronet() {
-  CLOSELIB(handle);
-}
-
-void removeRequest(Cronet_UrlRequestPtr rp) {
-  requestNativePorts.erase(rp);
-}
-
-// Register our HttpClient object from dart side
-void registerHttpClient(Dart_Handle h, Cronet_EnginePtr ce) {
-  void* peer = ce;
-  intptr_t size = 8;
-  Dart_NewFinalizableHandle_DL(h, peer, size, HttpClientDestroy);
-}
-
-
-
 P_IMPORT(int32_t, Cronet_UrlResponseInfo_http_status_code_get, const Cronet_UrlResponseInfoPtr);
 int32_t Cronet_UrlResponseInfo_http_status_code_get(const Cronet_UrlResponseInfoPtr self) {return _Cronet_UrlResponseInfo_http_status_code_get(self);}
 
@@ -229,86 +137,9 @@ int32_t Cronet_UrlResponseInfo_http_status_code_get(const Cronet_UrlResponseInfo
 P_IMPORT(Cronet_String, Cronet_UrlResponseInfo_http_status_text_get, const Cronet_UrlResponseInfoPtr);
 Cronet_String Cronet_UrlResponseInfo_http_status_text_get(const Cronet_UrlResponseInfoPtr self) {return _Cronet_UrlResponseInfo_http_status_text_get(self);}
 
-
-/* URL Callbacks Implementations */
-
-void OnRedirectReceived(
-    Cronet_UrlRequestCallbackPtr self,
-    Cronet_UrlRequestPtr request,
-    Cronet_UrlResponseInfoPtr info,
-    Cronet_String newLocationUrl) {
-    dispatchCallback("OnRedirectReceived",request, callbackArgBuilder(2, newLocationUrl, info));
-}
-
-void OnResponseStarted(
-    Cronet_UrlRequestCallbackPtr self,
-    Cronet_UrlRequestPtr request,
-    Cronet_UrlResponseInfoPtr info) {
-    
-  // Create and allocate 32kb buffer.
-  Cronet_BufferPtr buffer = _Cronet_Buffer_Create();
-  _Cronet_Buffer_InitWithAlloc(buffer, 32 * 1024);
-
-  dispatchCallback("OnResponseStarted",request, callbackArgBuilder(1, info));
-
-  // Started reading the response.
-  _Cronet_UrlRequest_Read(request, buffer);
-   
-}
-
-
-void OnReadCompleted(
-    Cronet_UrlRequestCallbackPtr self,
-    Cronet_UrlRequestPtr request,
-    Cronet_UrlResponseInfoPtr info,
-    Cronet_BufferPtr buffer,
-    uint64_t bytes_read) {
-    dispatchCallback("OnReadCompleted",request, callbackArgBuilder(4, request, info, buffer, bytes_read));
-}
-
-
-void OnSucceeded(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request, Cronet_UrlResponseInfoPtr info) {
-  dispatchCallback("OnSucceeded",request, callbackArgBuilder(1, info));
-}
-
-void OnFailed(
-    Cronet_UrlRequestCallbackPtr self,
-    Cronet_UrlRequestPtr request,
-    Cronet_UrlResponseInfoPtr info,
-    Cronet_ErrorPtr error) {
-  dispatchCallback("OnFailed",request, callbackArgBuilder(1, _Cronet_Error_message_get(error)));
-}
-
-void OnCanceled(
-    Cronet_UrlRequestCallbackPtr self,
-    Cronet_UrlRequestPtr request,
-    Cronet_UrlResponseInfoPtr info) {
-      dispatchCallback("OnCanceled",request, callbackArgBuilder(0));
-}
-
-
-/* Interface */
-
-Cronet_EnginePtr Cronet_Engine_Create() {
-  // Checks if cronet is loaded properly
-  // As this is the first function to call,
-  // if this succeeds, every subsequent use
-  // of cronet [handle] should.
-  if (!handle) {
-    std::cout << "Can't locate cronet library. Make sure that they are available." << std::endl;
-    std::cout << "Try Running this from the root of your project:\ndart run cronet <platform>" << std::endl;
-    std::clog << dlerror() << std::endl;
-    exit(EXIT_FAILURE);
-  }
-  return _Cronet_Engine_Create();
-}
-
-Cronet_RESULT Cronet_Engine_Shutdown(Cronet_EnginePtr self) { return _Cronet_Engine_Shutdown(self); }
-
-// Mapping Cronet Function -> Wrapper function
-// Most of them are unchanged, except some.
-// Note: Can someone suggest a better way to
-// map unchanged APIs?
+// Mapping Cronet Function -> Wrapper function. Most of them are unchanged, except some.
+// 
+// Note: Can someone suggest a better way to map unchanged APIs?
 Cronet_String Cronet_Engine_GetVersionString(Cronet_EnginePtr ce) {return _Cronet_Engine_GetVersionString(ce);}
 Cronet_EngineParamsPtr Cronet_EngineParams_Create(void) {return _Cronet_EngineParams_Create();}
 void Cronet_EngineParams_Destroy(Cronet_EngineParamsPtr self) {}
@@ -403,6 +234,164 @@ Cronet_RESULT Cronet_UrlRequest_Read(Cronet_UrlRequestPtr self, Cronet_BufferPtr
 Cronet_RawDataPtr Cronet_Buffer_GetData(Cronet_BufferPtr buffer) {return _Cronet_Buffer_GetData(buffer);}
 uint64_t Cronet_Buffer_GetSize(Cronet_BufferPtr self) {return _Cronet_Buffer_GetSize(self);}
 
+/* Wrapper implemented APIs from here */
+
+static void FreeFinalizer(void*, void* value) {
+  free(value);
+}
+
+/* Callback Helpers */
+
+// Registers the Dart side's
+// ReceievePort's NativePort component
+//
+// This is required to send the data
+void registerCallbackHandler(Dart_Port send_port, Cronet_UrlRequestPtr rp) {
+  requestNativePorts[rp] = send_port;
+}
+
+// This sends the callback name and the associated data
+// with it to the Dart side via NativePort
+//
+// Sent data is broken into 3 parts.
+// message[0] is the method name, which is a string
+// message[1] contains all the data to pass to that method
+void dispatchCallback(const char* methodname, Cronet_UrlRequestPtr request, Dart_CObject args) {
+  Dart_CObject c_method_name;
+  c_method_name.type = Dart_CObject_kString;
+  c_method_name.value.as_string = const_cast<char *>(methodname);
+
+  Dart_CObject* c_request_arr[] = {&c_method_name, &args};
+  Dart_CObject c_request;
+
+  c_request.type = Dart_CObject_kArray;
+  c_request.value.as_array.values = c_request_arr;
+  c_request.value.as_array.length =
+      sizeof(c_request_arr) / sizeof(c_request_arr[0]);
+  
+  Dart_PostCObject_DL(requestNativePorts[request], &c_request);
+}
+
+// Builds the arguments to pass to the Dart side as a parameter to the callbacks.
+// [num] is the number of arguments to be passed and rest are the arguments.
+Dart_CObject callbackArgBuilder(int num, ...) {
+  Dart_CObject c_request_data;
+  va_list valist;
+  va_start(valist, num);
+  void* request_buffer = malloc(sizeof(uint64_t) * num);
+  uint64_t* buf =  reinterpret_cast<uint64_t*>(request_buffer);
+
+  for(int i = 0; i < num; i++) {
+    buf[i] = va_arg(valist,uint64_t);
+  }
+
+  c_request_data.type = Dart_CObject_kExternalTypedData;
+  c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint64;
+  c_request_data.value.as_external_typed_data.length = sizeof(uint64_t) * num;  // 4 args to pass
+  c_request_data.value.as_external_typed_data.data = static_cast<uint8_t*>(request_buffer);
+  c_request_data.value.as_external_typed_data.peer = request_buffer;
+  c_request_data.value.as_external_typed_data.callback = FreeFinalizer;
+
+  va_end(valist);
+
+  return c_request_data;
+}
+
+
+
+/* Engine Cleanup Tasks */
+static void HttpClientDestroy(void* isolate_callback_data,
+                         void* peer) {
+  Cronet_EnginePtr ce = reinterpret_cast<Cronet_EnginePtr>(peer);
+  _Cronet_Engine_Shutdown(ce);
+  _Cronet_Engine_Destroy(ce);
+}
+
+void unloadCronet() {
+  CLOSELIB(handle);
+}
+
+void removeRequest(Cronet_UrlRequestPtr rp) {
+  requestNativePorts.erase(rp);
+}
+
+// Register our HttpClient object from dart side
+void registerHttpClient(Dart_Handle h, Cronet_EnginePtr ce) {
+  void* peer = ce;
+  intptr_t size = 8;
+  Dart_NewFinalizableHandle_DL(h, peer, size, HttpClientDestroy);
+}
+
+/* URL Callbacks Implementations */
+
+void OnRedirectReceived(
+    Cronet_UrlRequestCallbackPtr self,
+    Cronet_UrlRequestPtr request,
+    Cronet_UrlResponseInfoPtr info,
+    Cronet_String newLocationUrl) {
+    dispatchCallback("OnRedirectReceived",request, callbackArgBuilder(2, newLocationUrl, info));
+}
+
+void OnResponseStarted(
+    Cronet_UrlRequestCallbackPtr self,
+    Cronet_UrlRequestPtr request,
+    Cronet_UrlResponseInfoPtr info) {
+    
+  // Create and allocate 32kb buffer.
+  Cronet_BufferPtr buffer = _Cronet_Buffer_Create();
+  _Cronet_Buffer_InitWithAlloc(buffer, 32 * 1024);
+
+  dispatchCallback("OnResponseStarted",request, callbackArgBuilder(1, info));
+
+  // Started reading the response.
+  _Cronet_UrlRequest_Read(request, buffer);
+   
+}
+
+void OnReadCompleted(
+    Cronet_UrlRequestCallbackPtr self,
+    Cronet_UrlRequestPtr request,
+    Cronet_UrlResponseInfoPtr info,
+    Cronet_BufferPtr buffer,
+    uint64_t bytes_read) {
+    dispatchCallback("OnReadCompleted",request, callbackArgBuilder(4, request, info, buffer, bytes_read));
+}
+
+
+void OnSucceeded(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request, Cronet_UrlResponseInfoPtr info) {
+  dispatchCallback("OnSucceeded",request, callbackArgBuilder(1, info));
+}
+
+void OnFailed(
+    Cronet_UrlRequestCallbackPtr self,
+    Cronet_UrlRequestPtr request,
+    Cronet_UrlResponseInfoPtr info,
+    Cronet_ErrorPtr error) {
+  dispatchCallback("OnFailed",request, callbackArgBuilder(1, _Cronet_Error_message_get(error)));
+}
+
+void OnCanceled(
+    Cronet_UrlRequestCallbackPtr self,
+    Cronet_UrlRequestPtr request,
+    Cronet_UrlResponseInfoPtr info) {
+      dispatchCallback("OnCanceled",request, callbackArgBuilder(0));
+}
+
+Cronet_EnginePtr Cronet_Engine_Create() {
+  // Checks if cronet is loaded properly
+  // As this is the first function to call,
+  // if this succeeds, every subsequent use
+  // of cronet [handle] should.
+  if (!handle) {
+    std::cout << "Can't locate cronet library. Make sure that they are available." << std::endl;
+    std::cout << "Try Running this from the root of your project:\ndart run cronet <platform>" << std::endl;
+    std::clog << dlerror() << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  return _Cronet_Engine_Create();
+}
+
+Cronet_RESULT Cronet_Engine_Shutdown(Cronet_EnginePtr self) { return _Cronet_Engine_Shutdown(self); }
 
 ExecutorPtr Create_Executor() {
   return new SampleExecutor();
@@ -422,4 +411,3 @@ Cronet_RESULT Cronet_UrlRequest_Init(Cronet_UrlRequestPtr self, Cronet_EnginePtr
     return _Cronet_UrlRequest_InitWithParams(self, engine, url, params, urCallback, executor->GetExecutor());
 
 } 
-
