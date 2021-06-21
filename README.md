@@ -79,6 +79,8 @@ dart run cronet <platform> # Downloads the cronet binaries.
 dart test --platform vm
 ```
 
+Test your cronet build by following [BUILD.md](third_party/cronet_sample/BUILD.md).
+
 ## Building Your Own
 
 1. Make sure you've downloaded your custom version of cronet shared library and filename follows the pattern `cronet.<version>.<extension>`. Default is: `cronet.86.0.4240.198.so` for linux. Else, you can build cronet from [source](https://www.chromium.org/developers/how-tos/get-the-code) using the [provided instuctions](https://chromium.googlesource.com/chromium/src/+/master/components/cronet/build_instructions.md). Then copy the library to the root of your project. For linux, you can also place the files under `cronet_binaries/linux64` for 64bit linux systems.

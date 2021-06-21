@@ -46,6 +46,10 @@ cronet_binaries/
 *.dylib
 *.dll
 
+# Compiled executables.
+*.o
+*.out
+
 # AOT compiled files.
 *.exe
 
