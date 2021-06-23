@@ -16,7 +16,7 @@ void main(List<String> args) {
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
 
   if (args.contains('-h')) {
-    print('build_cronet [cronet_version]');
+    print('dart run cronet:build [cronet_version]');
   }
   final version = args.isEmpty ? cronetVersion : args[0];
   if (Platform.isLinux) {

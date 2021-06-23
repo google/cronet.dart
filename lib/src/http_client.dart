@@ -4,13 +4,11 @@
 
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:io' as io;
 
 import 'package:cronet/src/exceptions.dart';
 import 'package:ffi/ffi.dart';
 
 import 'dylib_handler.dart';
-import 'enums.dart';
 import 'generated_bindings.dart';
 import 'quic_hint.dart';
 import 'http_client_request.dart';
@@ -22,11 +20,11 @@ final _cronet = Cronet(loadWrapper());
 /// from a server using the HTTP, HTTPS, HTTP2, Quic etc. protocol.
 ///
 /// HttpClient contains a number of methods to send an [HttpClientRequest] to an
-/// Http server and receive an [Stream] of [List] of [int], analogus to [HttpClientResponse] back.
-/// Alternatively, you can also register callbacks for different network events including
-/// but not limited to receiving the raw bytes sent by the server.
-/// For example, you can use the
-/// [get], [getUrl], [post], and [postUrl] methods for GET and POST requests, respectively.
+/// Http server and receive an [HttpClientResponse] back which is a [Stream].
+/// Alternatively, you can also register callbacks for different network events
+/// including but not limited to receiving the raw bytes sent by the server.
+/// For example, you can use the [get], [getUrl], [post], and [postUrl] methods
+/// for GET and POST requests, respectively.
 ///
 /// Example Usage:
 /// ```dart
@@ -42,11 +40,7 @@ class HttpClient {
   final bool http2;
   final bool brotli;
   final String acceptLanguage;
-  // final CacheMode cacheMode;
-  // final int? maxCache;
-  final List<QuicHint>? quicHints;
-
-  // TODO: Migrate enableTimelineLogging API here
+  final List<QuicHint> quicHints;
 
   final Pointer<Cronet_Engine> _cronetEngine;
   // Keep all the request reference in a list so if the client is being explicitly closed,
@@ -54,34 +48,20 @@ class HttpClient {
   final _requests = List<HttpClientRequest>.empty(growable: true);
   var _stop = false;
 
-  // Uri? _temp;
-
   static const int defaultHttpPort = 80;
   static const int defaultHttpsPort = 443;
 
-  /// Initiates a [HttpClient].
+  /// Initiates an [HttpClient] with the settings provided in the arguments.
   ///
-  /// An optional parameters -
-  /// 1. [quic] use QUIC protocol. Default - true. You can also pass [quicHints].
-  /// 2. [http2] use HTTP2 protocol. Default - true
-  /// 3. [brotli] use brotli compression. Default - true
-  /// 4. [acceptLanguage] - Default - 'en_US'
-  /// 5. [cacheMode] - Choose from [CacheMode]. Default - [CacheMode.inMemory] (TODO)
-  /// 6. [maxCache] - Set maximum cache size in bytes. Set to `null` to let the system decide. Default - `10KB`. (TODO)
-  /// 7. If caches and cookies should persist, provide a directory using [cronetStorage]. Keeping it null will use
-  /// a temporary, non persistant storage.
-  ///
-  /// NOTE: For [CacheMode.inMemory], [maxCache] must not be null. For any other mode, it can be.
+  /// The settings control whether this client supports [quic], [brotli] and
+  /// [http2]. If [quic] is enabled, then [quicHints] can be provided.
+  /// [userAgent] and [acceptLanguage] can also be provided.
   ///
   /// Throws [CronetException] if [HttpClient] can't be created.
-  ///
-  /// Breaking Changes from `dart:io` based library:
-  ///
-  /// 1. [userAgent] property must be set when constructing [HttpClient] and can't be changed afterwards.
   HttpClient({
     this.userAgent = 'Dart/2.12',
     this.quic = true,
-    this.quicHints,
+    this.quicHints = const [],
     this.http2 = true,
     this.brotli = true,
     this.acceptLanguage = 'en_US',
@@ -95,18 +75,17 @@ class HttpClient {
     _cronet.Cronet_EngineParams_user_agent_set(
         engineParams, userAgent.toNativeUtf8().cast<Int8>());
     _cronet.Cronet_EngineParams_enable_quic_set(engineParams, quic);
-
-    if (quicHints != null) {
-      for (final quicHint in quicHints!) {
-        final hint = _cronet.Cronet_QuicHint_Create();
-        _cronet.Cronet_QuicHint_host_set(
-            hint, quicHint.host.toNativeUtf8().cast<Int8>());
-        _cronet.Cronet_QuicHint_port_set(hint, quicHint.port);
-        _cronet.Cronet_QuicHint_alternate_port_set(
-            hint, quicHint.alternatePort);
-        _cronet.Cronet_EngineParams_quic_hints_add(engineParams, hint);
-        _cronet.Cronet_QuicHint_Destroy(hint);
-      }
+    if (!quic && quicHints.isNotEmpty) {
+      throw ArgumentError('Quic is not enabled but quic hints are provided.');
+    }
+    for (final quicHint in quicHints) {
+      final hint = _cronet.Cronet_QuicHint_Create();
+      _cronet.Cronet_QuicHint_host_set(
+          hint, quicHint.host.toNativeUtf8().cast<Int8>());
+      _cronet.Cronet_QuicHint_port_set(hint, quicHint.port);
+      _cronet.Cronet_QuicHint_alternate_port_set(hint, quicHint.alternatePort);
+      _cronet.Cronet_EngineParams_quic_hints_add(engineParams, hint);
+      _cronet.Cronet_QuicHint_Destroy(hint);
     }
 
     _cronet.Cronet_EngineParams_enable_http2_set(engineParams, http2);
@@ -114,12 +93,10 @@ class HttpClient {
     _cronet.Cronet_EngineParams_accept_language_set(
         engineParams, acceptLanguage.toNativeUtf8().cast<Int8>());
 
-    // TODO: Storage and cache mode change code goes here
-
     final res =
         _cronet.Cronet_Engine_StartWithParams(_cronetEngine, engineParams);
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-      throw CronetException(res);
+      throw CronetNativeException(res);
     }
     _cronet.Cronet_EngineParams_Destroy(engineParams);
   }
@@ -128,23 +105,15 @@ class HttpClient {
     _requests.remove(hcr);
   }
 
-  /// Shuts down the HTTP client.
+  /// Shuts down the [HttpClient].
   ///
-  /// If [force] is `false` (the default) the HttpClient will be kept alive until all
-  /// active connections are done. If [force] is `true` any active connections
-  /// will be closed to immediately release all resources. These closed connections
-  /// will receive an ~error~ cancel event to indicate that the client was shut down.
-  /// In both cases trying to establish a new connection after calling close,
-  /// will throw an exception.
-  void close({bool force = false}) {
-    if (_stop) {
-      // If already stopped, return immediately.
-      return;
-    }
+  /// The HttpClient will be kept alive until all active connections are done.
+  /// Trying to establish a new connection after calling close, will throw an exception.
+  void close() {
     _stop = true;
-    // TODO: add force stop code here (with abort api)
   }
 
+  /// Constructs [Uri] from [host], [port] & [path].
   Uri _getUri(String host, int port, String path) {
     final _host = Uri.parse(host);
     if (!_host.hasScheme) {
@@ -263,17 +232,7 @@ class HttpClient {
     return deleteUrl(_getUri(host, port, path));
   }
 
-  /// Function for resolving the proxy server to be used for a HTTP connection from
-  /// the proxy configuration specified through environment variables.
-  ///
-  /// Note: It just returns `dart:io` [HttpClient.findProxyFromEnvironment].
-  static String findProxyFromEnvironment(Uri url,
-      {Map<String, String>? environment}) {
-    return io.HttpClient.findProxyFromEnvironment(url,
-        environment: environment);
-  }
-
-  /// Gets Cronet's version
+  /// Version string of the Cronet Shared Library currently in use.
   String get httpClientVersion =>
       _cronet.Cronet_Engine_GetVersionString(_cronetEngine)
           .cast<Utf8>()

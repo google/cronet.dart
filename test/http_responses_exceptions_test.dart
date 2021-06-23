@@ -2,23 +2,25 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
-import 'test_utils.dart';
+
+const host = 'localhost';
 
 void main() {
-  group('response_HttpException_test', () {
+  group('Server Response Exceptions', () {
     late HttpClient client;
-    late HttpServer server;
+    late io.HttpServer server;
     late int port;
     setUp(() async {
       client = HttpClient();
-      server = await HttpServer.bind(InternetAddress.anyIPv6, 0);
+      server = await io.HttpServer.bind(io.InternetAddress.anyIPv6, 0);
       port = server.port;
-      server.listen((HttpRequest request) {
+      server.listen((io.HttpRequest request) {
         final paths = request.uri.pathSegments;
+        assert(paths.isNotEmpty);
         request.response.statusCode = int.parse(paths[0]);
         request.response.close();
       });

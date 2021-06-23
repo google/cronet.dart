@@ -25,20 +25,25 @@ class HttpException implements IOException {
   }
 }
 
-class CronetException implements Exception {
+/// Errors/Exceptions from Cronet Native Library.
+class CronetNativeException implements Exception {
   final int val;
-  const CronetException(this.val);
+  const CronetNativeException(this.val);
 
   @override
   String toString() {
     final b = StringBuffer()
-      ..write('CronetException: Cronet Result: ')
+      ..write('CronetNativeException: Cronet Result: ')
       ..write(val);
     return b.toString();
   }
 }
 
-class UrlRequestException extends CronetException {
+/// Exceptions occured while performing a request.
+///
+/// Failing to start a request or failing to complete
+/// with a proper server response will throw this exception.
+class UrlRequestException extends CronetNativeException {
   const UrlRequestException(int val) : super(val);
 }
 

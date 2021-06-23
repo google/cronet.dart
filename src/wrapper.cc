@@ -250,12 +250,15 @@ void registerCallbackHandler(Dart_Port send_port, Cronet_UrlRequestPtr rp) {
   requestNativePorts[rp] = send_port;
 }
 
-// This sends the callback name and the associated data
-// with it to the Dart side via NativePort
+// This sends the callback name and the associated data with it to the Dart
+// side via NativePort.
 //
 // Sent data is broken into 3 parts.
-// message[0] is the method name, which is a string
-// message[1] contains all the data to pass to that method
+// message[0] is the method name, which is a string.
+// message[1] contains all the data to pass to that method.
+//
+// Using this due to the lack of support for asynchronous callbacks in dart:ffi.
+// See Issue: dart-lang/sdk#37022.
 void dispatchCallback(const char* methodname, Cronet_UrlRequestPtr request, Dart_CObject args) {
   Dart_CObject c_method_name;
   c_method_name.type = Dart_CObject_kString;

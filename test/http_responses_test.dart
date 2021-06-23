@@ -3,23 +3,25 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
-import 'test_utils.dart';
+
+const host = 'localhost';
+const sentData = 'Hello, world!';
 
 void main() {
-  group('http_responses_test', () {
+  group('Server Responses', () {
     late HttpClient client;
-    late HttpServer server;
+    late io.HttpServer server;
     late int port;
     setUp(() async {
       client = HttpClient();
-      server = await HttpServer.bind(InternetAddress.anyIPv6, 0);
+      server = await io.HttpServer.bind(io.InternetAddress.anyIPv6, 0);
       port = server.port;
-      server.listen((HttpRequest request) {
-        if (request.method == 'CUSTOM') {
+      server.listen((io.HttpRequest request) {
+        if (request.method != 'GET' && request.method != 'POST') {
           request.response.write(request.method);
         } else {
           request.response.write(sentData);
@@ -44,15 +46,14 @@ void main() {
 
     test('Gets Hello, world response from server using openUrl method',
         () async {
-      final request =
-          await client.openUrl('GET', Uri.parse('http://$host:$port/random'));
+      final request = await client.openUrl(
+          'GET', Uri.parse('http://$host:$port/some/path'));
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
     });
 
-    test(
-        'Fetch Hello, world response from server using openUrl, custom method method',
+    test('Fetch Hello, world response from server using openUrl, custom method',
         () async {
       final request =
           await client.openUrl('CUSTOM', Uri.parse('http://$host:$port'));
@@ -69,11 +70,32 @@ void main() {
       expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
     });
 
-    test('response.close after registering callbacks will throw error',
-        () async {
-      final request = await client.postUrl(Uri.parse('http://$host:$port'));
-      request.registerCallbacks((data, bytesRead, responseCode) {});
-      expect(request.close(), throwsA(isA<ResponseListenerException>()));
+    test('Sending a HEAD request to server should send no body', () async {
+      final request = await client.head(host, port, '/path');
+      final resp = await request.close();
+      final dataStream = resp.transform(utf8.decoder);
+      expect(dataStream, emitsInOrder(<Matcher>[emitsDone]));
+    });
+
+    test('Do a PUT request to the server', () async {
+      final request = await client.put(host, port, '/path');
+      final resp = await request.close();
+      final dataStream = resp.transform(utf8.decoder);
+      expect(dataStream, emitsInOrder(<Matcher>[equals('PUT'), emitsDone]));
+    });
+
+    test('Do a PATCH request to the server', () async {
+      final request = await client.patch(host, port, '/path');
+      final resp = await request.close();
+      final dataStream = resp.transform(utf8.decoder);
+      expect(dataStream, emitsInOrder(<Matcher>[equals('PATCH'), emitsDone]));
+    });
+
+    test('Do a DELETE request to the server', () async {
+      final request = await client.delete(host, port, '/path');
+      final resp = await request.close();
+      final dataStream = resp.transform(utf8.decoder);
+      expect(dataStream, emitsInOrder(<Matcher>[equals('DELETE'), emitsDone]));
     });
 
     tearDown(() {

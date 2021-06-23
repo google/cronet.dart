@@ -3,20 +3,22 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
-import 'test_utils.dart';
+
+const host = 'localhost';
+const sentData = 'Hello, world!';
 
 void main() {
-  group('client_close_test', () {
-    late HttpServer server;
+  group('HttpClient Close', () {
+    late io.HttpServer server;
     late int port;
     setUp(() async {
-      server = await HttpServer.bind(InternetAddress.anyIPv6, 0);
+      server = await io.HttpServer.bind(io.InternetAddress.anyIPv6, 0);
       port = server.port;
-      server.listen((HttpRequest request) {
+      server.listen((io.HttpRequest request) {
         request.response.write(sentData);
         request.response.close();
       });

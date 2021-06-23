@@ -6,7 +6,7 @@ import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('cronet_initialization_test', () {
+  group('Cronet Initialization', () {
     late HttpClient client;
     setUp(() {
       client = HttpClient();

@@ -77,11 +77,12 @@ bool buildWrapperWindows([String? version]) {
     print(result.stdout);
     print(result.stderr);
   } catch (error) {
+    Directory.current = pwd;
     logger.stdout("${ansi.red}Build failed.${ansi.none}");
     logger.stdout(
         'Open ${ansi.yellow}x64 Native Tools Command Prompt for VS 2019.${ansi.none} Then run:\n');
-    logger.stdout('cd ${pwd.path}\nbuild_cronet ${version ?? cronetVersion}');
-    Directory.current = pwd;
+    logger.stdout(
+        'cd ${pwd.path}\ndart run cronet:build ${version ?? cronetVersion}');
     return false;
   }
   var result =

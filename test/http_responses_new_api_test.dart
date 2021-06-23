@@ -3,22 +3,24 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:cronet/cronet.dart';
 import 'package:test/test.dart';
-import 'test_utils.dart';
+
+const host = 'localhost';
+const sentData = 'Hello, world!';
 
 void main() {
-  group('callback_api_response_test New API', () {
+  group('Callback based api', () {
     late HttpClient client;
-    late HttpServer server;
+    late io.HttpServer server;
     late int port;
     setUp(() async {
       client = HttpClient();
-      server = await HttpServer.bind(InternetAddress.anyIPv6, 0);
+      server = await io.HttpServer.bind(io.InternetAddress.anyIPv6, 0);
       port = server.port;
-      server.listen((HttpRequest request) {
+      server.listen((io.HttpRequest request) {
         if (request.uri.pathSegments.isNotEmpty &&
             request.uri.pathSegments[0] == '301') {
           request.response.statusCode = 301;

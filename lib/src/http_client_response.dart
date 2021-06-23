@@ -4,8 +4,11 @@
 
 part of '../src/http_client_request.dart';
 
+/// Represents the server's response to a request.
+///
 /// The body of a [HttpClientResponse] object is a [Stream] of data from the server.
-/// Listen to the body to handle the data and be notified when the entire body is received.
+/// Listen to the body to handle the data and be notified when the entire body
+/// is received.
 abstract class HttpClientResponse extends Stream<List<int>> {
   HttpClientResponse();
 

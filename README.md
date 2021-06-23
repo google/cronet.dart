@@ -61,6 +61,8 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
   });
 ```
 
+[See the API comparison with dart:io.]('dart_io_comparison.md')
+
 ## Run Example
 
 ```bash
@@ -79,13 +81,12 @@ dart run cronet <platform> # Downloads the cronet binaries.
 dart test --platform vm
 ```
 
-Test your cronet build by following [BUILD.md](third_party/cronet_sample/BUILD.md).
+You can also test your cronet build independently by following [BUILD.md](third_party/cronet_sample/BUILD.md).
 
 ## Building Your Own
 
 1. Make sure you've downloaded your custom version of cronet shared library and filename follows the pattern `cronet.<version>.<extension>`. Default is: `cronet.86.0.4240.198.so` for linux. Else, you can build cronet from [source](https://www.chromium.org/developers/how-tos/get-the-code) using the [provided instuctions](https://chromium.googlesource.com/chromium/src/+/master/components/cronet/build_instructions.md). Then copy the library to the root of your project. For linux, you can also place the files under `cronet_binaries/linux64` for 64bit linux systems.
 
-2. Activate `cronet.dart` package using `dart pub global activate`.
-3. Run `build_cronet <version>` from the root of your project.
+2. Run `dart run cronet:build` from the root of your project.
 
 **Note for Windows:** Run `step 3` from `x64 Native Tools Command Prompt for VS 2019` shell.
