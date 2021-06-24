@@ -4,18 +4,16 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:ffi';
-import 'dart:io';
+import 'dart:io' as io;
 import 'dart:isolate';
-import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
 import 'exceptions.dart';
 import 'generated_bindings.dart';
-part 'http_client_response.dart';
-part 'http_callback_handler.dart';
+import 'http_client_response.dart';
+import 'http_callback_handler.dart';
 
 /// HTTP request for a client connection.
 ///
@@ -35,12 +33,39 @@ part 'http_callback_handler.dart';
 ///   // Use it as you like.
 /// });
 /// ```
-class HttpClientRequest implements IOSink {
+abstract class HttpClientRequest implements io.IOSink {
+  /// Returns [Future] of [HttpClientResponse] which can be listened for server response.
+  ///
+  /// Throws [UrlRequestException] if request can't be initiated.
+  @override
+  Future<HttpClientResponse> close();
+
+  /// This is same as [close]. A [HttpClientResponse] future that will complete
+  /// once the request is successfully made.
+  ///
+  /// If any problems occurs before the response is available, this future will
+  /// completes with an [UrlRequestException].
+  @override
+  Future<HttpClientResponse> get done;
+
+  /// Follow the redirects.
+  bool get followRedirects;
+
+  /// Maximum numbers of redirects to follow.
+  /// Have no effect if [followRedirects] is set to false.
+  int get maxRedirects;
+
+  /// The uri of the request.
+  Uri get uri;
+}
+
+/// Implementation of [HttpClientRequest].
+class HttpClientRequestImpl implements HttpClientRequest {
   final Uri _uri;
   final String _method;
   final Cronet _cronet;
   final Pointer<Cronet_Engine> _cronetEngine;
-  final _CallbackHandler _cbh;
+  final CallbackHandler _cbh;
   final Pointer<Cronet_UrlRequest> _request;
 
   /// Holds the function to clean up after the request is done (if nessesary).
@@ -51,12 +76,12 @@ class HttpClientRequest implements IOSink {
   @override
   Encoding encoding;
 
-  /// Initiates a [HttpClientRequest]. It is meant to be used by a [HttpClient].
-  HttpClientRequest(this._uri, this._method, this._cronet, this._cronetEngine,
-      this._clientCleanup,
+  /// Initiates a [HttpClientRequestImpl]. It is meant to be used by a [HttpClient].
+  HttpClientRequestImpl(this._uri, this._method, this._cronet,
+      this._cronetEngine, this._clientCleanup,
       {this.encoding = utf8})
       : _cbh =
-            _CallbackHandler(_cronet, _cronet.Create_Executor(), ReceivePort()),
+            CallbackHandler(_cronet, _cronet.Create_Executor(), ReceivePort()),
         _request = _cronet.Cronet_UrlRequest_Create() {
     // Register the native port to C side.
     _cronet.registerCallbackHandler(
@@ -94,7 +119,7 @@ class HttpClientRequest implements IOSink {
   Future<HttpClientResponse> close() {
     return Future(() {
       _startRequest();
-      return HttpClientResponse._(_cbh.stream);
+      return HttpClientResponseImpl(_cbh.stream);
     });
   }
 
@@ -107,6 +132,7 @@ class HttpClientRequest implements IOSink {
   Future<HttpClientResponse> get done => close();
 
   /// Follow the redirects.
+  @override
   bool get followRedirects => _cbh.followRedirects;
   set followRedirects(bool follow) {
     _cbh.followRedirects = follow;
@@ -114,12 +140,14 @@ class HttpClientRequest implements IOSink {
 
   /// Maximum numbers of redirects to follow.
   /// Have no effect if [followRedirects] is set to false.
+  @override
   int get maxRedirects => _cbh.maxRedirects;
   set maxRedirects(int redirects) {
     _cbh.maxRedirects = redirects;
   }
 
   /// The uri of the request.
+  @override
   Uri get uri => _uri;
 
   @override

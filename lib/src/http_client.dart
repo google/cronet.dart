@@ -133,7 +133,7 @@ class HttpClient {
       if (_stop) {
         throw Exception("Client is closed. Can't open new connections");
       }
-      _requests.add(HttpClientRequest(
+      _requests.add(HttpClientRequestImpl(
           url, method, _cronet, _cronetEngine, _cleanUpRequests));
       return _requests.last;
     });

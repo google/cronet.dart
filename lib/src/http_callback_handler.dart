@@ -2,7 +2,16 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-part of 'http_client_request.dart';
+import 'dart:async';
+import 'dart:developer';
+import 'dart:ffi';
+import 'dart:isolate';
+import 'dart:typed_data';
+
+import 'package:ffi/ffi.dart';
+
+import 'exceptions.dart';
+import 'generated_bindings.dart';
 
 /// Deserializes the message sent by cronet and it's wrapper.
 class _CallbackRequestMessage {
@@ -23,7 +32,7 @@ class _CallbackRequestMessage {
 
 /// Handles every kind of callbacks that are invoked by messages and
 /// data that are sent by [NativePort] from native cronet library.
-class _CallbackHandler {
+class CallbackHandler {
   final ReceivePort receivePort;
   final Cronet cronet;
   final Pointer<Void> executor;
@@ -36,7 +45,7 @@ class _CallbackHandler {
   final _controller = StreamController<List<int>>();
 
   /// Registers the [NativePort] to the cronet side.
-  _CallbackHandler(this.cronet, this.executor, this.receivePort);
+  CallbackHandler(this.cronet, this.executor, this.receivePort);
 
   /// [Stream] controller for [HttpClientResponse]
   Stream<List<int>> get stream {
