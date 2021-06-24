@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 
 import 'package:cronet/src/constants.dart';
-import 'package:cronet/src/find_resource.dart';
+import 'package:cronet/src/third_party/ffigen/find_resource.dart';
 
 import 'prepare_cronet.dart';
 

@@ -61,7 +61,7 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
   });
 ```
 
-[See the API comparison with dart:io.]('dart_io_comparison.md')
+[See the API comparison with dart:io.](dart_io_comparison.md)
 
 ## Run Example
 

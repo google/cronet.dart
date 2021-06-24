@@ -8,7 +8,7 @@ import 'dart:io' show Directory, File, HttpClient, Process;
 
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
-import 'package:cronet/src/find_resource.dart';
+import 'package:cronet/src/third_party/ffigen/find_resource.dart';
 import 'package:cronet/src/constants.dart';
 
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
