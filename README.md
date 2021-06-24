@@ -27,8 +27,6 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 ## Example
 
-### `dart:io` style API
-
 ```dart
   final client = HttpClient();
   client
@@ -44,24 +42,7 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
   });
 ```
 
-### Alternate API
-
-```dart
-  final client = HttpClient();
-  client
-      .getUrl(Uri.parse('http://info.cern.ch/'))
-      .then((HttpClientRequest request) {
-    request.registerCallbacks((data, bytesRead, responseCode) {
-      print(utf8.decoder.convert(data));
-      print('Status: $responseCode');
-    },
-        onSuccess: (responseCode) =>
-            print('Done with status: $responseCode')).catchError(
-        (Object e) {print(e);});
-  });
-```
-
-[See the API comparison with dart:io.](dart_io_comparison.md)
+[See the API comparison with `dart:io`.](dart_io_comparison.md)
 
 ## Run Example
 

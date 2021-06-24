@@ -34,57 +34,13 @@ class _CallbackHandler {
 
   /// Stream controller to allow consumption of data like [HttpClientResponse].
   final _controller = StreamController<List<int>>();
-  bool _isStreamClaimed = false; // Stream instance should be claimed once.
-
-  /// If callback based api is used, completes when receiving data is done.
-  Completer<bool>? _callBackCompleter;
-
-  RedirectReceivedCallback? _onRedirectReceived;
-  ResponseStartedCallback? _onResponseStarted;
-  ReadDataCallback? _onReadData;
-  FailedCallabck? _onFailed;
-  CanceledCallabck? _onCanceled;
-  SuccessCallabck? _onSuccess;
 
   /// Registers the [NativePort] to the cronet side.
   _CallbackHandler(this.cronet, this.executor, this.receivePort);
 
   /// [Stream] controller for [HttpClientResponse]
   Stream<List<int>> get stream {
-    if (_isStreamClaimed) {
-      throw ResponseListenerException();
-    }
-    _isStreamClaimed = true;
     return _controller.stream;
-  }
-
-  /// Sets callbacks that are registered using [HttpClientRequest.registerCallbacks].
-  ///
-  /// If called, the [StreamController] for [HttpClientRequest.close] will be closed.
-  /// Resolves with error if [Stream] already has a listener.
-  Future<bool> registerCallbacks(ReadDataCallback onReadData,
-      [RedirectReceivedCallback? onRedirectReceived,
-      ResponseStartedCallback? onResponseStarted,
-      FailedCallabck? onFailed,
-      CanceledCallabck? onCanceled,
-      SuccessCallabck? onSuccess]) {
-    _callBackCompleter = Completer<bool>();
-    // If stream based api is already under use, resolve with error.
-    if (_isStreamClaimed) {
-      _callBackCompleter!.completeError(ResponseListenerException());
-      return _callBackCompleter!.future;
-    }
-    _onRedirectReceived = onRedirectReceived;
-    _onResponseStarted = onResponseStarted;
-    _onReadData = onReadData;
-    // If callbacks are registered, close the contoller.
-    _controller.close();
-
-    _onFailed = onFailed;
-    _onCanceled = onCanceled;
-    _onSuccess = onSuccess;
-
-    return _callBackCompleter!.future;
   }
 
   // Clean up tasks for a request.
@@ -109,19 +65,8 @@ class _CallbackHandler {
           cronet.Cronet_UrlResponseInfo_http_status_text_get(respInfoPtr)
               .cast<Utf8>()
               .toDartString());
-
-      if (_callBackCompleter != null) {
-        // If callbacks are registered.
-        if (_onFailed != null) {
-          _onFailed!(exception);
-          _callBackCompleter!.complete(false);
-        } else {
-          _callBackCompleter!.completeError(exception);
-        }
-      } else {
-        _controller.addError(exception);
-        _controller.close();
-      }
+      _controller.addError(exception);
+      _controller.close();
     }
     return respCode;
   }
@@ -142,12 +87,10 @@ class _CallbackHandler {
       args = reqMessage.data.buffer.asInt64List();
 
       switch (reqMessage.method) {
-        // Invoked when a redirect is received.
-        // Passes the new location's url and response code as parameter.
         case 'OnRedirectReceived':
           {
             log('New Location: ${Pointer.fromAddress(args[0]).cast<Utf8>().toDartString()}');
-            final respCode = statusChecker(
+            statusChecker(
                 Pointer.fromAddress(args[1]).cast<Cronet_UrlResponseInfo>(),
                 300,
                 399,
@@ -163,27 +106,19 @@ class _CallbackHandler {
             } else {
               cronet.Cronet_UrlRequest_Cancel(reqPtr);
             }
-            if (_onRedirectReceived != null) {
-              _onRedirectReceived!(
-                  Pointer.fromAddress(args[0]).cast<Utf8>().toDartString(),
-                  respCode);
-            }
           }
           break;
 
         // When server has sent the initial response.
         case 'OnResponseStarted':
           {
-            final respCode = statusChecker(
+            // If NOT a 1XX or 2XX status code, throw Exception.
+            statusChecker(
                 Pointer.fromAddress(args[0]).cast<Cronet_UrlResponseInfo>(),
                 100,
                 299,
-                () => cleanUpRequest(reqPtr,
-                    cleanUpClient)); // If NOT a 1XX or 2XX status code, throw Exception.
+                () => cleanUpRequest(reqPtr, cleanUpClient));
             log('Response started');
-            if (_onResponseStarted != null) {
-              _onResponseStarted!(respCode);
-            }
           }
           break;
         // Read a chunk of data.
@@ -199,33 +134,18 @@ class _CallbackHandler {
             final bytesRead = args[3];
 
             log('Recieved: $bytesRead');
-            final respCode = statusChecker(
-                info,
-                100,
-                299,
-                () => cleanUpRequest(reqPtr,
-                    cleanUpClient)); // If NOT a 1XX or 2XX status code, throw Exception.
+            // If NOT a 1XX or 2XX status code, throw Exception.
+            statusChecker(
+                info, 100, 299, () => cleanUpRequest(reqPtr, cleanUpClient));
             final data = cronet.Cronet_Buffer_GetData(buffer)
                 .cast<Uint8>()
                 .asTypedList(bytesRead);
-
-            // Invoke the callback.
-            if (_onReadData != null) {
-              _onReadData!(data.toList(growable: false), bytesRead, respCode);
-              final res = cronet.Cronet_UrlRequest_Read(request, buffer);
-              if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-                cleanUpRequest(reqPtr, cleanUpClient);
-                _callBackCompleter!.completeError(UrlRequestException(res));
-              }
-            } else {
-              // Or, add data to the stream.
-              _controller.sink.add(data.toList(growable: false));
-              final res = cronet.Cronet_UrlRequest_Read(request, buffer);
-              if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-                cleanUpRequest(reqPtr, cleanUpClient);
-                _controller.addError(UrlRequestException(res));
-                _controller.close();
-              }
+            _controller.sink.add(data.toList(growable: false));
+            final res = cronet.Cronet_UrlRequest_Read(request, buffer);
+            if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
+              cleanUpRequest(reqPtr, cleanUpClient);
+              _controller.addError(UrlRequestException(res));
+              _controller.close();
             }
           }
           break;
@@ -235,19 +155,8 @@ class _CallbackHandler {
             final error =
                 Pointer.fromAddress(args[0]).cast<Utf8>().toDartString();
             cleanUpRequest(reqPtr, cleanUpClient);
-
-            if (_callBackCompleter != null) {
-              if (_onFailed != null) {
-                _onFailed!(HttpException(error));
-                _callBackCompleter!.complete(false);
-              } else {
-                // If callback is registed but onFailed callback is not.
-                _callBackCompleter!.completeError(HttpException(error));
-              }
-            } else {
-              _controller.addError(HttpException(error));
-              _controller.close();
-            }
+            _controller.addError(HttpException(error));
+            _controller.close();
             cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
@@ -255,15 +164,7 @@ class _CallbackHandler {
         case 'OnCanceled':
           {
             cleanUpRequest(reqPtr, cleanUpClient);
-            if (_callBackCompleter != null) {
-              if (_onCanceled != null) {
-                _onCanceled!();
-              }
-              _callBackCompleter!.complete(false);
-            } else {
-              // If callbacks are not registered, stream isn't closed before. So, close here.
-              _controller.close();
-            }
+            _controller.close();
             cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
@@ -271,18 +172,7 @@ class _CallbackHandler {
         case 'OnSucceeded':
           {
             cleanUpRequest(reqPtr, cleanUpClient);
-            if (_callBackCompleter != null) {
-              if (_onSuccess != null) {
-                final respInfoPtr =
-                    Pointer.fromAddress(args[0]).cast<Cronet_UrlResponseInfo>();
-                _onSuccess!(cronet.Cronet_UrlResponseInfo_http_status_code_get(
-                    respInfoPtr));
-              }
-              _callBackCompleter!.complete(true);
-            } else {
-              // If callbacks are not registered, stream isn't closed before. So, close here.
-              _controller.close();
-            }
+            _controller.close();
             cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;

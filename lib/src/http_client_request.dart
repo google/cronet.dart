@@ -17,18 +17,6 @@ import 'generated_bindings.dart';
 part 'http_client_response.dart';
 part 'http_callback_handler.dart';
 
-// Function signature for callbacks called on redirects.
-typedef RedirectReceivedCallback = void Function(
-    String newLocationUrl, int responseCode);
-typedef ResponseStartedCallback = void Function(int responseCode);
-
-/// Called when a chunk of data is received from the server.
-typedef ReadDataCallback = void Function(
-    List<int> data, int bytesRead, int responseCode);
-typedef FailedCallabck = void Function(HttpException exception);
-typedef CanceledCallabck = void Function();
-typedef SuccessCallabck = void Function(int responseCode);
-
 /// HTTP request for a client connection.
 ///
 /// It handles all of the Http Requests made by [HttpClient].
@@ -99,50 +87,22 @@ class HttpClientRequest implements IOSink {
     _cbh.listen(_request, () => _clientCleanup(this));
   }
 
-  /// Registers callbacks for all network events.
-  ///
-  /// Throws [Exception] if callbacks are registered after listening to response [Stream].
-  /// Resolves with `true` if request finished successfully and `false` otherwise.
-  ///
-  /// This is one of the methods to get data out of [HttpClientRequest].
-  /// Accepted callbacks are [RedirectReceivedCallback], [ResponseStartedCallback],
-  /// [ReadDataCallback], [FailedCallabck], [CanceledCallabck] and [SuccessCallabck].
-  /// Callbacks will be called as per sequence of the events.
-  Future<bool> registerCallbacks(ReadDataCallback onReadData,
-      {RedirectReceivedCallback? onRedirectReceived,
-      ResponseStartedCallback? onResponseStarted,
-      FailedCallabck? onFailed,
-      CanceledCallabck? onCanceled,
-      SuccessCallabck? onSuccess}) {
-    if (_cbh._isStreamClaimed) {
-      return Future.error(ResponseListenerException());
-    }
-    final rc = _cbh.registerCallbacks(onReadData, onRedirectReceived,
-        onResponseStarted, onFailed, onCanceled, onSuccess);
-    _startRequest();
-    return rc;
-  }
-
   /// Returns [Future] of [HttpClientResponse] which can be listened for server response.
   ///
-  /// Throws [Exception] if callback based api is in use.
   /// Throws [UrlRequestException] if request can't be initiated.
-  /// Consumable similar to [HttpClientResponse].
   @override
   Future<HttpClientResponse> close() {
     return Future(() {
-      // If callback based API is being used, throw Exception.
-      if (_cbh._callBackCompleter != null) {
-        throw ResponseListenerException();
-      }
       _startRequest();
       return HttpClientResponse._(_cbh.stream);
     });
   }
 
-  /// Done is same as [close]. A [HttpClientResponse] future that will complete once the response is available.
+  /// This is same as [close]. A [HttpClientResponse] future that will complete
+  /// once the request is successfully made.
   ///
-  /// If an error occurs before the response is available, this future will complete with an error.
+  /// If any problems occurs before the response is available, this future will
+  /// completes with an [UrlRequestException].
   @override
   Future<HttpClientResponse> get done => close();
 

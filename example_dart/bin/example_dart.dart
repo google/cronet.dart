@@ -23,20 +23,4 @@ void main(List<String> args) {
       });
     });
   }
-
-  // Alternate API
-
-  final client2 = HttpClient();
-  client2
-      .getUrl(Uri.parse('http://info.cern.ch/'))
-      .then((HttpClientRequest request) {
-    request.registerCallbacks((data, bytesRead, responseCode) {
-      print(utf8.decoder.convert(data));
-      print('Status: $responseCode');
-    },
-        onSuccess: (responseCode) =>
-            print('Done with status: $responseCode')).catchError((Object e) {
-      print(e);
-    });
-  });
 }
