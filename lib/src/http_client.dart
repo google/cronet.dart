@@ -5,13 +5,14 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:cronet/src/exceptions.dart';
 import 'package:ffi/ffi.dart';
 
 import 'dylib_handler.dart';
+import 'enums.dart';
+import 'exceptions.dart';
 import 'generated_bindings.dart';
-import 'quic_hint.dart';
 import 'http_client_request.dart';
+import 'quic_hint.dart';
 
 // Cronet library is loaded in global scope.
 final _cronet = Cronet(loadWrapper());
@@ -36,8 +37,7 @@ final _cronet = Cronet(loadWrapper());
 /// ```
 class HttpClient {
   final String userAgent;
-  final bool quic;
-  final bool http2;
+  final HttpProtocol protocol;
   final bool brotli;
   final String acceptLanguage;
   final List<QuicHint> quicHints;
@@ -53,16 +53,16 @@ class HttpClient {
 
   /// Initiates an [HttpClient] with the settings provided in the arguments.
   ///
-  /// The settings control whether this client supports [quic], [brotli] and
-  /// [http2]. If [quic] is enabled, then [quicHints] can be provided.
-  /// [userAgent] and [acceptLanguage] can also be provided.
+  /// The settings control whether this client supports [brotli] and
+  /// [HttpProtocol]s like  `quic`, `http2` and `http/1.1`. If `quic` is
+  /// enabled, then [quicHints] can be provided. [userAgent] and
+  /// [acceptLanguage] can also be provided.
   ///
-  /// Throws [CronetException] if [HttpClient] can't be created.
+  /// Throws [CronetNativeException] if [HttpClient] can't be created.
   HttpClient({
     this.userAgent = 'Dart/2.12',
-    this.quic = true,
+    this.protocol = HttpProtocol.quic,
     this.quicHints = const [],
-    this.http2 = true,
     this.brotli = true,
     this.acceptLanguage = 'en_US',
   }) : _cronetEngine = _cronet.Cronet_Engine_Create() {
@@ -74,8 +74,23 @@ class HttpClient {
     final engineParams = _cronet.Cronet_EngineParams_Create();
     _cronet.Cronet_EngineParams_user_agent_set(
         engineParams, userAgent.toNativeUtf8().cast<Int8>());
-    _cronet.Cronet_EngineParams_enable_quic_set(engineParams, quic);
-    if (!quic && quicHints.isNotEmpty) {
+
+    switch (protocol) {
+      case HttpProtocol.quic:
+        _cronet.Cronet_EngineParams_enable_quic_set(engineParams, true);
+        break;
+      case HttpProtocol.http2:
+        _cronet.Cronet_EngineParams_enable_http2_set(engineParams, true);
+        _cronet.Cronet_EngineParams_enable_quic_set(engineParams, false);
+        break;
+      case HttpProtocol.http:
+        _cronet.Cronet_EngineParams_enable_quic_set(engineParams, false);
+        _cronet.Cronet_EngineParams_enable_http2_set(engineParams, false);
+        break;
+      default:
+        break;
+    }
+    if (protocol != HttpProtocol.quic && quicHints.isNotEmpty) {
       throw ArgumentError('Quic is not enabled but quic hints are provided.');
     }
     for (final quicHint in quicHints) {
@@ -88,7 +103,6 @@ class HttpClient {
       _cronet.Cronet_QuicHint_Destroy(hint);
     }
 
-    _cronet.Cronet_EngineParams_enable_http2_set(engineParams, http2);
     _cronet.Cronet_EngineParams_enable_brotli_set(engineParams, brotli);
     _cronet.Cronet_EngineParams_accept_language_set(
         engineParams, acceptLanguage.toNativeUtf8().cast<Int8>());
