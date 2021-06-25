@@ -1,0 +1,32 @@
+name: 'Cronet'
+description: 'Bindings to Cronet'
+output: 'lib/src/third_party/cronet/generated_bindings.dart'
+array-workaround: true
+headers:
+  entry-points:
+    - 'third_party/cronet/cronet.idl_c.h'
+compiler-opts:
+  - '-Ithird_party/cronet/'
+macros:
+  include:
+    - nothing
+enums:
+  include:
+    - nothing
+unnamed-enums:
+  include:
+    - nothing
+globals:
+  include:
+    - nothing
+structs:
+  include:
+    - nothing
+  dependency-only: opaque
+preamble: |
+  // Copyright 2017 The Chromium Authors. All rights reserved.
+  // Use of this source code is governed by a BSD-style license that can be
+  // found in the LICENSE file.
+
+  // ignore_for_file: non_constant_identifier_names, camel_case_types
+  // ignore_for_file: constant_identifier_names

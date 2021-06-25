@@ -1,0 +1,40 @@
+name: 'Wrapper'
+description: 'Bindings to Wrapper for Cronet'
+output: 'lib/src/wrapper/generated_bindings.dart'
+array-workaround: true
+headers:
+  entry-points:
+    - 'src/wrapper.h'
+  include-directives:
+  - 'src/wrapper.h'
+  - 'src/wrapper_export.h'
+compiler-opts:
+  - '-Isrc/'
+  - '-Ithird_party/dart-sdk/'
+  - '-DDART_SHARED_LIB'
+macros:
+  include:
+    - nothing
+enums:
+  include:
+    - nothing
+unnamed-enums:
+  include:
+    - nothing
+globals:
+  include:
+    - nothing
+structs:
+  include:
+    - nothing
+  dependency-only: opaque
+comments:
+  style: any
+  length: full
+preamble: |
+  // Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
+  // for details. All rights reserved. Use of this source code is governed by a
+  // BSD-style license that can be found in the LICENSE file.
+
+  // ignore_for_file: non_constant_identifier_names, camel_case_types
+  // ignore_for_file: constant_identifier_names
