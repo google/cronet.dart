@@ -14,7 +14,7 @@ import 'package:cronet/src/constants.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 
 /// Builds the `wrapper` shared library for linux.
-bool buildWrapperLinux([String? version]) {
+bool buildWrapperLinux() {
   final wrapperPath = wrapperSourcePath();
   final pwd = Directory.current;
   const compiler = 'g++';
@@ -45,14 +45,16 @@ bool buildWrapperLinux([String? version]) {
   print(result.stdout);
   print(result.stderr);
   if (result.exitCode != 0) return false;
-  print('Copying wrapper to project root...');
-  File('$wrapperPath/$outputName').copySync(outputName);
+  print("Copying wrapper to project's .dart_tool...");
+  Directory('.dart_tool/cronet/linux64').createSync(recursive: true);
+  File('$wrapperPath/$outputName')
+      .copySync('.dart_tool/cronet/linux64/$outputName');
   if (result.exitCode != 0) return false;
   return true;
 }
 
 /// Builds the `wrapper` shared library for windows.
-bool buildWrapperWindows([String? version]) {
+bool buildWrapperWindows() {
   final logger = Logger.standard();
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
   final wrapperPath = wrapperSourcePath();
@@ -68,8 +70,7 @@ bool buildWrapperWindows([String? version]) {
     logger.stdout("${ansi.red}Build failed.${ansi.none}");
     logger.stdout(
         'Open ${ansi.yellow}x64 Native Tools Command Prompt for VS 2019.${ansi.none} Then run:\n');
-    logger.stdout(
-        'cd ${pwd.path}\ndart run cronet:build ${version ?? cronetVersion}');
+    logger.stdout('cd ${pwd.path}\ndart run cronet:build');
     return false;
   }
   var result = Process.runSync('cmake', ['--build', 'out']);
@@ -77,7 +78,9 @@ bool buildWrapperWindows([String? version]) {
   print(result.stderr);
   if (result.exitCode != 0) return false;
   Directory.current = pwd;
-  File('$wrapperPath\\out\\Debug\\wrapper.dll').copySync('wrapper.dll');
+  Directory('.dart_tool\\cronet\\windows64').createSync(recursive: true);
+  File('$wrapperPath\\out\\Debug\\wrapper.dll')
+      .copySync('.dart_tool\\cronet\\windows64\\wrapper.dll');
   return true;
 }
 
@@ -102,13 +105,8 @@ void extract(String fileName, [String dir = '']) {
 /// Places downloaded binaries to proper location.
 void placeBinaries(String platform, String fileName) {
   print('Extracting Cronet for $platform');
-
-  if (platform.startsWith('windows')) {
-    extract(fileName);
-  } else {
-    Directory('cronet_binaries').createSync();
-    extract(fileName, 'cronet_binaries/');
-  }
+  Directory('.dart_tool/cronet').createSync(recursive: true);
+  extract(fileName, '.dart_tool/cronet/');
   print('Done! Cleaning up...');
 
   File(fileName).deleteSync();

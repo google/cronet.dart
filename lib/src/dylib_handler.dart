@@ -18,14 +18,27 @@ bool _doesFileExist(Uri uri) {
 /// Resolves the absolute path of a resource (usually a dylib).
 ///
 /// Checks if a dynamic library is located in -
-///   1. Present Working Directory
-///   2. Current script's/executable's directory
-///   3. Current script's/executable's directory's parent
+///   1. Present Working Directory and it's .dart_tool.
+///   2. Current script's/executable's directory and it's .dart_tool.
+///   3. Current script's/executable's directory's parent and it's .dart_tool.
 /// and returns the absolute path or [null] if can't be resolved.
 String? _resolveLibUri(String name) {
   var libUri = Directory.current.uri.resolve(name);
+  var dartTool = '.dart_tool/cronet/';
 
   // If lib is in Present Working Directory.
+  if (_doesFileExist(libUri)) {
+    return libUri.toFilePath(windows: Platform.isWindows);
+  }
+
+  // If lib is in Present Working Directory's .dart_tool folder.
+  if (Platform.isWindows) {
+    dartTool += 'windows64';
+  } else {
+    dartTool += 'linux64';
+  }
+
+  libUri = Directory.current.uri.resolve('$dartTool/$name');
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
@@ -37,8 +50,23 @@ String? _resolveLibUri(String name) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
 
+  // If lib is in script's .dart_tool directory.
+  libUri =
+      Uri.directory(dirname(Platform.script.path)).resolve('$dartTool/$name');
+  if (_doesFileExist(libUri)) {
+    return libUri.toFilePath(windows: Platform.isWindows);
+  }
+
   // If lib is in executable's directory.
   libUri = Uri.directory(dirname(Platform.resolvedExecutable)).resolve(name);
+
+  if (_doesFileExist(libUri)) {
+    return libUri.toFilePath(windows: Platform.isWindows);
+  }
+
+  // If lib is in executable's .dart_tool directory.
+  libUri = Uri.directory(dirname(Platform.resolvedExecutable))
+      .resolve('$dartTool/$name');
 
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);
@@ -52,10 +80,27 @@ String? _resolveLibUri(String name) {
     return libUri.toFilePath(windows: Platform.isWindows);
   }
 
+  // If lib is in script's directory's parent's .dart_tool.
+
+  libUri = Uri.directory(dirname(Platform.script.path))
+      .resolve('../$dartTool/$name');
+
+  if (_doesFileExist(libUri)) {
+    return libUri.toFilePath(windows: Platform.isWindows);
+  }
+
   // If lib is in executable's directory's parent.
 
   libUri =
       Uri.directory(dirname(Platform.resolvedExecutable)).resolve('../$name');
+
+  if (_doesFileExist(libUri)) {
+    return libUri.toFilePath(windows: Platform.isWindows);
+  }
+
+  // If lib is in executable's directory's parent's .dart_tool.
+  libUri = Uri.directory(dirname(Platform.resolvedExecutable))
+      .resolve('..../$dartTool/$name');
 
   if (_doesFileExist(libUri)) {
     return libUri.toFilePath(windows: Platform.isWindows);

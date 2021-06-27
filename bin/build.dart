@@ -16,18 +16,17 @@ void main(List<String> args) {
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
 
   if (args.contains('-h')) {
-    print('dart run cronet:build [cronet_version]');
+    print('dart run cronet:build');
   }
-  final version = args.isEmpty ? cronetVersion : args[0];
   if (Platform.isLinux) {
-    buildWrapperLinux(version);
+    buildWrapperLinux();
   } else if (Platform.isWindows) {
-    buildWrapperWindows(version);
+    buildWrapperWindows();
   } else {
     logger.stderr('${ansi.red}Unsupported platform.${ansi.none}');
     return;
   }
-  final cronetName = getDylibName('cronet.$version');
+  final cronetName = getDylibName('cronet.$cronetVersion');
   if (!isCronetAvailable(Platform.isLinux ? 'linux64' : 'windows64')) {
     logger.stderr('${ansi.yellow}Make sure that your cronet shared library'
         ' is named as $cronetName and either placed in ${Directory.current.path}'

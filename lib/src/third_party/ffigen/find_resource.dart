@@ -53,8 +53,8 @@ String wrapperSourcePath() {
 
 /// Checks if cronet binaries are already available in the project.
 bool isCronetAvailable(String platform) {
-  final cronetBinaries = Directory.fromUri(
-          Directory.current.uri.resolve('cronet_binaries/$platform/'))
+  final cronetBinaries = File.fromUri(Directory.current.uri
+          .resolve('.dart_tool/cronet/$platform/${getCronetName(platform)}'))
       .existsSync();
   final inRoot =
       File.fromUri(Directory.current.uri.resolve(getWrapperName(platform)))
