@@ -4,36 +4,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "sample_executor.h"
+#include "../../src/wrapper.h"
 #include <iostream>
-extern LIBTYPE handle;
-
-// cronet function loading and exposing macros
-// use IMPORT to expose a API unchanged or just for private use - accessable as func_name
-// use P_IMPORT for those API who needs to be wrapped before exposing - accessable as _func_name
-
-#define IMPORT(r_type, f_name, ...) r_type (* f_name) (__VA_ARGS__) = reinterpret_cast<r_type (*)(__VA_ARGS__)>(dlsym(handle, #f_name))
-
-#define P_IMPORT(r_type, f_name, ...) r_type (* _ ## f_name) (__VA_ARGS__) = reinterpret_cast<r_type (*)(__VA_ARGS__)>(dlsym(handle, #f_name))
 
 /* Executor Only */
 
-IMPORT(Cronet_ExecutorPtr, Cronet_Executor_CreateWith, Cronet_Executor_ExecuteFunc);
-IMPORT(void, Cronet_Executor_SetClientContext, Cronet_ExecutorPtr, Cronet_ClientContext);
-IMPORT(void, Cronet_Executor_Destroy, Cronet_ExecutorPtr);
-IMPORT(void, Cronet_Runnable_Run, Cronet_RunnablePtr);
-IMPORT(void, Cronet_Runnable_Destroy, Cronet_RunnablePtr);
-IMPORT(Cronet_ClientContext, Cronet_Executor_GetClientContext, Cronet_ExecutorPtr);
+Cronet_ExecutorPtr (*_Cronet_Executor_CreateWith)(Cronet_Executor_ExecuteFunc);
+void (*_Cronet_Executor_SetClientContext)(
+    Cronet_ExecutorPtr self,
+    Cronet_ClientContext client_context);
+Cronet_ClientContext (*_Cronet_Executor_GetClientContext)(Cronet_ExecutorPtr self);
+void (*_Cronet_Executor_Destroy)(Cronet_ExecutorPtr self);
+void (*_Cronet_Runnable_Run)(Cronet_RunnablePtr self);
+void (*_Cronet_Runnable_Destroy)(Cronet_RunnablePtr self);
+
+void InitCronetExecutorApi(void *executor_createWith, void *executor_setClientContext,
+  void *executor_getClientContext,
+  void *executor_destroy,
+  void *runnable_run,
+  void *runnable_destroy) {
+    _Cronet_Executor_CreateWith = reinterpret_cast<Cronet_ExecutorPtr (*)(Cronet_Executor_ExecuteFunc)>(executor_createWith);
+    _Cronet_Executor_SetClientContext = reinterpret_cast<void (*)(Cronet_ExecutorPtr, Cronet_ClientContext)>
+                                        (executor_setClientContext);
+    _Cronet_Executor_GetClientContext = reinterpret_cast<Cronet_ClientContext (*)(Cronet_ExecutorPtr)>
+                                        (executor_getClientContext);
+    _Cronet_Executor_Destroy = reinterpret_cast<void (*)(Cronet_ExecutorPtr)>(executor_destroy);
+    _Cronet_Runnable_Run = reinterpret_cast<void (*)(Cronet_RunnablePtr)>(runnable_run);
+    _Cronet_Runnable_Destroy = reinterpret_cast<void (*)(Cronet_RunnablePtr)>(runnable_destroy);
+}
+// IMPORT(Cronet_ExecutorPtr, Cronet_Executor_CreateWith, Cronet_Executor_ExecuteFunc);
+// IMPORT(void, Cronet_Executor_SetClientContext, Cronet_ExecutorPtr, Cronet_ClientContext);
+// IMPORT(void, Cronet_Executor_Destroy, Cronet_ExecutorPtr);
+// IMPORT(void, Cronet_Runnable_Run, Cronet_RunnablePtr);
+// IMPORT(void, Cronet_Runnable_Destroy, Cronet_RunnablePtr);
+// IMPORT(Cronet_ClientContext, Cronet_Executor_GetClientContext, Cronet_ExecutorPtr);
 
 SampleExecutor::SampleExecutor()
     : executor_thread_(SampleExecutor::ThreadLoop, this) {}
 SampleExecutor::~SampleExecutor() {
   ShutdownExecutor();
-  Cronet_Executor_Destroy(executor_);
+  _Cronet_Executor_Destroy(executor_);
 }
 
 void SampleExecutor::Init() {
-  executor_ = Cronet_Executor_CreateWith(SampleExecutor::Execute);
-  Cronet_Executor_SetClientContext(executor_, this);
+  executor_ = _Cronet_Executor_CreateWith(SampleExecutor::Execute);
+  _Cronet_Executor_SetClientContext(executor_, this);
 }
 
 Cronet_ExecutorPtr SampleExecutor::GetExecutor() {
@@ -70,8 +85,8 @@ void SampleExecutor::RunTasksInQueue() {
       task_queue_.pop();
       
     }
-    Cronet_Runnable_Run(runnable);
-    Cronet_Runnable_Destroy(runnable);
+    _Cronet_Runnable_Run(runnable);
+    _Cronet_Runnable_Destroy(runnable);
   }
   // Delete remaining tasks.
   std::queue<Cronet_RunnablePtr> tasks_to_destroy;
@@ -80,7 +95,7 @@ void SampleExecutor::RunTasksInQueue() {
     tasks_to_destroy.swap(task_queue_);
   }
   while (!tasks_to_destroy.empty()) {
-    Cronet_Runnable_Destroy(tasks_to_destroy.front());
+    _Cronet_Runnable_Destroy(tasks_to_destroy.front());
     tasks_to_destroy.pop();
   }
 }
@@ -97,7 +112,7 @@ void SampleExecutor::Execute(Cronet_RunnablePtr runnable) {
     }
   }
   if (runnable) {
-    Cronet_Runnable_Destroy(runnable);
+    _Cronet_Runnable_Destroy(runnable);
   } else {
     task_available_.notify_one();
   }
@@ -106,6 +121,6 @@ void SampleExecutor::Execute(Cronet_RunnablePtr runnable) {
 void SampleExecutor::Execute(Cronet_ExecutorPtr self,
                              Cronet_RunnablePtr runnable) {
   auto* executor =
-      static_cast<SampleExecutor*>(Cronet_Executor_GetClientContext(self));
+      static_cast<SampleExecutor*>(_Cronet_Executor_GetClientContext(self));
   executor->Execute(runnable);
 }

@@ -173,7 +173,7 @@ typedef enum Cronet_UrlRequestStatusListener_Status {
 // // Concrete interface Cronet_Buffer.
 
 // // Create an instance of Cronet_Buffer.
-// CRONET_EXPORT Cronet_BufferPtr Cronet_Buffer_Create(void);
+CRONET_EXPORT Cronet_BufferPtr Cronet_Buffer_Create(void);
 // // Destroy an instance of Cronet_Buffer.
 // CRONET_EXPORT void Cronet_Buffer_Destroy(Cronet_BufferPtr self);
 // // Set and get app-specific Cronet_ClientContext.
@@ -189,8 +189,8 @@ typedef enum Cronet_UrlRequestStatusListener_Status {
 //                                            Cronet_RawDataPtr data,
 //                                            uint64_t size,
 //                                            Cronet_BufferCallbackPtr callback);
-// CRONET_EXPORT
-// void Cronet_Buffer_InitWithAlloc(Cronet_BufferPtr self, uint64_t size);
+CRONET_EXPORT
+void Cronet_Buffer_InitWithAlloc(Cronet_BufferPtr self, uint64_t size);
 CRONET_EXPORT
 uint64_t Cronet_Buffer_GetSize(Cronet_BufferPtr self);
 CRONET_EXPORT
@@ -202,8 +202,8 @@ Cronet_RawDataPtr Cronet_Buffer_GetData(Cronet_BufferPtr self);
 //     Cronet_RawDataPtr data,
 //     uint64_t size,
 //     Cronet_BufferCallbackPtr callback);
-// typedef void (*Cronet_Buffer_InitWithAllocFunc)(Cronet_BufferPtr self,
-//                                                 uint64_t size);
+typedef void (*Cronet_Buffer_InitWithAllocFunc)(Cronet_BufferPtr self,
+                                                uint64_t size);
 // typedef uint64_t (*Cronet_Buffer_GetSizeFunc)(Cronet_BufferPtr self);
 // typedef Cronet_RawDataPtr (*Cronet_Buffer_GetDataFunc)(Cronet_BufferPtr self);
 // // Concrete interface Cronet_Buffer is implemented by Cronet.
@@ -248,8 +248,8 @@ Cronet_RawDataPtr Cronet_Buffer_GetData(Cronet_BufferPtr self);
 
 // // There is no method to create a concrete implementation.
 
-// // Destroy an instance of Cronet_Runnable.
-// CRONET_EXPORT void Cronet_Runnable_Destroy(Cronet_RunnablePtr self);
+// Destroy an instance of Cronet_Runnable.
+CRONET_EXPORT void Cronet_Runnable_Destroy(Cronet_RunnablePtr self);
 // // Set and get app-specific Cronet_ClientContext.
 // CRONET_EXPORT void Cronet_Runnable_SetClientContext(
 //     Cronet_RunnablePtr self,
@@ -259,8 +259,8 @@ Cronet_RawDataPtr Cronet_Buffer_GetData(Cronet_BufferPtr self);
 // // Abstract interface Cronet_Runnable is implemented by the app.
 // // The following concrete methods forward call to app implementation.
 // // The app doesn't normally call them.
-// CRONET_EXPORT
-// void Cronet_Runnable_Run(Cronet_RunnablePtr self);
+CRONET_EXPORT
+void Cronet_Runnable_Run(Cronet_RunnablePtr self);
 // // The app implements abstract interface Cronet_Runnable by defining custom
 // // functions for each method.
 // typedef void (*Cronet_Runnable_RunFunc)(Cronet_RunnablePtr self);
@@ -275,27 +275,27 @@ Cronet_RawDataPtr Cronet_Buffer_GetData(Cronet_BufferPtr self);
 // // There is no method to create a concrete implementation.
 
 // // Destroy an instance of Cronet_Executor.
-// CRONET_EXPORT void Cronet_Executor_Destroy(Cronet_ExecutorPtr self);
-// // Set and get app-specific Cronet_ClientContext.
-// CRONET_EXPORT void Cronet_Executor_SetClientContext(
-//     Cronet_ExecutorPtr self,
-//     Cronet_ClientContext client_context);
-// CRONET_EXPORT Cronet_ClientContext
-// Cronet_Executor_GetClientContext(Cronet_ExecutorPtr self);
-// // Abstract interface Cronet_Executor is implemented by the app.
-// // The following concrete methods forward call to app implementation.
-// // The app doesn't normally call them.
-// CRONET_EXPORT
-// void Cronet_Executor_Execute(Cronet_ExecutorPtr self,
-//                              Cronet_RunnablePtr command);
+CRONET_EXPORT void Cronet_Executor_Destroy(Cronet_ExecutorPtr self);
+// Set and get app-specific Cronet_ClientContext.
+CRONET_EXPORT void Cronet_Executor_SetClientContext(
+    Cronet_ExecutorPtr self,
+    Cronet_ClientContext client_context);
+CRONET_EXPORT Cronet_ClientContext
+Cronet_Executor_GetClientContext(Cronet_ExecutorPtr self);
+// Abstract interface Cronet_Executor is implemented by the app.
+// The following concrete methods forward call to app implementation.
+// The app doesn't normally call them.
+CRONET_EXPORT
+void Cronet_Executor_Execute(Cronet_ExecutorPtr self,
+                             Cronet_RunnablePtr command);
 // // The app implements abstract interface Cronet_Executor by defining custom
 // // functions for each method.
-// typedef void (*Cronet_Executor_ExecuteFunc)(Cronet_ExecutorPtr self,
-//                                             Cronet_RunnablePtr command);
+typedef void (*Cronet_Executor_ExecuteFunc)(Cronet_ExecutorPtr self,
+                                            Cronet_RunnablePtr command);
 // // The app creates an instance of Cronet_Executor by providing custom functions
 // // for each method.
-// CRONET_EXPORT Cronet_ExecutorPtr
-// Cronet_Executor_CreateWith(Cronet_Executor_ExecuteFunc ExecuteFunc);
+CRONET_EXPORT Cronet_ExecutorPtr
+Cronet_Executor_CreateWith(Cronet_Executor_ExecuteFunc ExecuteFunc);
 
 // ///////////////////////
 // // Concrete interface Cronet_Engine.
@@ -303,7 +303,7 @@ Cronet_RawDataPtr Cronet_Buffer_GetData(Cronet_BufferPtr self);
 // // Create an instance of Cronet_Engine.
 CRONET_EXPORT Cronet_EnginePtr Cronet_Engine_Create(void);
 // // Destroy an instance of Cronet_Engine.
-// CRONET_EXPORT void Cronet_Engine_Destroy(Cronet_EnginePtr self);
+CRONET_EXPORT void Cronet_Engine_Destroy(Cronet_EnginePtr self);
 // // Set and get app-specific Cronet_ClientContext.
 // CRONET_EXPORT void Cronet_Engine_SetClientContext(
 //     Cronet_EnginePtr self,
@@ -483,13 +483,13 @@ typedef void (*Cronet_UrlRequestCallback_OnCanceledFunc)(
     Cronet_UrlResponseInfoPtr info);
 // // The app creates an instance of Cronet_UrlRequestCallback by providing custom
 // // functions for each method.
-// CRONET_EXPORT Cronet_UrlRequestCallbackPtr Cronet_UrlRequestCallback_CreateWith(
-//     Cronet_UrlRequestCallback_OnRedirectReceivedFunc OnRedirectReceivedFunc,
-//     Cronet_UrlRequestCallback_OnResponseStartedFunc OnResponseStartedFunc,
-//     Cronet_UrlRequestCallback_OnReadCompletedFunc OnReadCompletedFunc,
-//     Cronet_UrlRequestCallback_OnSucceededFunc OnSucceededFunc,
-//     Cronet_UrlRequestCallback_OnFailedFunc OnFailedFunc,
-//     Cronet_UrlRequestCallback_OnCanceledFunc OnCanceledFunc);
+CRONET_EXPORT Cronet_UrlRequestCallbackPtr Cronet_UrlRequestCallback_CreateWith(
+    Cronet_UrlRequestCallback_OnRedirectReceivedFunc OnRedirectReceivedFunc,
+    Cronet_UrlRequestCallback_OnResponseStartedFunc OnResponseStartedFunc,
+    Cronet_UrlRequestCallback_OnReadCompletedFunc OnReadCompletedFunc,
+    Cronet_UrlRequestCallback_OnSucceededFunc OnSucceededFunc,
+    Cronet_UrlRequestCallback_OnFailedFunc OnFailedFunc,
+    Cronet_UrlRequestCallback_OnCanceledFunc OnCanceledFunc);
 
 // ///////////////////////
 // // Concrete interface Cronet_UploadDataSink.
@@ -605,14 +605,14 @@ CRONET_EXPORT Cronet_ClientContext
 Cronet_UrlRequest_GetClientContext(Cronet_UrlRequestPtr self);
 // // Concrete methods of Cronet_UrlRequest implemented by Cronet.
 // // The app calls them to manipulate Cronet_UrlRequest.
-// CRONET_EXPORT
-// Cronet_RESULT Cronet_UrlRequest_InitWithParams(
-//     Cronet_UrlRequestPtr self,
-//     Cronet_EnginePtr engine,
-//     Cronet_String url,
-//     Cronet_UrlRequestParamsPtr params,
-//     Cronet_UrlRequestCallbackPtr callback,
-//     Cronet_ExecutorPtr executor);
+CRONET_EXPORT
+Cronet_RESULT Cronet_UrlRequest_InitWithParams(
+    Cronet_UrlRequestPtr self,
+    Cronet_EnginePtr engine,
+    Cronet_String url,
+    Cronet_UrlRequestParamsPtr params,
+    Cronet_UrlRequestCallbackPtr callback,
+    Cronet_ExecutorPtr executor);
 CRONET_EXPORT
 Cronet_RESULT Cronet_UrlRequest_Start(Cronet_UrlRequestPtr self);
 CRONET_EXPORT
@@ -629,33 +629,33 @@ void Cronet_UrlRequest_Cancel(Cronet_UrlRequestPtr self);
 //                                  Cronet_UrlRequestStatusListenerPtr listener);
 // // Concrete interface Cronet_UrlRequest is implemented by Cronet.
 // // The app can implement these for testing / mocking.
-// typedef Cronet_RESULT (*Cronet_UrlRequest_InitWithParamsFunc)(
-//     Cronet_UrlRequestPtr self,
-//     Cronet_EnginePtr engine,
-//     Cronet_String url,
-//     Cronet_UrlRequestParamsPtr params,
-//     Cronet_UrlRequestCallbackPtr callback,
-//     Cronet_ExecutorPtr executor);
-// typedef Cronet_RESULT (*Cronet_UrlRequest_StartFunc)(Cronet_UrlRequestPtr self);
-// typedef Cronet_RESULT (*Cronet_UrlRequest_FollowRedirectFunc)(
-//     Cronet_UrlRequestPtr self);
-// typedef Cronet_RESULT (*Cronet_UrlRequest_ReadFunc)(Cronet_UrlRequestPtr self,
-//                                                     Cronet_BufferPtr buffer);
-// typedef void (*Cronet_UrlRequest_CancelFunc)(Cronet_UrlRequestPtr self);
-// typedef bool (*Cronet_UrlRequest_IsDoneFunc)(Cronet_UrlRequestPtr self);
-// typedef void (*Cronet_UrlRequest_GetStatusFunc)(
-//     Cronet_UrlRequestPtr self,
-//     Cronet_UrlRequestStatusListenerPtr listener);
+typedef Cronet_RESULT (*Cronet_UrlRequest_InitWithParamsFunc)(
+    Cronet_UrlRequestPtr self,
+    Cronet_EnginePtr engine,
+    Cronet_String url,
+    Cronet_UrlRequestParamsPtr params,
+    Cronet_UrlRequestCallbackPtr callback,
+    Cronet_ExecutorPtr executor);
+typedef Cronet_RESULT (*Cronet_UrlRequest_StartFunc)(Cronet_UrlRequestPtr self);
+typedef Cronet_RESULT (*Cronet_UrlRequest_FollowRedirectFunc)(
+    Cronet_UrlRequestPtr self);
+typedef Cronet_RESULT (*Cronet_UrlRequest_ReadFunc)(Cronet_UrlRequestPtr self,
+                                                    Cronet_BufferPtr buffer);
+typedef void (*Cronet_UrlRequest_CancelFunc)(Cronet_UrlRequestPtr self);
+typedef bool (*Cronet_UrlRequest_IsDoneFunc)(Cronet_UrlRequestPtr self);
+typedef void (*Cronet_UrlRequest_GetStatusFunc)(
+    Cronet_UrlRequestPtr self,
+    Cronet_UrlRequestStatusListenerPtr listener);
 // // Concrete interface Cronet_UrlRequest is implemented by Cronet.
 // // The app can use this for testing / mocking.
-// CRONET_EXPORT Cronet_UrlRequestPtr Cronet_UrlRequest_CreateWith(
-//     Cronet_UrlRequest_InitWithParamsFunc InitWithParamsFunc,
-//     Cronet_UrlRequest_StartFunc StartFunc,
-//     Cronet_UrlRequest_FollowRedirectFunc FollowRedirectFunc,
-//     Cronet_UrlRequest_ReadFunc ReadFunc,
-//     Cronet_UrlRequest_CancelFunc CancelFunc,
-//     Cronet_UrlRequest_IsDoneFunc IsDoneFunc,
-//     Cronet_UrlRequest_GetStatusFunc GetStatusFunc);
+CRONET_EXPORT Cronet_UrlRequestPtr Cronet_UrlRequest_CreateWith(
+    Cronet_UrlRequest_InitWithParamsFunc InitWithParamsFunc,
+    Cronet_UrlRequest_StartFunc StartFunc,
+    Cronet_UrlRequest_FollowRedirectFunc FollowRedirectFunc,
+    Cronet_UrlRequest_ReadFunc ReadFunc,
+    Cronet_UrlRequest_CancelFunc CancelFunc,
+    Cronet_UrlRequest_IsDoneFunc IsDoneFunc,
+    Cronet_UrlRequest_GetStatusFunc GetStatusFunc);
 
 // ///////////////////////
 // // Abstract interface Cronet_RequestFinishedInfoListener is implemented by the
@@ -720,10 +720,10 @@ void Cronet_UrlRequest_Cancel(Cronet_UrlRequestPtr self);
 // // Cronet_Error getters.
 // CRONET_EXPORT
 // Cronet_Error_ERROR_CODE Cronet_Error_error_code_get(const Cronet_ErrorPtr self);
-// CRONET_EXPORT
-// Cronet_String Cronet_Error_message_get(const Cronet_ErrorPtr self);
-// CRONET_EXPORT
-// int32_t Cronet_Error_internal_error_code_get(const Cronet_ErrorPtr self);
+CRONET_EXPORT
+Cronet_String Cronet_Error_message_get(const Cronet_ErrorPtr self);
+CRONET_EXPORT
+int32_t Cronet_Error_internal_error_code_get(const Cronet_ErrorPtr self);
 // CRONET_EXPORT
 // bool Cronet_Error_immediately_retryable_get(const Cronet_ErrorPtr self);
 // CRONET_EXPORT

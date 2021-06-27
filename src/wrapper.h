@@ -8,29 +8,9 @@
 #include "../third_party/dart-sdk/dart_api_dl.h"
 #include "../third_party/cronet/cronet.idl_c.h"
 
-
 #include"wrapper_export.h"
 
 #include<stdbool.h>
-
-#ifdef __linux__
-  #include <dlfcn.h>
-  #define LIBTYPE void*
-  #define OPENLIB(libname) dlopen((libname), RTLD_NOW)
-  #define CLOSELIB(handle) dlclose((handle))
-  #define CRONET_LIB_PREFIX "libcronet"
-  #define CRONET_LIB_EXTENSION ".so"
-#elif defined(_WIN32)
-#include<windows.h>
-  #define LIBTYPE HINSTANCE
-  #define OPENLIB(libname) LoadLibrary(TEXT(libname))
-  #define dlsym(lib, fn) (void *)GetProcAddress((lib), (fn))
-  #define dlerror() GetLastError()
-  #define CLOSELIB(handle) FreeLibrary((handle))
-  #define CRONET_LIB_PREFIX "cronet"
-  #define CRONET_LIB_EXTENSION ".dll"
-#endif
-
 
 #ifdef __cplusplus
 
@@ -42,20 +22,27 @@ extern "C" {
 
 DART_EXPORT void dispatchCallback(char* methodname);
 DART_EXPORT intptr_t InitDartApiDL(void* data);
-DART_EXPORT void unloadCronet();
+DART_EXPORT void InitCronetApi(void* shutdown, void *destroy, void *buffer_create, 
+  void *buffer_InitWithAlloc, void *UrlRequestCallback_CreateWith, 
+  void *UrlRequest_InitWithParams);
+DART_EXPORT void InitCronetExecutorApi(void *executor_createWith, void *executor_setClientContext,
+  void *executor_getClientContext,
+  void *executor_destroy,
+  void *runnable_run,
+  void *runnable_destroy);
 typedef void* ExecutorPtr;
 
 DART_EXPORT ExecutorPtr Create_Executor();
 DART_EXPORT void Destroy_Executor(ExecutorPtr executor);
 
-DART_EXPORT void registerHttpClient(Dart_Handle h, Cronet_EnginePtr ce);
-DART_EXPORT void registerCallbackHandler(Dart_Port nativePort, Cronet_UrlRequestPtr rp);
-DART_EXPORT void removeRequest(Cronet_UrlRequestPtr rp);
-DART_EXPORT Cronet_RESULT Cronet_UrlRequest_Init(Cronet_UrlRequestPtr self, Cronet_EnginePtr engine, Cronet_String url, Cronet_UrlRequestParamsPtr params, ExecutorPtr _executor);
+DART_EXPORT void registerHttpClient(Dart_Handle h, Cronet_Engine* ce);
+DART_EXPORT void registerCallbackHandler(Dart_Port nativePort, Cronet_UrlRequest* rp);
+DART_EXPORT void removeRequest(Cronet_UrlRequest* rp);
+DART_EXPORT Cronet_RESULT Cronet_UrlRequest_Init(Cronet_UrlRequest* self, Cronet_Engine* engine, Cronet_String url, Cronet_UrlRequestParams* params, ExecutorPtr _executor);
 
 /* executor only */
 
-typedef void (*Cronet_Executor_ExecuteFunc)(Cronet_ExecutorPtr self, Cronet_RunnablePtr command);
+typedef void (*Cronet_Executor_ExecuteFunc)(Cronet_Executor* self, Cronet_Runnable* command);
 
 
 #ifdef __cplusplus

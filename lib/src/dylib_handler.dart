@@ -64,21 +64,18 @@ String? _resolveLibUri(String name) {
   return null;
 }
 
-/// Loads [wrapper] dynamic library depending on the platform.
+/// Loads dynamic library depending on the platform.
 ///
-/// This loaded [wrapper] will then load [cronet].
 /// Throws an [ArgumentError] if library can't be loaded.
-DynamicLibrary loadWrapper() {
-  var wrapperName = getWrapperName();
-
+DynamicLibrary loadDylib(String name) {
   // _resolveLibUri() will try to resolve wrapper's absolute path.
   // If it can't find it, try looking at search paths provided by the system.
-  wrapperName = _resolveLibUri(wrapperName) ?? wrapperName;
+  name = _resolveLibUri(name) ?? name;
 
   try {
     return Platform.isIOS
         ? DynamicLibrary.process()
-        : DynamicLibrary.open(wrapperName);
+        : DynamicLibrary.open(name);
   } catch (exception) {
     final logger = Logger.standard();
     final ansi = Ansi(Ansi.terminalSupportsAnsi);
@@ -95,4 +92,14 @@ DynamicLibrary loadWrapper() {
     logger.stdout(ansi.none);
     rethrow;
   }
+}
+
+/// Loads `wrapper` dynamic library depending on the platform.
+DynamicLibrary loadWrapper() {
+  return loadDylib(getWrapperName());
+}
+
+/// Loads `cronet` dynamic library depending on the platform.
+DynamicLibrary loadCronet() {
+  return loadDylib(getCronetName());
 }

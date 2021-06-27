@@ -12,22 +12,6 @@ compiler-opts:
   - '-Isrc/'
   - '-Ithird_party/dart-sdk/'
   - '-DDART_SHARED_LIB'
-macros:
-  include:
-    - nothing
-enums:
-  include:
-    - nothing
-unnamed-enums:
-  include:
-    - nothing
-globals:
-  include:
-    - nothing
-structs:
-  include:
-    - nothing
-  dependency-only: opaque
 comments:
   style: any
   length: full

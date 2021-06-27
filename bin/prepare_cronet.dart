@@ -25,12 +25,9 @@ bool buildWrapperLinux([String? version]) {
     '-shared',
     '-W',
     '-ldl',
-    '-DDART_SHARED_LIB',
-    '-Wl,-z,origin',
-    "-Wl,-rpath,\$ORIGIN",
-    "-Wl,-rpath,\$ORIGIN/cronet_binaries/linux64/"
+    '-DDART_SHARED_LIB'
   ];
-  const outputName = 'wrapper.so';
+  const outputName = 'libwrapper.so';
   const sources = [
     'wrapper.cc',
     '../third_party/cronet_impl/sample_executor.cc',
@@ -43,19 +40,13 @@ bool buildWrapperLinux([String? version]) {
   Directory.current = Directory(wrapperPath);
   print('Building Wrapper...');
   var result = Process.runSync(
-      compiler,
-      [cppV] +
-          ['-DCRONET_VERSION="${version ?? cronetVersion}"'] +
-          options +
-          sources +
-          ['-o', outputName] +
-          includes);
+      compiler, [cppV] + options + sources + ['-o', outputName] + includes);
   Directory.current = pwd;
   print(result.stdout);
   print(result.stderr);
   if (result.exitCode != 0) return false;
   print('Copying wrapper to project root...');
-  File('$wrapperPath/wrapper.so').copySync('wrapper.so');
+  File('$wrapperPath/$outputName').copySync(outputName);
   if (result.exitCode != 0) return false;
   return true;
 }
@@ -66,14 +57,10 @@ bool buildWrapperWindows([String? version]) {
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
   final wrapperPath = wrapperSourcePath();
   final pwd = Directory.current;
-  final environment = {
-    'CL': '/DCRONET_VERSION="""${version ?? cronetVersion}"""'
-  };
   Directory.current = Directory(wrapperPath);
   logger.stdout('Building Wrapper...');
   try {
-    final result = Process.runSync('cmake', ['CMakeLists.txt', '-B', 'out'],
-        environment: environment);
+    final result = Process.runSync('cmake', ['CMakeLists.txt', '-B', 'out']);
     print(result.stdout);
     print(result.stderr);
   } catch (error) {
@@ -85,8 +72,7 @@ bool buildWrapperWindows([String? version]) {
         'cd ${pwd.path}\ndart run cronet:build ${version ?? cronetVersion}');
     return false;
   }
-  var result =
-      Process.runSync('cmake', ['--build', 'out'], environment: environment);
+  var result = Process.runSync('cmake', ['--build', 'out']);
   print(result.stdout);
   print(result.stderr);
   if (result.exitCode != 0) return false;

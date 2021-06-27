@@ -11,7 +11,8 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 
 import 'exceptions.dart';
-import 'generated_bindings.dart';
+import 'third_party/cronet/generated_bindings.dart';
+import 'wrapper/generated_bindings.dart' as wrapper;
 import 'http_client_response.dart';
 import 'http_callback_handler.dart';
 
@@ -64,6 +65,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   final Uri _uri;
   final String _method;
   final Cronet _cronet;
+  final wrapper.Wrapper _wrapper;
   final Pointer<Cronet_Engine> _cronetEngine;
   final CallbackHandler _cbh;
   final Pointer<Cronet_UrlRequest> _request;
@@ -77,15 +79,15 @@ class HttpClientRequestImpl implements HttpClientRequest {
   Encoding encoding;
 
   /// Initiates a [HttpClientRequestImpl]. It is meant to be used by a [HttpClient].
-  HttpClientRequestImpl(this._uri, this._method, this._cronet,
+  HttpClientRequestImpl(this._uri, this._method, this._cronet, this._wrapper,
       this._cronetEngine, this._clientCleanup,
       {this.encoding = utf8})
-      : _cbh =
-            CallbackHandler(_cronet, _cronet.Create_Executor(), ReceivePort()),
+      : _cbh = CallbackHandler(
+            _cronet, _wrapper, _wrapper.Create_Executor(), ReceivePort()),
         _request = _cronet.Cronet_UrlRequest_Create() {
     // Register the native port to C side.
-    _cronet.registerCallbackHandler(
-        _cbh.receivePort.sendPort.nativePort, _request);
+    _wrapper.registerCallbackHandler(_cbh.receivePort.sendPort.nativePort,
+        _request.cast<wrapper.Cronet_UrlRequest>());
   }
 
   // Starts the request.
@@ -94,11 +96,11 @@ class HttpClientRequestImpl implements HttpClientRequest {
     _cronet.Cronet_UrlRequestParams_http_method_set(
         requestParams, _method.toNativeUtf8().cast<Int8>());
 
-    final res = _cronet.Cronet_UrlRequest_Init(
-        _request,
-        _cronetEngine,
+    final res = _wrapper.Cronet_UrlRequest_Init(
+        _request.cast<wrapper.Cronet_UrlRequest>(),
+        _cronetEngine.cast<wrapper.Cronet_Engine>(),
         _uri.toString().toNativeUtf8().cast<Int8>(),
-        requestParams,
+        requestParams.cast<wrapper.Cronet_UrlRequestParams>(),
         _cbh.executor);
 
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {

@@ -13,12 +13,10 @@ const cronetVersion = "86.0.4240.198";
 
 String getDylibName(String name, [String platform = '']) {
   var ext = '.so';
-  var prefix = '';
+  var prefix = 'lib';
 
-  // When gradle builds the wrapper, it automatically prepends lib.
-  if (Platform.isAndroid || platform.startsWith('android')) {
-    prefix = 'lib';
-  } else if (Platform.isWindows || platform.startsWith('windows')) {
+  if (Platform.isWindows || platform.startsWith('windows')) {
+    prefix = '';
     ext = '.dll';
   } else if (Platform.isMacOS || platform.startsWith('macos')) {
     ext = '.dylib';

@@ -11,7 +11,8 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 
 import 'exceptions.dart';
-import 'generated_bindings.dart';
+import 'third_party/cronet/generated_bindings.dart';
+import 'wrapper/generated_bindings.dart' as wrpr;
 
 /// Deserializes the message sent by cronet and it's wrapper.
 class _CallbackRequestMessage {
@@ -35,6 +36,7 @@ class _CallbackRequestMessage {
 class CallbackHandler {
   final ReceivePort receivePort;
   final Cronet cronet;
+  final wrpr.Wrapper wrapper;
   final Pointer<Void> executor;
 
   // These are a part of HttpClientRequest Public API.
@@ -45,7 +47,7 @@ class CallbackHandler {
   final _controller = StreamController<List<int>>();
 
   /// Registers the [NativePort] to the cronet side.
-  CallbackHandler(this.cronet, this.executor, this.receivePort);
+  CallbackHandler(this.cronet, this.wrapper, this.executor, this.receivePort);
 
   /// [Stream] controller for [HttpClientResponse]
   Stream<List<int>> get stream {
@@ -58,7 +60,7 @@ class CallbackHandler {
   void cleanUpRequest(
       Pointer<Cronet_UrlRequest> reqPtr, Function cleanUpClient) {
     receivePort.close();
-    cronet.removeRequest(reqPtr);
+    wrapper.removeRequest(reqPtr.cast<wrpr.Cronet_UrlRequest>());
     cleanUpClient();
   }
 
@@ -128,6 +130,8 @@ class CallbackHandler {
                 299,
                 () => cleanUpRequest(reqPtr, cleanUpClient));
             log('Response started');
+            cronet.Cronet_UrlRequest_Read(
+                reqPtr, Pointer.fromAddress(args[1]).cast<Cronet_Buffer>());
           }
           break;
         // Read a chunk of data.
@@ -161,8 +165,11 @@ class CallbackHandler {
         // In case of network error, we will shut everything down after this.
         case 'OnFailed':
           {
-            final error =
-                Pointer.fromAddress(args[0]).cast<Utf8>().toDartString();
+            final errorPtr = Pointer.fromAddress(args[0]).cast<Cronet_Error>();
+            final error = Pointer.fromAddress(
+                    cronet.Cronet_Error_message_get(errorPtr).address)
+                .cast<Utf8>()
+                .toDartString();
             cleanUpRequest(reqPtr, cleanUpClient);
             _controller.addError(HttpException(error));
             _controller.close();

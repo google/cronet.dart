@@ -10,12 +10,14 @@ import 'package:ffi/ffi.dart';
 import 'dylib_handler.dart';
 import 'enums.dart';
 import 'exceptions.dart';
-import 'generated_bindings.dart';
+import 'third_party/cronet/generated_bindings.dart';
+import 'wrapper/generated_bindings.dart' as wrapper;
 import 'http_client_request.dart';
 import 'quic_hint.dart';
 
 // Cronet library is loaded in global scope.
-final _cronet = Cronet(loadWrapper());
+final _cronet = Cronet(loadCronet());
+final _wrapper = wrapper.Wrapper(loadWrapper());
 
 /// A client that receives content, such as web pages,
 /// from a server using the HTTP, HTTPS, HTTP2, Quic etc. protocol.
@@ -67,9 +69,26 @@ class HttpClient {
     this.acceptLanguage = 'en_US',
   }) : _cronetEngine = _cronet.Cronet_Engine_Create() {
     // Initialize Dart Native API dynamically.
-    _cronet.InitDartApiDL(NativeApi.initializeApiDLData);
-    _cronet.registerHttpClient(this, _cronetEngine);
-
+    _wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
+    _wrapper.registerHttpClient(
+        this, _cronetEngine.cast<wrapper.Cronet_Engine>());
+    // Registers few cronet functions that are required by the wrapper.
+    _wrapper.InitCronetApi(
+        _cronet.addresses.Cronet_Engine_Shutdown.cast<Void>(),
+        _cronet.addresses.Cronet_Engine_Destroy.cast<Void>(),
+        _cronet.addresses.Cronet_Buffer_Create.cast<Void>(),
+        _cronet.addresses.Cronet_Buffer_InitWithAlloc.cast<Void>(),
+        _cronet.addresses.Cronet_UrlRequestCallback_CreateWith.cast<Void>(),
+        _cronet.addresses.Cronet_UrlRequest_InitWithParams.cast<Void>());
+    // Registers few cronet functions that are required by the executor
+    // run from the wrapper for executing network requests.
+    _wrapper.InitCronetExecutorApi(
+        _cronet.addresses.Cronet_Executor_CreateWith.cast<Void>(),
+        _cronet.addresses.Cronet_Executor_SetClientContext.cast<Void>(),
+        _cronet.addresses.Cronet_Executor_GetClientContext.cast<Void>(),
+        _cronet.addresses.Cronet_Executor_Destroy.cast<Void>(),
+        _cronet.addresses.Cronet_Runnable_Run.cast<Void>(),
+        _cronet.addresses.Cronet_Runnable_Destroy.cast<Void>());
     // Starting the engine with parameters.
     final engineParams = _cronet.Cronet_EngineParams_Create();
     _cronet.Cronet_EngineParams_user_agent_set(
@@ -148,7 +167,7 @@ class HttpClient {
         throw Exception("Client is closed. Can't open new connections");
       }
       _requests.add(HttpClientRequestImpl(
-          url, method, _cronet, _cronetEngine, _cleanUpRequests));
+          url, method, _cronet, _wrapper, _cronetEngine, _cleanUpRequests));
       return _requests.last;
     });
   }

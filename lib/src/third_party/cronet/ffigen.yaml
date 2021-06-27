@@ -5,24 +5,26 @@ array-workaround: true
 headers:
   entry-points:
     - 'third_party/cronet/cronet.idl_c.h'
+  include-directives:
+    - 'third_party/cronet/cronet.idl_c.h'
+    - 'third_party/cronet/cronet_export.h'
 compiler-opts:
   - '-Ithird_party/cronet/'
-macros:
-  include:
-    - nothing
-enums:
-  include:
-    - nothing
-unnamed-enums:
-  include:
-    - nothing
-globals:
-  include:
-    - nothing
-structs:
-  include:
-    - nothing
-  dependency-only: opaque
+functions:
+  symbol-address:
+    include:
+      - 'Cronet_Engine_Shutdown' # For wrapper.
+      - 'Cronet_Engine_Destroy'
+      - 'Cronet_Buffer_Create'
+      - 'Cronet_Buffer_InitWithAlloc'
+      - 'Cronet_UrlRequestCallback_CreateWith'
+      - 'Cronet_UrlRequest_InitWithParams'
+      - 'Cronet_Executor_CreateWith' # For executor.
+      - 'Cronet_Executor_SetClientContext'
+      - 'Cronet_Executor_GetClientContext'
+      - 'Cronet_Executor_Destroy'
+      - 'Cronet_Runnable_Run'
+      - 'Cronet_Runnable_Destroy'
 preamble: |
   // Copyright 2017 The Chromium Authors. All rights reserved.
   // Use of this source code is governed by a BSD-style license that can be
