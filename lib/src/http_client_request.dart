@@ -93,6 +93,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   // Starts the request.
   void _startRequest() {
     final requestParams = _cronet.Cronet_UrlRequestParams_Create();
+    if (requestParams == nullptr) throw Error();
     _cronet.Cronet_UrlRequestParams_http_method_set(
         requestParams, _method.toNativeUtf8().cast<Int8>());
 

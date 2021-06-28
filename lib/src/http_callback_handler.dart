@@ -130,8 +130,11 @@ class CallbackHandler {
                 299,
                 () => cleanUpRequest(reqPtr, cleanUpClient));
             log('Response started');
-            cronet.Cronet_UrlRequest_Read(
+            final res = cronet.Cronet_UrlRequest_Read(
                 reqPtr, Pointer.fromAddress(args[1]).cast<Cronet_Buffer>());
+            if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
+              throw UrlRequestException(res);
+            }
           }
           break;
         // Read a chunk of data.

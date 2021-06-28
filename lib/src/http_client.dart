@@ -68,6 +68,7 @@ class HttpClient {
     this.brotli = true,
     this.acceptLanguage = 'en_US',
   }) : _cronetEngine = _cronet.Cronet_Engine_Create() {
+    if (_cronetEngine == nullptr) throw Error();
     // Initialize Dart Native API dynamically.
     _wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
     _wrapper.registerHttpClient(
@@ -91,6 +92,7 @@ class HttpClient {
         _cronet.addresses.Cronet_Runnable_Destroy.cast<Void>());
     // Starting the engine with parameters.
     final engineParams = _cronet.Cronet_EngineParams_Create();
+    if (engineParams == nullptr) throw Error();
     _cronet.Cronet_EngineParams_user_agent_set(
         engineParams, userAgent.toNativeUtf8().cast<Int8>());
 
@@ -114,6 +116,7 @@ class HttpClient {
     }
     for (final quicHint in quicHints) {
       final hint = _cronet.Cronet_QuicHint_Create();
+      if (hint == nullptr) throw Error();
       _cronet.Cronet_QuicHint_host_set(
           hint, quicHint.host.toNativeUtf8().cast<Int8>());
       _cronet.Cronet_QuicHint_port_set(hint, quicHint.port);
