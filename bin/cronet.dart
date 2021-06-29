@@ -2,16 +2,16 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'prepare_cronet.dart';
+import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:cronet/src/constants.dart';
 
-import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
+import 'prepare_cronet.dart';
 
 Future<void> main(List<String> platforms) async {
   final logger = Logger.standard();
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
   if (platforms.isEmpty || platforms.contains('-h')) {
-    logger.stderr(
+    logger.stdout(
         'Please run: dart run cronet ${ansi.red}<platform>.${ansi.none}');
     return;
   }

@@ -18,7 +18,8 @@ void main() {
     });
 
     test('Gets the version string', () {
-      expect(client.httpClientVersion, TypeMatcher<String>());
+      final exp = RegExp(r'^\d{2}.\d.\d{4}.\d{3}$');
+      expect(true, exp.hasMatch(client.httpClientVersion));
     });
 
     test('Gets the user agent', () {

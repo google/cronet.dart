@@ -125,10 +125,12 @@ DynamicLibrary loadDylib(String name) {
     final logger = Logger.standard();
     final ansi = Ansi(Ansi.terminalSupportsAnsi);
 
-    logger.stderr(
-        '${ansi.red}Failed to open the library. Make sure that required binaries are in place.${ansi.none}');
+    logger
+        .stderr('${ansi.red}Failed to open the library. Make sure that required'
+            ' binaries are in place.${ansi.none}');
     logger.stdout(
-        'To download the binaries, please run the following from the root of your project:');
+        'To download the binaries, please run the following from the root of'
+        ' your project:');
     logger.stdout('${ansi.yellow}dart run cronet <platform>${ansi.none}');
     logger.stdout('${ansi.green}Valid platforms are:');
     for (final platform in validPlatforms) {

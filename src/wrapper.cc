@@ -41,37 +41,35 @@ intptr_t InitDartApiDL(void *data) { return Dart_InitializeApiDL(data); }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize required cronet functions
-void InitCronetApi(void *shutdown, void *destroy, void *buffer_create,
-                   void *buffer_InitWithAlloc,
-                   void *UrlRequestCallback_CreateWith,
-                   void *UrlRequest_InitWithParams) {
-  if (!(shutdown && destroy && buffer_create && buffer_InitWithAlloc &&
-        UrlRequestCallback_CreateWith && UrlRequest_InitWithParams)) {
+void InitCronetApi(
+    Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
+    void (*Cronet_Engine_Destroy)(Cronet_EnginePtr),
+    Cronet_BufferPtr (*Cronet_Buffer_Create)(void),
+    void (*Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr, uint64_t),
+    Cronet_UrlRequestCallbackPtr (*Cronet_UrlRequestCallback_CreateWith)(
+        Cronet_UrlRequestCallback_OnRedirectReceivedFunc,
+        Cronet_UrlRequestCallback_OnResponseStartedFunc,
+        Cronet_UrlRequestCallback_OnReadCompletedFunc,
+        Cronet_UrlRequestCallback_OnSucceededFunc,
+        Cronet_UrlRequestCallback_OnFailedFunc,
+        Cronet_UrlRequestCallback_OnCanceledFunc),
+    Cronet_RESULT (*Cronet_UrlRequest_InitWithParams)(
+        Cronet_UrlRequestPtr, Cronet_EnginePtr, Cronet_String,
+        Cronet_UrlRequestParamsPtr, Cronet_UrlRequestCallbackPtr,
+        Cronet_ExecutorPtr)) {
+  if (!(Cronet_Engine_Shutdown && Cronet_Engine_Destroy &&
+        Cronet_Buffer_Create && Cronet_Buffer_InitWithAlloc &&
+        Cronet_UrlRequestCallback_CreateWith &&
+        Cronet_UrlRequest_InitWithParams)) {
     std::cerr << "Invalid pointer(s): null" << std::endl;
     return;
   }
-  _Cronet_Engine_Shutdown =
-      reinterpret_cast<Cronet_RESULT (*)(Cronet_EnginePtr)>(shutdown);
-  _Cronet_Engine_Destroy =
-      reinterpret_cast<void (*)(Cronet_EnginePtr)>(destroy);
-  _Cronet_Buffer_Create =
-      reinterpret_cast<Cronet_BufferPtr (*)()>(buffer_create);
-  _Cronet_Buffer_InitWithAlloc =
-      reinterpret_cast<void (*)(Cronet_BufferPtr, uint64_t)>(
-          buffer_InitWithAlloc);
-  _Cronet_UrlRequestCallback_CreateWith =
-      reinterpret_cast<Cronet_UrlRequestCallbackPtr (*)(
-          Cronet_UrlRequestCallback_OnRedirectReceivedFunc,
-          Cronet_UrlRequestCallback_OnResponseStartedFunc,
-          Cronet_UrlRequestCallback_OnReadCompletedFunc,
-          Cronet_UrlRequestCallback_OnSucceededFunc,
-          Cronet_UrlRequestCallback_OnFailedFunc,
-          Cronet_UrlRequestCallback_OnCanceledFunc)>(
-          UrlRequestCallback_CreateWith);
-  _Cronet_UrlRequest_InitWithParams = reinterpret_cast<Cronet_RESULT (*)(
-      Cronet_UrlRequestPtr, Cronet_EnginePtr, Cronet_String,
-      Cronet_UrlRequestParamsPtr, Cronet_UrlRequestCallbackPtr,
-      Cronet_ExecutorPtr)>(UrlRequest_InitWithParams);
+  _Cronet_Engine_Shutdown = Cronet_Engine_Shutdown;
+  _Cronet_Engine_Destroy = Cronet_Engine_Destroy;
+  _Cronet_Buffer_Create = Cronet_Buffer_Create;
+  _Cronet_Buffer_InitWithAlloc = Cronet_Buffer_InitWithAlloc;
+  _Cronet_UrlRequestCallback_CreateWith = Cronet_UrlRequestCallback_CreateWith;
+  _Cronet_UrlRequest_InitWithParams = Cronet_UrlRequest_InitWithParams;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,8 +128,7 @@ Dart_CObject CallbackArgBuilder(int num, ...) {
 
   c_request_data.type = Dart_CObject_kExternalTypedData;
   c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint64;
-  c_request_data.value.as_external_typed_data.length =
-      sizeof(uint64_t) * num;
+  c_request_data.value.as_external_typed_data.length = sizeof(uint64_t) * num;
   c_request_data.value.as_external_typed_data.data =
       static_cast<uint8_t *>(request_buffer);
   c_request_data.value.as_external_typed_data.peer = request_buffer;
@@ -181,9 +178,6 @@ void OnResponseStarted(Cronet_UrlRequestCallbackPtr self,
 
   DispatchCallback("OnResponseStarted", request,
                    CallbackArgBuilder(2, info, buffer));
-
-  // // Started reading the response.
-  // _Cronet_UrlRequest_Read(request, buffer);
 }
 
 void OnReadCompleted(Cronet_UrlRequestCallbackPtr self,

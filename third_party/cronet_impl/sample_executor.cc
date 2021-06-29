@@ -18,32 +18,28 @@ void (*_Cronet_Executor_Destroy)(Cronet_ExecutorPtr self);
 void (*_Cronet_Runnable_Run)(Cronet_RunnablePtr self);
 void (*_Cronet_Runnable_Destroy)(Cronet_RunnablePtr self);
 
-void InitCronetExecutorApi(void *executor_createWith,
-                           void *executor_setClientContext,
-                           void *executor_getClientContext,
-                           void *executor_destroy, void *runnable_run,
-                           void *runnable_destroy) {
-  if (!(executor_createWith && executor_setClientContext &&
-        executor_getClientContext && executor_destroy && runnable_run &&
-        runnable_destroy)) {
+void InitCronetExecutorApi(
+    Cronet_ExecutorPtr (*Cronet_Executor_CreateWith)(
+        Cronet_Executor_ExecuteFunc),
+    void (*Cronet_Executor_SetClientContext)(Cronet_ExecutorPtr,
+                                             Cronet_ClientContext),
+    Cronet_ClientContext (*Cronet_Executor_GetClientContext)(
+        Cronet_ExecutorPtr),
+    void (*Cronet_Executor_Destroy)(Cronet_ExecutorPtr),
+    void (*Cronet_Runnable_Run)(Cronet_RunnablePtr),
+    void (*Cronet_Runnable_Destroy)(Cronet_RunnablePtr)) {
+  if (!(Cronet_Executor_CreateWith && Cronet_Executor_SetClientContext &&
+        Cronet_Executor_GetClientContext && Cronet_Executor_Destroy &&
+        Cronet_Runnable_Run && Cronet_Runnable_Destroy)) {
     std::cerr << "Invalid pointer(s): null" << std::endl;
     return;
   }
-  _Cronet_Executor_CreateWith =
-      reinterpret_cast<Cronet_ExecutorPtr (*)(Cronet_Executor_ExecuteFunc)>(
-          executor_createWith);
-  _Cronet_Executor_SetClientContext =
-      reinterpret_cast<void (*)(Cronet_ExecutorPtr, Cronet_ClientContext)>(
-          executor_setClientContext);
-  _Cronet_Executor_GetClientContext =
-      reinterpret_cast<Cronet_ClientContext (*)(Cronet_ExecutorPtr)>(
-          executor_getClientContext);
-  _Cronet_Executor_Destroy =
-      reinterpret_cast<void (*)(Cronet_ExecutorPtr)>(executor_destroy);
-  _Cronet_Runnable_Run =
-      reinterpret_cast<void (*)(Cronet_RunnablePtr)>(runnable_run);
-  _Cronet_Runnable_Destroy =
-      reinterpret_cast<void (*)(Cronet_RunnablePtr)>(runnable_destroy);
+  _Cronet_Executor_CreateWith = Cronet_Executor_CreateWith;
+  _Cronet_Executor_SetClientContext = Cronet_Executor_SetClientContext;
+  _Cronet_Executor_GetClientContext = Cronet_Executor_GetClientContext;
+  _Cronet_Executor_Destroy = Cronet_Executor_Destroy;
+  _Cronet_Runnable_Run = Cronet_Runnable_Run;
+  _Cronet_Runnable_Destroy = Cronet_Runnable_Destroy;
 }
 
 SampleExecutor::SampleExecutor()

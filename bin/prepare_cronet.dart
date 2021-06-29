@@ -8,10 +8,9 @@ import 'dart:io' show Directory, File, HttpClient, Process;
 
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
-import 'package:cronet/src/third_party/ffigen/find_resource.dart';
-import 'package:cronet/src/constants.dart';
-
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
+import 'package:cronet/src/constants.dart';
+import 'package:cronet/src/third_party/ffigen/find_resource.dart';
 
 /// Builds the `wrapper` shared library for linux.
 bool buildWrapperLinux() {
@@ -97,7 +96,7 @@ void extract(String fileName, [String dir = '']) {
         ..createSync(recursive: true)
         ..writeAsBytesSync(data);
     } else {
-      Directory(dir + filename).create(recursive: true);
+      Directory(dir + filename).createSync(recursive: true);
     }
   }
 }

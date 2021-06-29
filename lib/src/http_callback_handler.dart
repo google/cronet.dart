@@ -60,7 +60,7 @@ class CallbackHandler {
   void cleanUpRequest(
       Pointer<Cronet_UrlRequest> reqPtr, void Function() cleanUpClient) {
     receivePort.close();
-    wrapper.RemoveRequest(reqPtr.cast<wrpr.Cronet_UrlRequest>());
+    wrapper.RemoveRequest(reqPtr.cast());
     cleanUpClient();
   }
 

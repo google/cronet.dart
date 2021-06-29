@@ -13,11 +13,11 @@ import 'exceptions.dart';
 import 'http_client_request.dart';
 import 'quic_hint.dart';
 import 'third_party/cronet/generated_bindings.dart';
-import 'wrapper/generated_bindings.dart' as wrapper;
+import 'wrapper/generated_bindings.dart';
 
 // Cronet library is loaded in global scope.
 final _cronet = Cronet(loadCronet());
-final _wrapper = wrapper.Wrapper(loadWrapper());
+final _wrapper = Wrapper(loadWrapper());
 
 /// A client that receives content, such as web pages,
 /// from a server using the HTTP, HTTPS, HTTP2, Quic etc. protocol.
@@ -45,8 +45,8 @@ class HttpClient {
   final List<QuicHint> quicHints;
 
   final Pointer<Cronet_Engine> _cronetEngine;
-  // Keep all the request reference in a list so if the client is being explicitly closed,
-  // we can clean up the requests.
+  // Keep all the request reference in a list so if the client is being
+  // explicitly closed, we can clean up the requests.
   final _requests = List<HttpClientRequest>.empty(growable: true);
   var _stop = false;
 
@@ -71,25 +71,26 @@ class HttpClient {
     if (_cronetEngine == nullptr) throw Error();
     // Initialize Dart Native API dynamically.
     _wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
-    _wrapper.RegisterHttpClient(
-        this, _cronetEngine.cast<wrapper.Cronet_Engine>());
+    _wrapper.RegisterHttpClient(this, _cronetEngine.cast());
     // Registers few cronet functions that are required by the wrapper.
+    // Casting because of https://github.com/dart-lang/ffigen/issues/22
     _wrapper.InitCronetApi(
-        _cronet.addresses.Cronet_Engine_Shutdown.cast<Void>(),
-        _cronet.addresses.Cronet_Engine_Destroy.cast<Void>(),
-        _cronet.addresses.Cronet_Buffer_Create.cast<Void>(),
-        _cronet.addresses.Cronet_Buffer_InitWithAlloc.cast<Void>(),
-        _cronet.addresses.Cronet_UrlRequestCallback_CreateWith.cast<Void>(),
-        _cronet.addresses.Cronet_UrlRequest_InitWithParams.cast<Void>());
+        _cronet.addresses.Cronet_Engine_Shutdown.cast(),
+        _cronet.addresses.Cronet_Engine_Destroy.cast(),
+        _cronet.addresses.Cronet_Buffer_Create.cast(),
+        _cronet.addresses.Cronet_Buffer_InitWithAlloc.cast(),
+        _cronet.addresses.Cronet_UrlRequestCallback_CreateWith.cast(),
+        _cronet.addresses.Cronet_UrlRequest_InitWithParams.cast());
     // Registers few cronet functions that are required by the executor
     // run from the wrapper for executing network requests.
+    // Casting because of https://github.com/dart-lang/ffigen/issues/22
     _wrapper.InitCronetExecutorApi(
-        _cronet.addresses.Cronet_Executor_CreateWith.cast<Void>(),
-        _cronet.addresses.Cronet_Executor_SetClientContext.cast<Void>(),
-        _cronet.addresses.Cronet_Executor_GetClientContext.cast<Void>(),
-        _cronet.addresses.Cronet_Executor_Destroy.cast<Void>(),
-        _cronet.addresses.Cronet_Runnable_Run.cast<Void>(),
-        _cronet.addresses.Cronet_Runnable_Destroy.cast<Void>());
+        _cronet.addresses.Cronet_Executor_CreateWith.cast(),
+        _cronet.addresses.Cronet_Executor_SetClientContext.cast(),
+        _cronet.addresses.Cronet_Executor_GetClientContext.cast(),
+        _cronet.addresses.Cronet_Executor_Destroy.cast(),
+        _cronet.addresses.Cronet_Runnable_Run.cast(),
+        _cronet.addresses.Cronet_Runnable_Destroy.cast());
     // Starting the engine with parameters.
     final engineParams = _cronet.Cronet_EngineParams_Create();
     if (engineParams == nullptr) throw Error();
@@ -144,7 +145,8 @@ class HttpClient {
   /// Shuts down the [HttpClient].
   ///
   /// The HttpClient will be kept alive until all active connections are done.
-  /// Trying to establish a new connection after calling close, will throw an exception.
+  /// Trying to establish a new connection after calling close, will throw an
+  /// exception.
   void close() {
     _stop = true;
   }

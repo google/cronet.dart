@@ -14,14 +14,14 @@ import 'exceptions.dart';
 import 'http_callback_handler.dart';
 import 'http_client_response.dart';
 import 'third_party/cronet/generated_bindings.dart';
-import 'wrapper/generated_bindings.dart' as wrapper;
+import 'wrapper/generated_bindings.dart';
 
 /// HTTP request for a client connection.
 ///
 /// It handles all of the Http Requests made by [HttpClient].
 /// Provides two ways to get data from the request.
-/// [registerCallbacks] or a [HttpClientResponse] which is a [Stream<List<int>>].
-/// Either of them can be used at a time.
+/// [registerCallbacks] or a [HttpClientResponse] which is a
+/// [Stream<List<int>>]. Either of them can be used at a time.
 ///
 /// Example Usage:
 /// ```dart
@@ -35,7 +35,8 @@ import 'wrapper/generated_bindings.dart' as wrapper;
 /// });
 /// ```
 abstract class HttpClientRequest implements io.IOSink {
-  /// Returns [Future] of [HttpClientResponse] which can be listened for server response.
+  /// Returns [Future] of [HttpClientResponse] which can be listened for server
+  /// response.
   ///
   /// Throws [UrlRequestException] if request can't be initiated.
   @override
@@ -65,7 +66,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   final Uri _uri;
   final String _method;
   final Cronet _cronet;
-  final wrapper.Wrapper _wrapper;
+  final Wrapper _wrapper;
   final Pointer<Cronet_Engine> _cronetEngine;
   final CallbackHandler _callbackHandler;
   final Pointer<Cronet_UrlRequest> _request;
@@ -78,7 +79,8 @@ class HttpClientRequestImpl implements HttpClientRequest {
   @override
   Encoding encoding;
 
-  /// Initiates a [HttpClientRequestImpl]. It is meant to be used by a [HttpClient].
+  /// Initiates a [HttpClientRequestImpl]. It is meant to be used by a
+  /// [HttpClient].
   HttpClientRequestImpl(this._uri, this._method, this._cronet, this._wrapper,
       this._cronetEngine, this._clientCleanup,
       {this.encoding = utf8})
@@ -87,8 +89,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
         _request = _cronet.Cronet_UrlRequest_Create() {
     // Register the native port to C side.
     _wrapper.RegisterCallbackHandler(
-        _callbackHandler.receivePort.sendPort.nativePort,
-        _request.cast<wrapper.Cronet_UrlRequest>());
+        _callbackHandler.receivePort.sendPort.nativePort, _request.cast());
   }
 
   // Starts the request.
@@ -99,10 +100,10 @@ class HttpClientRequestImpl implements HttpClientRequest {
         requestParams, _method.toNativeUtf8().cast<Int8>());
 
     final res = _wrapper.Cronet_UrlRequest_Init(
-        _request.cast<wrapper.Cronet_UrlRequest>(),
-        _cronetEngine.cast<wrapper.Cronet_Engine>(),
+        _request.cast(),
+        _cronetEngine.cast(),
         _uri.toString().toNativeUtf8().cast<Int8>(),
-        requestParams.cast<wrapper.Cronet_UrlRequestParams>(),
+        requestParams.cast(),
         _callbackHandler.executor);
 
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
@@ -116,7 +117,8 @@ class HttpClientRequestImpl implements HttpClientRequest {
     _callbackHandler.listen(_request, () => _clientCleanup(this));
   }
 
-  /// Returns [Future] of [HttpClientResponse] which can be listened for server response.
+  /// Returns [Future] of [HttpClientResponse] which can be listened for server
+  /// response.
   ///
   /// Throws [UrlRequestException] if request can't be initiated.
   @override
