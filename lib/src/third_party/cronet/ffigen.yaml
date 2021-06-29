@@ -1,7 +1,6 @@
 name: 'Cronet'
 description: 'Bindings to Cronet'
 output: 'lib/src/third_party/cronet/generated_bindings.dart'
-array-workaround: true
 headers:
   entry-points:
     - 'third_party/cronet/cronet.idl_c.h'
@@ -13,13 +12,15 @@ compiler-opts:
 functions:
   symbol-address:
     include:
-      - 'Cronet_Engine_Shutdown' # For wrapper.
+      # For wrapper.
+      - 'Cronet_Engine_Shutdown'
       - 'Cronet_Engine_Destroy'
       - 'Cronet_Buffer_Create'
       - 'Cronet_Buffer_InitWithAlloc'
       - 'Cronet_UrlRequestCallback_CreateWith'
       - 'Cronet_UrlRequest_InitWithParams'
-      - 'Cronet_Executor_CreateWith' # For executor.
+      # For executor.
+      - 'Cronet_Executor_CreateWith'
       - 'Cronet_Executor_SetClientContext'
       - 'Cronet_Executor_GetClientContext'
       - 'Cronet_Executor_Destroy'
@@ -30,5 +31,6 @@ preamble: |
   // Use of this source code is governed by a BSD-style license that can be
   // found in the LICENSE file.
 
-  // ignore_for_file: non_constant_identifier_names, camel_case_types
+  // ignore_for_file: camel_case_types
   // ignore_for_file: constant_identifier_names
+  // ignore_for_file: non_constant_identifier_names

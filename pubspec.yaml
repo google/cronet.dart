@@ -4,7 +4,6 @@
 
 name: cronet
 version: 0.0.1
-author: Dart Team <misc@dartlang.org>
 homepage: https://github.com/google/cronet.dart
 description: Experimental Cronet dart bindings.
 

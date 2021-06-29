@@ -11,10 +11,10 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 
 import 'exceptions.dart';
+import 'http_callback_handler.dart';
+import 'http_client_response.dart';
 import 'third_party/cronet/generated_bindings.dart';
 import 'wrapper/generated_bindings.dart' as wrapper;
-import 'http_client_response.dart';
-import 'http_callback_handler.dart';
 
 /// HTTP request for a client connection.
 ///
@@ -67,13 +67,13 @@ class HttpClientRequestImpl implements HttpClientRequest {
   final Cronet _cronet;
   final wrapper.Wrapper _wrapper;
   final Pointer<Cronet_Engine> _cronetEngine;
-  final CallbackHandler _cbh;
+  final CallbackHandler _callbackHandler;
   final Pointer<Cronet_UrlRequest> _request;
 
   /// Holds the function to clean up after the request is done (if nessesary).
   ///
   /// Implemented by: http_client.dart.
-  final Function _clientCleanup;
+  final void Function(HttpClientRequest) _clientCleanup;
 
   @override
   Encoding encoding;
@@ -82,11 +82,12 @@ class HttpClientRequestImpl implements HttpClientRequest {
   HttpClientRequestImpl(this._uri, this._method, this._cronet, this._wrapper,
       this._cronetEngine, this._clientCleanup,
       {this.encoding = utf8})
-      : _cbh = CallbackHandler(
+      : _callbackHandler = CallbackHandler(
             _cronet, _wrapper, _wrapper.Create_Executor(), ReceivePort()),
         _request = _cronet.Cronet_UrlRequest_Create() {
     // Register the native port to C side.
-    _wrapper.registerCallbackHandler(_cbh.receivePort.sendPort.nativePort,
+    _wrapper.RegisterCallbackHandler(
+        _callbackHandler.receivePort.sendPort.nativePort,
         _request.cast<wrapper.Cronet_UrlRequest>());
   }
 
@@ -102,7 +103,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
         _cronetEngine.cast<wrapper.Cronet_Engine>(),
         _uri.toString().toNativeUtf8().cast<Int8>(),
         requestParams.cast<wrapper.Cronet_UrlRequestParams>(),
-        _cbh.executor);
+        _callbackHandler.executor);
 
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
       throw UrlRequestException(res);
@@ -112,7 +113,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
     if (res2 != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
       throw UrlRequestException(res2);
     }
-    _cbh.listen(_request, () => _clientCleanup(this));
+    _callbackHandler.listen(_request, () => _clientCleanup(this));
   }
 
   /// Returns [Future] of [HttpClientResponse] which can be listened for server response.
@@ -122,7 +123,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   Future<HttpClientResponse> close() {
     return Future(() {
       _startRequest();
-      return HttpClientResponseImpl(_cbh.stream);
+      return HttpClientResponseImpl(_callbackHandler.stream);
     });
   }
 
@@ -136,17 +137,17 @@ class HttpClientRequestImpl implements HttpClientRequest {
 
   /// Follow the redirects.
   @override
-  bool get followRedirects => _cbh.followRedirects;
+  bool get followRedirects => _callbackHandler.followRedirects;
   set followRedirects(bool follow) {
-    _cbh.followRedirects = follow;
+    _callbackHandler.followRedirects = follow;
   }
 
   /// Maximum numbers of redirects to follow.
   /// Have no effect if [followRedirects] is set to false.
   @override
-  int get maxRedirects => _cbh.maxRedirects;
+  int get maxRedirects => _callbackHandler.maxRedirects;
   set maxRedirects(int redirects) {
-    _cbh.maxRedirects = redirects;
+    _callbackHandler.maxRedirects = redirects;
   }
 
   /// The uri of the request.

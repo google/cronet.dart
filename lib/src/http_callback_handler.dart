@@ -58,15 +58,15 @@ class CallbackHandler {
   //
   // We need to call this then whenever we are done with the request.
   void cleanUpRequest(
-      Pointer<Cronet_UrlRequest> reqPtr, Function cleanUpClient) {
+      Pointer<Cronet_UrlRequest> reqPtr, void Function() cleanUpClient) {
     receivePort.close();
-    wrapper.removeRequest(reqPtr.cast<wrpr.Cronet_UrlRequest>());
+    wrapper.RemoveRequest(reqPtr.cast<wrpr.Cronet_UrlRequest>());
     cleanUpClient();
   }
 
   /// Checks status of an URL response.
   int statusChecker(Pointer<Cronet_UrlResponseInfo> respInfoPtr, int lBound,
-      int uBound, Function callback) {
+      int uBound, void Function() callback) {
     final respCode =
         cronet.Cronet_UrlResponseInfo_http_status_code_get(respInfoPtr);
     if (!(respCode >= lBound && respCode <= uBound)) {
@@ -86,7 +86,8 @@ class CallbackHandler {
   ///
   /// This also invokes the appropriate callbacks that are registered,
   /// according to the network events sent from cronet side.
-  void listen(Pointer<Cronet_UrlRequest> reqPtr, Function cleanUpClient) {
+  void listen(
+      Pointer<Cronet_UrlRequest> reqPtr, void Function() cleanUpClient) {
     // Registers the listener on the receivePort.
     //
     // The message parameter contains both the name of the event and

@@ -10,10 +10,10 @@ import 'package:ffi/ffi.dart';
 import 'dylib_handler.dart';
 import 'enums.dart';
 import 'exceptions.dart';
-import 'third_party/cronet/generated_bindings.dart';
-import 'wrapper/generated_bindings.dart' as wrapper;
 import 'http_client_request.dart';
 import 'quic_hint.dart';
+import 'third_party/cronet/generated_bindings.dart';
+import 'wrapper/generated_bindings.dart' as wrapper;
 
 // Cronet library is loaded in global scope.
 final _cronet = Cronet(loadCronet());
@@ -71,7 +71,7 @@ class HttpClient {
     if (_cronetEngine == nullptr) throw Error();
     // Initialize Dart Native API dynamically.
     _wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
-    _wrapper.registerHttpClient(
+    _wrapper.RegisterHttpClient(
         this, _cronetEngine.cast<wrapper.Cronet_Engine>());
     // Registers few cronet functions that are required by the wrapper.
     _wrapper.InitCronetApi(

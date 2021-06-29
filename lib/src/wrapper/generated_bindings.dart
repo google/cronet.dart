@@ -2,8 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// ignore_for_file: non_constant_identifier_names, camel_case_types
+// ignore_for_file: camel_case_types
 // ignore_for_file: constant_identifier_names
+// ignore_for_file: non_constant_identifier_names
 
 // AUTO GENERATED FILE, DO NOT EDIT.
 //
@@ -24,19 +25,6 @@ class Wrapper {
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;
-
-  void dispatchCallback(
-    ffi.Pointer<ffi.Int8> methodname,
-  ) {
-    return _dispatchCallback(
-      methodname,
-    );
-  }
-
-  late final _dispatchCallback_ptr =
-      _lookup<ffi.NativeFunction<_c_dispatchCallback>>('dispatchCallback');
-  late final _dart_dispatchCallback _dispatchCallback =
-      _dispatchCallback_ptr.asFunction<_dart_dispatchCallback>();
 
   int InitDartApiDL(
     ffi.Pointer<ffi.Void> data,
@@ -120,49 +108,49 @@ class Wrapper {
   late final _dart_Destroy_Executor _Destroy_Executor =
       _Destroy_Executor_ptr.asFunction<_dart_Destroy_Executor>();
 
-  void registerHttpClient(
+  void RegisterHttpClient(
     Object h,
     ffi.Pointer<Cronet_Engine> ce,
   ) {
-    return _registerHttpClient(
+    return _RegisterHttpClient(
       h,
       ce,
     );
   }
 
-  late final _registerHttpClient_ptr =
-      _lookup<ffi.NativeFunction<_c_registerHttpClient>>('registerHttpClient');
-  late final _dart_registerHttpClient _registerHttpClient =
-      _registerHttpClient_ptr.asFunction<_dart_registerHttpClient>();
+  late final _RegisterHttpClient_ptr =
+      _lookup<ffi.NativeFunction<_c_RegisterHttpClient>>('RegisterHttpClient');
+  late final _dart_RegisterHttpClient _RegisterHttpClient =
+      _RegisterHttpClient_ptr.asFunction<_dart_RegisterHttpClient>();
 
-  void registerCallbackHandler(
+  void RegisterCallbackHandler(
     int nativePort,
     ffi.Pointer<Cronet_UrlRequest> rp,
   ) {
-    return _registerCallbackHandler(
+    return _RegisterCallbackHandler(
       nativePort,
       rp,
     );
   }
 
-  late final _registerCallbackHandler_ptr =
-      _lookup<ffi.NativeFunction<_c_registerCallbackHandler>>(
-          'registerCallbackHandler');
-  late final _dart_registerCallbackHandler _registerCallbackHandler =
-      _registerCallbackHandler_ptr.asFunction<_dart_registerCallbackHandler>();
+  late final _RegisterCallbackHandler_ptr =
+      _lookup<ffi.NativeFunction<_c_RegisterCallbackHandler>>(
+          'RegisterCallbackHandler');
+  late final _dart_RegisterCallbackHandler _RegisterCallbackHandler =
+      _RegisterCallbackHandler_ptr.asFunction<_dart_RegisterCallbackHandler>();
 
-  void removeRequest(
+  void RemoveRequest(
     ffi.Pointer<Cronet_UrlRequest> rp,
   ) {
-    return _removeRequest(
+    return _RemoveRequest(
       rp,
     );
   }
 
-  late final _removeRequest_ptr =
-      _lookup<ffi.NativeFunction<_c_removeRequest>>('removeRequest');
-  late final _dart_removeRequest _removeRequest =
-      _removeRequest_ptr.asFunction<_dart_removeRequest>();
+  late final _RemoveRequest_ptr =
+      _lookup<ffi.NativeFunction<_c_RemoveRequest>>('RemoveRequest');
+  late final _dart_RemoveRequest _RemoveRequest =
+      _RemoveRequest_ptr.asFunction<_dart_RemoveRequest>();
 
   int Cronet_UrlRequest_Init(
     ffi.Pointer<Cronet_UrlRequest> self,
@@ -192,14 +180,6 @@ class Cronet_Engine extends ffi.Opaque {}
 class Cronet_UrlRequest extends ffi.Opaque {}
 
 class Cronet_UrlRequestParams extends ffi.Opaque {}
-
-typedef _c_dispatchCallback = ffi.Void Function(
-  ffi.Pointer<ffi.Int8> methodname,
-);
-
-typedef _dart_dispatchCallback = void Function(
-  ffi.Pointer<ffi.Int8> methodname,
-);
 
 typedef _c_InitDartApiDL = ffi.IntPtr Function(
   ffi.Pointer<ffi.Void> data,
@@ -257,31 +237,31 @@ typedef _dart_Destroy_Executor = void Function(
   ffi.Pointer<ffi.Void> executor,
 );
 
-typedef _c_registerHttpClient = ffi.Void Function(
+typedef _c_RegisterHttpClient = ffi.Void Function(
   ffi.Handle h,
   ffi.Pointer<Cronet_Engine> ce,
 );
 
-typedef _dart_registerHttpClient = void Function(
+typedef _dart_RegisterHttpClient = void Function(
   Object h,
   ffi.Pointer<Cronet_Engine> ce,
 );
 
-typedef _c_registerCallbackHandler = ffi.Void Function(
+typedef _c_RegisterCallbackHandler = ffi.Void Function(
   ffi.Int64 nativePort,
   ffi.Pointer<Cronet_UrlRequest> rp,
 );
 
-typedef _dart_registerCallbackHandler = void Function(
+typedef _dart_RegisterCallbackHandler = void Function(
   int nativePort,
   ffi.Pointer<Cronet_UrlRequest> rp,
 );
 
-typedef _c_removeRequest = ffi.Void Function(
+typedef _c_RemoveRequest = ffi.Void Function(
   ffi.Pointer<Cronet_UrlRequest> rp,
 );
 
-typedef _dart_removeRequest = void Function(
+typedef _dart_RemoveRequest = void Function(
   ffi.Pointer<Cronet_UrlRequest> rp,
 );
 

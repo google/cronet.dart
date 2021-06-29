@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore_for_file: non_constant_identifier_names, camel_case_types
+// ignore_for_file: camel_case_types
 // ignore_for_file: constant_identifier_names
+// ignore_for_file: non_constant_identifier_names
 
 // AUTO GENERATED FILE, DO NOT EDIT.
 //
