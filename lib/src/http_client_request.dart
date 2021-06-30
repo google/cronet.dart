@@ -38,7 +38,7 @@ abstract class HttpClientRequest implements io.IOSink {
   /// Returns [Future] of [HttpClientResponse] which can be listened for server
   /// response.
   ///
-  /// Throws [UrlRequestException] if request can't be initiated.
+  /// Throws [UrlRequestError] if request can't be initiated.
   @override
   Future<HttpClientResponse> close();
 
@@ -46,7 +46,7 @@ abstract class HttpClientRequest implements io.IOSink {
   /// once the request is successfully made.
   ///
   /// If any problems occurs before the response is available, this future will
-  /// completes with an [UrlRequestException].
+  /// completes with an [UrlRequestError].
   @override
   Future<HttpClientResponse> get done;
 
@@ -105,12 +105,12 @@ class HttpClientRequestImpl implements HttpClientRequest {
         _callbackHandler.executor);
 
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-      throw UrlRequestException(res);
+      throw UrlRequestError(res);
     }
 
     final res2 = cronet.Cronet_UrlRequest_Start(_request);
     if (res2 != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-      throw UrlRequestException(res2);
+      throw UrlRequestError(res2);
     }
     _callbackHandler.listen(_request, () => _clientCleanup(this));
   }
@@ -118,7 +118,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   /// Returns [Future] of [HttpClientResponse] which can be listened for server
   /// response.
   ///
-  /// Throws [UrlRequestException] if request can't be initiated.
+  /// Throws [UrlRequestError] if request can't be initiated.
   @override
   Future<HttpClientResponse> close() {
     return Future(() {
@@ -131,7 +131,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   /// once the request is successfully made.
   ///
   /// If any problems occurs before the response is available, this future will
-  /// completes with an [UrlRequestException].
+  /// completes with an [UrlRequestError].
   @override
   Future<HttpClientResponse> get done => close();
 

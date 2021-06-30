@@ -55,7 +55,7 @@ class HttpClient {
   /// enabled, then [quicHints] can be provided. [userAgent] and
   /// [acceptLanguage] can also be provided.
   ///
-  /// Throws [CronetNativeException] if [HttpClient] can't be created.
+  /// Throws [CronetNativeError] if [HttpClient] can't be created.
   HttpClient({
     this.userAgent = 'Dart/2.12',
     this.protocol = HttpProtocol.quic,
@@ -128,7 +128,7 @@ class HttpClient {
     final res =
         cronet.Cronet_Engine_StartWithParams(_cronetEngine, engineParams);
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-      throw CronetNativeException(res);
+      throw CronetNativeError(res);
     }
     cronet.Cronet_EngineParams_Destroy(engineParams);
   }

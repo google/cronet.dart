@@ -110,7 +110,7 @@ class CallbackHandler {
               final res = cronet.Cronet_UrlRequest_FollowRedirect(reqPtr);
               if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
                 cleanUpRequest(reqPtr, cleanUpClient);
-                throw UrlRequestException(res);
+                throw UrlRequestError(res);
               }
               maxRedirects--;
             } else {
@@ -132,7 +132,7 @@ class CallbackHandler {
             final res = cronet.Cronet_UrlRequest_Read(
                 reqPtr, Pointer.fromAddress(args[1]).cast<Cronet_Buffer>());
             if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
-              throw UrlRequestException(res);
+              throw UrlRequestError(res);
             }
           }
           break;
@@ -159,7 +159,7 @@ class CallbackHandler {
             final res = cronet.Cronet_UrlRequest_Read(request, buffer);
             if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
               cleanUpRequest(reqPtr, cleanUpClient);
-              _controller.addError(UrlRequestException(res));
+              _controller.addError(UrlRequestError(res));
               _controller.close();
             }
           }

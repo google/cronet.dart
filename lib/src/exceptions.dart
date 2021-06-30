@@ -4,6 +4,8 @@
 
 import 'dart:io';
 
+import 'enums.dart';
+
 class LoggingException implements Exception {
   const LoggingException();
 }
@@ -25,24 +27,27 @@ class HttpException implements IOException {
   }
 }
 
-/// Errors/Exceptions from Cronet Native Library.
-class CronetNativeException implements Exception {
+/// Errors from Cronet Native Library.
+class CronetNativeError implements Error {
   final int val;
-  const CronetNativeException(this.val);
-
+  const CronetNativeError(this.val);
   @override
   String toString() {
     final b = StringBuffer()
-      ..write('CronetNativeException: Cronet Result: ')
-      ..write(val);
+      ..write('CronetNativeError: Cronet Result: ')
+      ..write(val)
+      ..write(' : ${CronetResults.toEnumName(val)}');
     return b.toString();
   }
+
+  @override
+  StackTrace? get stackTrace => StackTrace.current;
 }
 
-/// Exceptions occured while performing a request.
+/// Error occured while performing a request.
 ///
 /// Failing to start a request or failing to complete
 /// with a proper server response will throw this exception.
-class UrlRequestException extends CronetNativeException {
-  const UrlRequestException(int val) : super(val);
+class UrlRequestError extends CronetNativeError {
+  const UrlRequestError(int val) : super(val);
 }
