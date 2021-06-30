@@ -11,10 +11,10 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 
 import 'exceptions.dart';
+import 'globals.dart';
 import 'http_callback_handler.dart';
 import 'http_client_response.dart';
 import 'third_party/cronet/generated_bindings.dart';
-import 'wrapper/generated_bindings.dart';
 
 /// HTTP request for a client connection.
 ///
@@ -65,8 +65,6 @@ abstract class HttpClientRequest implements io.IOSink {
 class HttpClientRequestImpl implements HttpClientRequest {
   final Uri _uri;
   final String _method;
-  final Cronet _cronet;
-  final Wrapper _wrapper;
   final Pointer<Cronet_Engine> _cronetEngine;
   final CallbackHandler _callbackHandler;
   final Pointer<Cronet_UrlRequest> _request;
@@ -81,25 +79,25 @@ class HttpClientRequestImpl implements HttpClientRequest {
 
   /// Initiates a [HttpClientRequestImpl]. It is meant to be used by a
   /// [HttpClient].
-  HttpClientRequestImpl(this._uri, this._method, this._cronet, this._wrapper,
-      this._cronetEngine, this._clientCleanup,
+  HttpClientRequestImpl(
+      this._uri, this._method, this._cronetEngine, this._clientCleanup,
       {this.encoding = utf8})
-      : _callbackHandler = CallbackHandler(
-            _cronet, _wrapper, _wrapper.Create_Executor(), ReceivePort()),
-        _request = _cronet.Cronet_UrlRequest_Create() {
+      : _callbackHandler =
+            CallbackHandler(wrapper.Create_Executor(), ReceivePort()),
+        _request = cronet.Cronet_UrlRequest_Create() {
     // Register the native port to C side.
-    _wrapper.RegisterCallbackHandler(
+    wrapper.RegisterCallbackHandler(
         _callbackHandler.receivePort.sendPort.nativePort, _request.cast());
   }
 
   // Starts the request.
   void _startRequest() {
-    final requestParams = _cronet.Cronet_UrlRequestParams_Create();
+    final requestParams = cronet.Cronet_UrlRequestParams_Create();
     if (requestParams == nullptr) throw Error();
-    _cronet.Cronet_UrlRequestParams_http_method_set(
+    cronet.Cronet_UrlRequestParams_http_method_set(
         requestParams, _method.toNativeUtf8().cast<Int8>());
 
-    final res = _wrapper.Cronet_UrlRequest_Init(
+    final res = wrapper.Cronet_UrlRequest_Init(
         _request.cast(),
         _cronetEngine.cast(),
         _uri.toString().toNativeUtf8().cast<Int8>(),
@@ -110,7 +108,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
       throw UrlRequestException(res);
     }
 
-    final res2 = _cronet.Cronet_UrlRequest_Start(_request);
+    final res2 = cronet.Cronet_UrlRequest_Start(_request);
     if (res2 != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
       throw UrlRequestException(res2);
     }

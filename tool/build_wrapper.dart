@@ -2,30 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io';
+import 'dart:io' show Directory, File, Platform, Process;
 
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
-
 import 'package:cronet/src/constants.dart';
 import 'package:cronet/src/third_party/ffigen/find_resource.dart';
 
-import 'prepare_cronet.dart';
-
-void main(List<String> args) {
+void main() {
   final logger = Logger.standard();
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
-
-  if (args.contains('-h')) {
-    print('dart run cronet:build');
-  }
-  if (Platform.isLinux) {
-    buildWrapperLinux();
-  } else if (Platform.isWindows) {
-    buildWrapperWindows();
-  } else {
-    logger.stderr('${ansi.red}Unsupported platform.${ansi.none}');
-    return;
-  }
+  final result = Process.runSync('dart', ['run', 'cronet:setup', 'build']);
+  logger.stdout('${result.stdout}');
+  logger.stderr('${result.stderr}');
   final cronetName = getDylibName('cronet.$cronetVersion');
   if (!isCronetAvailable(Platform.isLinux ? 'linux64' : 'windows64')) {
     logger.stderr('${ansi.yellow}Make sure that your cronet shared library'

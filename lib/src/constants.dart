@@ -11,6 +11,8 @@ const cronetBinaryUrl =
     'https://github.com/unsuitable001/cronet.dart/releases/download/$release/';
 const cronetVersion = "86.0.4240.198";
 
+const binaryStorageDir = '.dart_tool/cronet/';
+
 String getDylibName(String name, [String platform = '']) {
   var ext = '.so';
   var prefix = 'lib';

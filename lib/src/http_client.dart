@@ -7,17 +7,12 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
-import 'dylib_handler.dart';
 import 'enums.dart';
 import 'exceptions.dart';
+import 'globals.dart';
 import 'http_client_request.dart';
 import 'quic_hint.dart';
 import 'third_party/cronet/generated_bindings.dart';
-import 'wrapper/generated_bindings.dart';
-
-// Cronet library is loaded in global scope.
-final _cronet = Cronet(loadCronet());
-final _wrapper = Wrapper(loadWrapper());
 
 /// A client that receives content, such as web pages,
 /// from a server using the HTTP, HTTPS, HTTP2, Quic etc. protocol.
@@ -67,47 +62,47 @@ class HttpClient {
     this.quicHints = const [],
     this.brotli = true,
     this.acceptLanguage = 'en_US',
-  }) : _cronetEngine = _cronet.Cronet_Engine_Create() {
+  }) : _cronetEngine = cronet.Cronet_Engine_Create() {
     if (_cronetEngine == nullptr) throw Error();
     // Initialize Dart Native API dynamically.
-    _wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
-    _wrapper.RegisterHttpClient(this, _cronetEngine.cast());
+    wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
+    wrapper.RegisterHttpClient(this, _cronetEngine.cast());
     // Registers few cronet functions that are required by the wrapper.
     // Casting because of https://github.com/dart-lang/ffigen/issues/22
-    _wrapper.InitCronetApi(
-        _cronet.addresses.Cronet_Engine_Shutdown.cast(),
-        _cronet.addresses.Cronet_Engine_Destroy.cast(),
-        _cronet.addresses.Cronet_Buffer_Create.cast(),
-        _cronet.addresses.Cronet_Buffer_InitWithAlloc.cast(),
-        _cronet.addresses.Cronet_UrlRequestCallback_CreateWith.cast(),
-        _cronet.addresses.Cronet_UrlRequest_InitWithParams.cast());
+    wrapper.InitCronetApi(
+        cronet.addresses.Cronet_Engine_Shutdown.cast(),
+        cronet.addresses.Cronet_Engine_Destroy.cast(),
+        cronet.addresses.Cronet_Buffer_Create.cast(),
+        cronet.addresses.Cronet_Buffer_InitWithAlloc.cast(),
+        cronet.addresses.Cronet_UrlRequestCallback_CreateWith.cast(),
+        cronet.addresses.Cronet_UrlRequest_InitWithParams.cast());
     // Registers few cronet functions that are required by the executor
     // run from the wrapper for executing network requests.
     // Casting because of https://github.com/dart-lang/ffigen/issues/22
-    _wrapper.InitCronetExecutorApi(
-        _cronet.addresses.Cronet_Executor_CreateWith.cast(),
-        _cronet.addresses.Cronet_Executor_SetClientContext.cast(),
-        _cronet.addresses.Cronet_Executor_GetClientContext.cast(),
-        _cronet.addresses.Cronet_Executor_Destroy.cast(),
-        _cronet.addresses.Cronet_Runnable_Run.cast(),
-        _cronet.addresses.Cronet_Runnable_Destroy.cast());
+    wrapper.InitCronetExecutorApi(
+        cronet.addresses.Cronet_Executor_CreateWith.cast(),
+        cronet.addresses.Cronet_Executor_SetClientContext.cast(),
+        cronet.addresses.Cronet_Executor_GetClientContext.cast(),
+        cronet.addresses.Cronet_Executor_Destroy.cast(),
+        cronet.addresses.Cronet_Runnable_Run.cast(),
+        cronet.addresses.Cronet_Runnable_Destroy.cast());
     // Starting the engine with parameters.
-    final engineParams = _cronet.Cronet_EngineParams_Create();
+    final engineParams = cronet.Cronet_EngineParams_Create();
     if (engineParams == nullptr) throw Error();
-    _cronet.Cronet_EngineParams_user_agent_set(
+    cronet.Cronet_EngineParams_user_agent_set(
         engineParams, userAgent.toNativeUtf8().cast<Int8>());
 
     switch (protocol) {
       case HttpProtocol.quic:
-        _cronet.Cronet_EngineParams_enable_quic_set(engineParams, true);
+        cronet.Cronet_EngineParams_enable_quic_set(engineParams, true);
         break;
       case HttpProtocol.http2:
-        _cronet.Cronet_EngineParams_enable_http2_set(engineParams, true);
-        _cronet.Cronet_EngineParams_enable_quic_set(engineParams, false);
+        cronet.Cronet_EngineParams_enable_http2_set(engineParams, true);
+        cronet.Cronet_EngineParams_enable_quic_set(engineParams, false);
         break;
       case HttpProtocol.http:
-        _cronet.Cronet_EngineParams_enable_quic_set(engineParams, false);
-        _cronet.Cronet_EngineParams_enable_http2_set(engineParams, false);
+        cronet.Cronet_EngineParams_enable_quic_set(engineParams, false);
+        cronet.Cronet_EngineParams_enable_http2_set(engineParams, false);
         break;
       default:
         break;
@@ -116,26 +111,26 @@ class HttpClient {
       throw ArgumentError('Quic is not enabled but quic hints are provided.');
     }
     for (final quicHint in quicHints) {
-      final hint = _cronet.Cronet_QuicHint_Create();
+      final hint = cronet.Cronet_QuicHint_Create();
       if (hint == nullptr) throw Error();
-      _cronet.Cronet_QuicHint_host_set(
+      cronet.Cronet_QuicHint_host_set(
           hint, quicHint.host.toNativeUtf8().cast<Int8>());
-      _cronet.Cronet_QuicHint_port_set(hint, quicHint.port);
-      _cronet.Cronet_QuicHint_alternate_port_set(hint, quicHint.alternatePort);
-      _cronet.Cronet_EngineParams_quic_hints_add(engineParams, hint);
-      _cronet.Cronet_QuicHint_Destroy(hint);
+      cronet.Cronet_QuicHint_port_set(hint, quicHint.port);
+      cronet.Cronet_QuicHint_alternate_port_set(hint, quicHint.alternatePort);
+      cronet.Cronet_EngineParams_quic_hints_add(engineParams, hint);
+      cronet.Cronet_QuicHint_Destroy(hint);
     }
 
-    _cronet.Cronet_EngineParams_enable_brotli_set(engineParams, brotli);
-    _cronet.Cronet_EngineParams_accept_language_set(
+    cronet.Cronet_EngineParams_enable_brotli_set(engineParams, brotli);
+    cronet.Cronet_EngineParams_accept_language_set(
         engineParams, acceptLanguage.toNativeUtf8().cast<Int8>());
 
     final res =
-        _cronet.Cronet_Engine_StartWithParams(_cronetEngine, engineParams);
+        cronet.Cronet_Engine_StartWithParams(_cronetEngine, engineParams);
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
       throw CronetNativeException(res);
     }
-    _cronet.Cronet_EngineParams_Destroy(engineParams);
+    cronet.Cronet_EngineParams_Destroy(engineParams);
   }
 
   void _cleanUpRequests(HttpClientRequest hcr) {
@@ -171,8 +166,8 @@ class HttpClient {
       if (_stop) {
         throw Exception("Client is closed. Can't open new connections");
       }
-      _requests.add(HttpClientRequestImpl(
-          url, method, _cronet, _wrapper, _cronetEngine, _cleanUpRequests));
+      _requests.add(
+          HttpClientRequestImpl(url, method, _cronetEngine, _cleanUpRequests));
       return _requests.last;
     });
   }
@@ -272,7 +267,7 @@ class HttpClient {
 
   /// Version string of the Cronet Shared Library currently in use.
   String get httpClientVersion =>
-      _cronet.Cronet_Engine_GetVersionString(_cronetEngine)
+      cronet.Cronet_Engine_GetVersionString(_cronetEngine)
           .cast<Utf8>()
           .toDartString();
 }

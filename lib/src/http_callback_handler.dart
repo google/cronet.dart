@@ -11,8 +11,8 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 
 import 'exceptions.dart';
+import 'globals.dart';
 import 'third_party/cronet/generated_bindings.dart';
-import 'wrapper/generated_bindings.dart' as wrpr;
 
 /// Deserializes the message sent by cronet and it's wrapper.
 class _CallbackRequestMessage {
@@ -35,8 +35,6 @@ class _CallbackRequestMessage {
 /// data that are sent by [NativePort] from native cronet library.
 class CallbackHandler {
   final ReceivePort receivePort;
-  final Cronet cronet;
-  final wrpr.Wrapper wrapper;
   final Pointer<Void> executor;
 
   // These are a part of HttpClientRequest Public API.
@@ -47,7 +45,7 @@ class CallbackHandler {
   final _controller = StreamController<List<int>>();
 
   /// Registers the [NativePort] to the cronet side.
-  CallbackHandler(this.cronet, this.wrapper, this.executor, this.receivePort);
+  CallbackHandler(this.executor, this.receivePort);
 
   /// [Stream] controller for [HttpClientResponse]
   Stream<List<int>> get stream {
@@ -102,12 +100,12 @@ class CallbackHandler {
         case 'OnRedirectReceived':
           {
             log('New Location: ${Pointer.fromAddress(args[0]).cast<Utf8>().toDartString()}');
+            // If NOT a 3XX status code, throw Exception.
             statusChecker(
                 Pointer.fromAddress(args[1]).cast<Cronet_UrlResponseInfo>(),
                 300,
                 399,
-                () => cleanUpRequest(reqPtr,
-                    cleanUpClient)); // If NOT a 3XX status code, throw Exception.
+                () => cleanUpRequest(reqPtr, cleanUpClient));
             if (followRedirects && maxRedirects > 0) {
               final res = cronet.Cronet_UrlRequest_FollowRedirect(reqPtr);
               if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
@@ -140,9 +138,9 @@ class CallbackHandler {
           break;
         // Read a chunk of data.
         //
-        // This is where we actually read the response from the server. Data gets added
-        // to the stream here. ReadDataCallback is invoked here with data received and no
-        // of bytes read.
+        // This is where we actually read the response from the server. Data
+        // gets added to the stream here. ReadDataCallback is invoked here with
+        // data received and no of bytes read.
         case 'OnReadCompleted':
           {
             final request = Pointer<Cronet_UrlRequest>.fromAddress(args[0]);
@@ -166,7 +164,7 @@ class CallbackHandler {
             }
           }
           break;
-        // In case of network error, we will shut everything down after this.
+        // In case of network error, we will shut down everything.
         case 'OnFailed':
           {
             final errorPtr = Pointer.fromAddress(args[0]).cast<Cronet_Error>();
@@ -180,7 +178,7 @@ class CallbackHandler {
             cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
-        // when the request is cancelled, we will shut everything down after this.
+        // When the request is cancelled, we will shut down everything.
         case 'OnCanceled':
           {
             cleanUpRequest(reqPtr, cleanUpClient);
@@ -188,7 +186,7 @@ class CallbackHandler {
             cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
-        // When the request is succesfully done, we will shut everything down after this.
+        // When the request is succesfully done, we will shut down everything.
         case 'OnSucceeded':
           {
             cleanUpRequest(reqPtr, cleanUpClient);
