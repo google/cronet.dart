@@ -8,7 +8,7 @@ import 'dart:io' show Directory, File, Platform;
 import 'package:cronet/src/constants.dart';
 
 /// Finds the root [Uri] of our package.
-Uri? findPackageRoot() {
+Uri findPackageRoot() {
   var root = Directory.current.uri;
   do {
     // Traverse up till .dart_tool/package_config.json is found.
@@ -35,15 +35,14 @@ Uri? findPackageRoot() {
       }
     }
   } while (root != (root = root.resolve('..')));
-  return null;
+  print('Unable to fetch package location.'
+      "Make sure you've added package:cronet as a dependency");
+  throw Exception("Cannot resolve package:cronet's rootUri");
 }
 
 /// Gets the [wrapper]'s source code's path, throws [Exception] if not found.
 String wrapperSourcePath() {
   final packagePath = findPackageRoot();
-  if (packagePath == null) {
-    throw Exception("Cannot resolve package:cronet's rootUri");
-  }
   final wrapperSource = packagePath.resolve('src');
   if (!Directory.fromUri(wrapperSource).existsSync()) {
     throw Exception('Cannot find wrapper source!');

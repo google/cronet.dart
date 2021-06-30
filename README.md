@@ -60,7 +60,8 @@ dart run cronet <platform> # Downloads the cronet binaries.
 dart test --platform vm
 ```
 
-You can also test your cronet build independently by following [BUILD.md](third_party/cronet_sample/BUILD.md).
+You can also verify your cronet binaries using `dart run cronet:setup verify`.
+Make sure to have `cmake 3.15`.
 
 ## Building Your Own
 

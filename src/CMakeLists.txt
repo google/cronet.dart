@@ -1,5 +1,3 @@
-# CMAKE file for windows build.
-
 cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME "cronet")
 project(${PROJECT_NAME} LANGUAGES C CXX)
@@ -16,8 +14,6 @@ add_library(${PLUGIN_NAME} SHARED
   "../third_party/cronet_impl/sample_executor.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk/dart_api_dl.c"
 )
-
-# apply_standard_settings(${PLUGIN_NAME})
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES
   CXX_VISIBILITY_PRESET hidden)

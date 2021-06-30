@@ -6,8 +6,8 @@
 build/
 pubspec.lock
 
-# wrapper build directory
-src/out
+# cmake build directories
+out
 
 # Directory created by dartdoc.
 doc/api/
@@ -45,6 +45,7 @@ cronet_binaries/
 *.so.*
 *.dylib
 *.dll
+*.lib
 
 # Compiled executables.
 *.o

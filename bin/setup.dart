@@ -51,12 +51,14 @@ Future<void> downloadCronetBinaries(String platform) async {
     final downloadUrl = cronetBinaryUrl + fileName;
     logger.stdout(downloadUrl);
     try {
-      final request = await HttpClient().getUrl(Uri.parse(downloadUrl));
+      final httpClient = HttpClient();
+      final request = await httpClient.getUrl(Uri.parse(downloadUrl));
       final response = await request.close();
       final fileSink = File(fileName).openWrite();
       await response.pipe(fileSink);
       await fileSink.flush();
       await fileSink.close();
+      httpClient.close();
     } catch (error) {
       Exception("Can't download. Check your network connection!");
     }
@@ -108,12 +110,65 @@ void buildWrapper() {
   return;
 }
 
+/// Verify if cronet binary is working correctly.
+void verifyCronetBinary() {
+  final logger = Logger.standard();
+  final ansi = Ansi(Ansi.terminalSupportsAnsi);
+  final sampleSource = findPackageRoot()
+      .resolve('third_party/cronet_sample')
+      .toFilePath(windows: Platform.isWindows);
+  final buildName = Platform.isLinux ? 'cronet_sample' : 'cronet_sample.exe';
+  final pwd = Directory.current;
+  if (!isCronetAvailable('${Platform.operatingSystem}64')) {
+    logger.stderr('${ansi.red}Cronet binaries are not available.${ansi.none}');
+    logger.stdout('Get the cronet binaries by running: dart run cronet:setup');
+    return;
+  }
+  // If the sample is NOT built.
+  if (!File(
+          '${pwd.path}/.dart_tool/cronet/${Platform.operatingSystem}64/$buildName')
+      .existsSync()) {
+    logger.stdout('Building Sample...');
+    var result = Process.runSync('cmake', [
+      '$sampleSource/CMakeLists.txt',
+      '-B',
+      '$sampleSource/out/${Platform.operatingSystem}'
+    ], environment: {
+      'CURRENTDIR': pwd.path
+    });
+    print(result.stdout);
+    print(result.stderr);
+    result = Process.runSync(
+        'cmake', ['--build', '$sampleSource/out/${Platform.operatingSystem}'],
+        environment: {'CURRENTDIR': pwd.path});
+    print(result.stdout);
+    print(result.stderr);
+    final buildOutputPath = Platform.isLinux
+        ? '$sampleSource/out/${Platform.operatingSystem}/$buildName'
+        : '$sampleSource\\out\\${Platform.operatingSystem}\\Debug\\$buildName';
+
+    logger.stdout('Copying...');
+    File(buildOutputPath)
+        .copySync('.dart_tool/cronet/${Platform.operatingSystem}64/$buildName');
+  }
+
+  logger.stdout('Verifying...');
+  final result = Process.runSync(
+      '.dart_tool/cronet/${Platform.operatingSystem}64/$buildName', []);
+  if (result.exitCode == 0) {
+    logger.stdout('${ansi.green}Verified! Cronet is working fine.${ansi.none}');
+  } else {
+    logger.stderr('${ansi.red}Verification failed!${ansi.none}');
+  }
+}
+
 Future<void> main(List<String> args) async {
   const docStr = """
 dart run cronet:setup [option]
 Downloads the cronet binaries.\n
 clean\tClean downloaded or built binaries.
 build\tBuilds the wrapper. Requires cmake.
+verify\tVerifies the cronet binary.
   """;
   final logger = Logger.standard();
   if (args.length > 1) {
@@ -127,9 +182,12 @@ build\tBuilds the wrapper. Requires cmake.
     logger.stdout('Done!');
   } else if (args.contains('build')) {
     buildWrapper();
+  } else if (args.contains('verify')) {
+    verifyCronetBinary();
   } else {
-    for (final platform in validPlatforms) {
-      await downloadCronetBinaries(platform);
+    // Targeting only 64bit OS. (At least for the time being.)
+    if (validPlatforms.contains('${Platform.operatingSystem}64')) {
+      await downloadCronetBinaries('${Platform.operatingSystem}64');
     }
   }
 }
