@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:io' show Directory, File, Platform, Process;
+import 'dart:io' show Directory, Platform, Process;
 
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:cronet/src/constants.dart';
