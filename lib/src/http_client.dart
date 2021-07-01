@@ -64,28 +64,7 @@ class HttpClient {
     this.acceptLanguage = 'en_US',
   }) : _cronetEngine = cronet.Cronet_Engine_Create() {
     if (_cronetEngine == nullptr) throw Error();
-    // Initialize Dart Native API dynamically.
-    wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
     wrapper.RegisterHttpClient(this, _cronetEngine.cast());
-    // Registers few cronet functions that are required by the wrapper.
-    // Casting because of https://github.com/dart-lang/ffigen/issues/22
-    wrapper.InitCronetApi(
-        cronet.addresses.Cronet_Engine_Shutdown.cast(),
-        cronet.addresses.Cronet_Engine_Destroy.cast(),
-        cronet.addresses.Cronet_Buffer_Create.cast(),
-        cronet.addresses.Cronet_Buffer_InitWithAlloc.cast(),
-        cronet.addresses.Cronet_UrlRequestCallback_CreateWith.cast(),
-        cronet.addresses.Cronet_UrlRequest_InitWithParams.cast());
-    // Registers few cronet functions that are required by the executor
-    // run from the wrapper for executing network requests.
-    // Casting because of https://github.com/dart-lang/ffigen/issues/22
-    wrapper.InitCronetExecutorApi(
-        cronet.addresses.Cronet_Executor_CreateWith.cast(),
-        cronet.addresses.Cronet_Executor_SetClientContext.cast(),
-        cronet.addresses.Cronet_Executor_GetClientContext.cast(),
-        cronet.addresses.Cronet_Executor_Destroy.cast(),
-        cronet.addresses.Cronet_Runnable_Run.cast(),
-        cronet.addresses.Cronet_Runnable_Destroy.cast());
     // Starting the engine with parameters.
     final engineParams = cronet.Cronet_EngineParams_Create();
     if (engineParams == nullptr) throw Error();
@@ -188,7 +167,8 @@ class HttpClient {
     return openUrl('GET', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using GET method.
+  /// Opens a request on the basis of [host], [port] and [path] using GET
+  /// method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> get(String host, int port, String path) {
@@ -202,7 +182,8 @@ class HttpClient {
     return openUrl('HEAD', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using HEAD method.
+  /// Opens a request on the basis of [host], [port] and [path] using HEAD
+  /// method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> head(String host, int port, String path) {
@@ -216,7 +197,8 @@ class HttpClient {
     return openUrl('PUT', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using PUT method.
+  /// Opens a request on the basis of [host], [port] and [path] using PUT
+  /// method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> put(String host, int port, String path) {
@@ -230,7 +212,8 @@ class HttpClient {
     return openUrl('POST', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using POST method.
+  /// Opens a request on the basis of [host], [port] and [path] using POST
+  /// method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> post(String host, int port, String path) {
@@ -244,7 +227,8 @@ class HttpClient {
     return openUrl('PATCH', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using PATCH method.
+  /// Opens a request on the basis of [host], [port] and [path] using PATCH
+  /// method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> patch(String host, int port, String path) {
@@ -258,7 +242,8 @@ class HttpClient {
     return openUrl('DELETE', url);
   }
 
-  /// Opens a request on the basis of [host], [port] and [path] using DELETE method.
+  /// Opens a request on the basis of [host], [port] and [path] using DELETE
+  /// method.
   ///
   /// Returns a [Future] of [HttpClientRequest].
   Future<HttpClientRequest> delete(String host, int port, String path) {

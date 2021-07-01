@@ -17,8 +17,6 @@ functions:
       - 'Cronet_Engine_Destroy'
       - 'Cronet_Buffer_Create'
       - 'Cronet_Buffer_InitWithAlloc'
-      - 'Cronet_UrlRequestCallback_CreateWith'
-      - 'Cronet_UrlRequest_InitWithParams'
       # For executor.
       - 'Cronet_Executor_CreateWith'
       - 'Cronet_Executor_SetClientContext'
@@ -33,4 +31,5 @@ preamble: |
 
   // ignore_for_file: camel_case_types
   // ignore_for_file: constant_identifier_names
+  // ignore_for_file: lines_longer_than_80_chars
   // ignore_for_file: non_constant_identifier_names

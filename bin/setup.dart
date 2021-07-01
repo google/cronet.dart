@@ -38,7 +38,8 @@ void placeBinaries(String platform, String fileName) {
 
   File(fileName).deleteSync();
   logger.stdout(
-      '${ansi.green}Done! Cronet support for $platform is now available!${ansi.none}');
+      '${ansi.green}Done! Cronet support for $platform is now available!'
+      '${ansi.none}');
 }
 
 /// Download `cronet` library from Github Releases.
@@ -88,8 +89,9 @@ void buildWrapper() {
     logger.stdout("${ansi.red}Build failed.${ansi.none}");
     if (Platform.isWindows) {
       logger.stdout(
-          'Open ${ansi.yellow}x64 Native Tools Command Prompt for VS 2019.${ansi.none} Then run:\n');
-      logger.stdout('cd ${pwd.path}\ndart run cronet:setup build');
+          'Open ${ansi.yellow}x64 Native Tools Command Prompt for VS 2019.'
+          '${ansi.none} Then run:\n'
+          'cd ${pwd.path}\ndart run cronet:setup build');
     }
     return;
   }

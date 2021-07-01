@@ -8,3 +8,7 @@ analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
+linter:
+  rules:
+    - directives_ordering
+    - lines_longer_than_80_chars

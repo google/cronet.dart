@@ -83,7 +83,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
       this._uri, this._method, this._cronetEngine, this._clientCleanup,
       {this.encoding = utf8})
       : _callbackHandler =
-            CallbackHandler(wrapper.Create_Executor(), ReceivePort()),
+            CallbackHandler(wrapper.SampleExecutorCreate(), ReceivePort()),
         _request = cronet.Cronet_UrlRequest_Create() {
     // Register the native port to C side.
     wrapper.RegisterCallbackHandler(
@@ -96,13 +96,24 @@ class HttpClientRequestImpl implements HttpClientRequest {
     if (requestParams == nullptr) throw Error();
     cronet.Cronet_UrlRequestParams_http_method_set(
         requestParams, _method.toNativeUtf8().cast<Int8>());
+    wrapper.InitSampleExecutor(_callbackHandler.executor);
 
-    final res = wrapper.Cronet_UrlRequest_Init(
-        _request.cast(),
-        _cronetEngine.cast(),
+    final cronetCallbacks = cronet.Cronet_UrlRequestCallback_CreateWith(
+      wrapper.addresses.OnRedirectReceived.cast(),
+      wrapper.addresses.OnResponseStarted.cast(),
+      wrapper.addresses.OnReadCompleted.cast(),
+      wrapper.addresses.OnSucceeded.cast(),
+      wrapper.addresses.OnFailed.cast(),
+      wrapper.addresses.OnCanceled.cast(),
+    );
+    final res = cronet.Cronet_UrlRequest_InitWithParams(
+        _request,
+        _cronetEngine,
         _uri.toString().toNativeUtf8().cast<Int8>(),
-        requestParams.cast(),
-        _callbackHandler.executor);
+        requestParams,
+        cronetCallbacks,
+        wrapper.SampleExecutor_Cronet_ExecutorPtr_get(_callbackHandler.executor)
+            .cast());
 
     if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
       throw UrlRequestError(res);

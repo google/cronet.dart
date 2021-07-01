@@ -17,8 +17,9 @@ void main() {
   final cronetName = getDylibName('cronet.$cronetVersion');
   if (!isCronetAvailable(Platform.isLinux ? 'linux64' : 'windows64')) {
     logger.stderr('${ansi.yellow}Make sure that your cronet shared library'
-        ' is named as $cronetName and either placed in ${Directory.current.path}'
-        ' or, available in your system\'s shared library search path.${ansi.none}');
+        ' is named as $cronetName and either placed in '
+        '${Directory.current.path} or, available in your system\'s shared'
+        ' library search path.${ansi.none}');
 
     logger.stdout('For more info and build instructions, go to: '
         'https://github.com/google/cronet.dart/#building-your-own');

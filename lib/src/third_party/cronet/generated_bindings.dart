@@ -4,6 +4,7 @@
 
 // ignore_for_file: camel_case_types
 // ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
 // ignore_for_file: non_constant_identifier_names
 
 // AUTO GENERATED FILE, DO NOT EDIT.
@@ -938,7 +939,7 @@ class Cronet {
   }
 
   late final _Cronet_UrlRequestCallback_CreateWith_ptr =
-      _lookup<ffi.NativeFunction<Native_Cronet_UrlRequestCallback_CreateWith>>(
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequestCallback_CreateWith>>(
           'Cronet_UrlRequestCallback_CreateWith');
   late final _dart_Cronet_UrlRequestCallback_CreateWith
       _Cronet_UrlRequestCallback_CreateWith =
@@ -1327,7 +1328,7 @@ class Cronet {
   }
 
   late final _Cronet_UrlRequest_InitWithParams_ptr =
-      _lookup<ffi.NativeFunction<Native_Cronet_UrlRequest_InitWithParams>>(
+      _lookup<ffi.NativeFunction<_c_Cronet_UrlRequest_InitWithParams>>(
           'Cronet_UrlRequest_InitWithParams');
   late final _dart_Cronet_UrlRequest_InitWithParams
       _Cronet_UrlRequest_InitWithParams = _Cronet_UrlRequest_InitWithParams_ptr
@@ -4677,12 +4678,6 @@ class _SymbolAddresses {
       get Cronet_Engine_Destroy => _library._Cronet_Engine_Destroy_ptr;
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Engine_Shutdown>>
       get Cronet_Engine_Shutdown => _library._Cronet_Engine_Shutdown_ptr;
-  ffi.Pointer<ffi.NativeFunction<Native_Cronet_UrlRequestCallback_CreateWith>>
-      get Cronet_UrlRequestCallback_CreateWith =>
-          _library._Cronet_UrlRequestCallback_CreateWith_ptr;
-  ffi.Pointer<ffi.NativeFunction<Native_Cronet_UrlRequest_InitWithParams>>
-      get Cronet_UrlRequest_InitWithParams =>
-          _library._Cronet_UrlRequest_InitWithParams_ptr;
 }
 
 class Cronet_Buffer extends ffi.Opaque {}
@@ -5487,7 +5482,7 @@ typedef Cronet_UrlRequestCallback_OnCanceledFunc = ffi.Void Function(
   ffi.Pointer<Cronet_UrlResponseInfo>,
 );
 
-typedef Native_Cronet_UrlRequestCallback_CreateWith
+typedef _c_Cronet_UrlRequestCallback_CreateWith
     = ffi.Pointer<Cronet_UrlRequestCallback> Function(
   ffi.Pointer<
           ffi.NativeFunction<Cronet_UrlRequestCallback_OnRedirectReceivedFunc>>
@@ -5780,7 +5775,7 @@ typedef _dart_Cronet_UrlRequest_GetClientContext = ffi.Pointer<ffi.Void>
   ffi.Pointer<Cronet_UrlRequest> self,
 );
 
-typedef Native_Cronet_UrlRequest_InitWithParams = ffi.Int32 Function(
+typedef _c_Cronet_UrlRequest_InitWithParams = ffi.Int32 Function(
   ffi.Pointer<Cronet_UrlRequest> self,
   ffi.Pointer<Cronet_Engine> engine,
   ffi.Pointer<ffi.Int8> url,

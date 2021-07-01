@@ -13,6 +13,7 @@ import 'package:ffi/ffi.dart';
 import 'exceptions.dart';
 import 'globals.dart';
 import 'third_party/cronet/generated_bindings.dart';
+import 'wrapper/generated_bindings.dart' as wrpr;
 
 /// Deserializes the message sent by cronet and it's wrapper.
 class _CallbackRequestMessage {
@@ -35,7 +36,7 @@ class _CallbackRequestMessage {
 /// data that are sent by [NativePort] from native cronet library.
 class CallbackHandler {
   final ReceivePort receivePort;
-  final Pointer<Void> executor;
+  final Pointer<wrpr.SampleExecutor> executor;
 
   // These are a part of HttpClientRequest Public API.
   bool followRedirects = true;
@@ -99,7 +100,8 @@ class CallbackHandler {
       switch (reqMessage.method) {
         case 'OnRedirectReceived':
           {
-            log('New Location: ${Pointer.fromAddress(args[0]).cast<Utf8>().toDartString()}');
+            log('New Location: '
+                '${Pointer.fromAddress(args[0]).cast<Utf8>().toDartString()}');
             // If NOT a 3XX status code, throw Exception.
             statusChecker(
                 Pointer.fromAddress(args[1]).cast<Cronet_UrlResponseInfo>(),

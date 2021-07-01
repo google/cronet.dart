@@ -6,14 +6,16 @@ import 'dart:async';
 
 /// Represents the server's response to a request.
 ///
-/// The body of a [HttpClientResponse] object is a [Stream] of data from the server.
+/// The body of a [HttpClientResponse] object is a [Stream] of data from the
+/// server.
 /// Listen to the body to handle the data and be notified when the entire body
 /// is received.
 abstract class HttpClientResponse extends Stream<List<int>> {}
 
 /// Implementation of [HttpClientResponse].
 ///
-/// Takes instance of callback handler and registers [listen] callbacks to the stream.
+/// Takes instance of callback handler and registers [listen] callbacks to the
+/// stream.
 class HttpClientResponseImpl extends HttpClientResponse {
   final Stream<List<int>> cbhStream;
   HttpClientResponseImpl(this.cbhStream);

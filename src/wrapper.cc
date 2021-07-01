@@ -20,17 +20,6 @@ Cronet_RESULT (*_Cronet_Engine_Shutdown)(Cronet_EnginePtr self);
 void (*_Cronet_Engine_Destroy)(Cronet_EnginePtr self);
 Cronet_BufferPtr (*_Cronet_Buffer_Create)(void);
 void (*_Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr self, uint64_t size);
-Cronet_UrlRequestCallbackPtr (*_Cronet_UrlRequestCallback_CreateWith)(
-    Cronet_UrlRequestCallback_OnRedirectReceivedFunc OnRedirectReceivedFunc,
-    Cronet_UrlRequestCallback_OnResponseStartedFunc OnResponseStartedFunc,
-    Cronet_UrlRequestCallback_OnReadCompletedFunc OnReadCompletedFunc,
-    Cronet_UrlRequestCallback_OnSucceededFunc OnSucceededFunc,
-    Cronet_UrlRequestCallback_OnFailedFunc OnFailedFunc,
-    Cronet_UrlRequestCallback_OnCanceledFunc OnCanceledFunc);
-Cronet_RESULT (*_Cronet_UrlRequest_InitWithParams)(
-    Cronet_UrlRequestPtr self, Cronet_EnginePtr engine, Cronet_String url,
-    Cronet_UrlRequestParamsPtr params, Cronet_UrlRequestCallbackPtr callback,
-    Cronet_ExecutorPtr executor);
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,26 +30,13 @@ intptr_t InitDartApiDL(void *data) { return Dart_InitializeApiDL(data); }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize required cronet functions
-void InitCronetApi(
-    Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
-    void (*Cronet_Engine_Destroy)(Cronet_EnginePtr),
-    Cronet_BufferPtr (*Cronet_Buffer_Create)(void),
-    void (*Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr, uint64_t),
-    Cronet_UrlRequestCallbackPtr (*Cronet_UrlRequestCallback_CreateWith)(
-        Cronet_UrlRequestCallback_OnRedirectReceivedFunc,
-        Cronet_UrlRequestCallback_OnResponseStartedFunc,
-        Cronet_UrlRequestCallback_OnReadCompletedFunc,
-        Cronet_UrlRequestCallback_OnSucceededFunc,
-        Cronet_UrlRequestCallback_OnFailedFunc,
-        Cronet_UrlRequestCallback_OnCanceledFunc),
-    Cronet_RESULT (*Cronet_UrlRequest_InitWithParams)(
-        Cronet_UrlRequestPtr, Cronet_EnginePtr, Cronet_String,
-        Cronet_UrlRequestParamsPtr, Cronet_UrlRequestCallbackPtr,
-        Cronet_ExecutorPtr)) {
+void InitCronetApi(Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
+                   void (*Cronet_Engine_Destroy)(Cronet_EnginePtr),
+                   Cronet_BufferPtr (*Cronet_Buffer_Create)(void),
+                   void (*Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr,
+                                                       uint64_t)) {
   if (!(Cronet_Engine_Shutdown && Cronet_Engine_Destroy &&
-        Cronet_Buffer_Create && Cronet_Buffer_InitWithAlloc &&
-        Cronet_UrlRequestCallback_CreateWith &&
-        Cronet_UrlRequest_InitWithParams)) {
+        Cronet_Buffer_Create && Cronet_Buffer_InitWithAlloc)) {
     std::cerr << "Invalid pointer(s): null" << std::endl;
     return;
   }
@@ -68,8 +44,6 @@ void InitCronetApi(
   _Cronet_Engine_Destroy = Cronet_Engine_Destroy;
   _Cronet_Buffer_Create = Cronet_Buffer_Create;
   _Cronet_Buffer_InitWithAlloc = Cronet_Buffer_InitWithAlloc;
-  _Cronet_UrlRequestCallback_CreateWith = Cronet_UrlRequestCallback_CreateWith;
-  _Cronet_UrlRequest_InitWithParams = Cronet_UrlRequest_InitWithParams;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +132,9 @@ void RegisterHttpClient(Dart_Handle h, Cronet_Engine *ce) {
   Dart_NewFinalizableHandle_DL(h, peer, size, HttpClientDestroy);
 }
 
-/* URL Callbacks Implementations */
+/* URL Callbacks Implementations
+ISSUE: https://github.com/dart-lang/sdk/issues/37022
+*/
 
 void OnRedirectReceived(Cronet_UrlRequestCallbackPtr self,
                         Cronet_UrlRequestPtr request,
@@ -203,32 +179,23 @@ void OnCanceled(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request,
   DispatchCallback("OnCanceled", request, CallbackArgBuilder(0));
 }
 
-ExecutorPtr Create_Executor() { return new SampleExecutor(); }
+// Creates a SampleExecutor Object.
+SampleExecutorPtr SampleExecutorCreate() { return new SampleExecutor(); }
 
-void Destroy_Executor(ExecutorPtr executor) {
+// Destroys a SampleExecutor Object.
+void SampleExecutorDestroy(SampleExecutorPtr executor) {
   if (executor == nullptr) {
     std::cerr << "Invalid executor pointer: null." << std::endl;
     return;
   }
-  delete reinterpret_cast<SampleExecutor *>(executor);
+  delete executor;
 }
 
-// NOTE: Changed from original cronet's api. executor & callback params aren't
-// needed.
-Cronet_RESULT Cronet_UrlRequest_Init(Cronet_UrlRequestPtr self,
-                                     Cronet_EnginePtr engine, Cronet_String url,
-                                     Cronet_UrlRequestParamsPtr params,
-                                     ExecutorPtr _executor) {
-  SampleExecutor *executor = reinterpret_cast<SampleExecutor *>(_executor);
-  if (executor == nullptr) {
-    std::cerr << "Invalid executor pointer: null." << std::endl;
-    return Cronet_RESULT_NULL_POINTER_EXECUTOR;
-  }
-  executor->Init();
-  Cronet_UrlRequestCallbackPtr urCallback =
-      _Cronet_UrlRequestCallback_CreateWith(OnRedirectReceived,
-                                            OnResponseStarted, OnReadCompleted,
-                                            OnSucceeded, OnFailed, OnCanceled);
-  return _Cronet_UrlRequest_InitWithParams(self, engine, url, params,
-                                           urCallback, executor->GetExecutor());
+// Initializes a SampleExecutor.
+void InitSampleExecutor(SampleExecutorPtr self) { return self->Init(); }
+
+// Cronet_ExecutorPtr of the provided SampleExecutor.
+Cronet_ExecutorPtr
+SampleExecutor_Cronet_ExecutorPtr_get(SampleExecutorPtr self) {
+  return self->GetExecutor();
 }

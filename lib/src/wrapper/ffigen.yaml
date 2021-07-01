@@ -11,6 +11,17 @@ compiler-opts:
   - '-Isrc/'
   - '-Ithird_party/dart-sdk/'
   - '-DDART_SHARED_LIB'
+
+# Callbacks. ISSUE: https://github.com/dart-lang/sdk/issues/37022
+functions:
+  symbol-address:
+    include:
+      - 'OnRedirectReceived'
+      - 'OnResponseStarted'
+      - 'OnReadCompleted'
+      - 'OnSucceeded'
+      - 'OnFailed'
+      - 'OnCanceled'
 comments:
   style: any
   length: full
