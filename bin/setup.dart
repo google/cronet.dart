@@ -126,42 +126,39 @@ void verifyCronetBinary() {
     logger.stdout('Get the cronet binaries by running: dart run cronet:setup');
     return;
   }
-  // If the sample is NOT built.
-  if (!File(
-          '${pwd.path}/.dart_tool/cronet/${Platform.operatingSystem}64/$buildName')
-      .existsSync()) {
-    logger.stdout('Building Sample...');
-    var result = Process.runSync('cmake', [
-      '$sampleSource/CMakeLists.txt',
-      '-B',
-      '$sampleSource/out/${Platform.operatingSystem}'
-    ], environment: {
-      'CURRENTDIR': pwd.path
-    });
-    print(result.stdout);
-    print(result.stderr);
-    result = Process.runSync(
-        'cmake', ['--build', '$sampleSource/out/${Platform.operatingSystem}'],
-        environment: {'CURRENTDIR': pwd.path});
-    print(result.stdout);
-    print(result.stderr);
-    final buildOutputPath = Platform.isLinux
-        ? '$sampleSource/out/${Platform.operatingSystem}/$buildName'
-        : '$sampleSource\\out\\${Platform.operatingSystem}\\Debug\\$buildName';
 
-    logger.stdout('Copying...');
-    File(buildOutputPath)
-        .copySync('.dart_tool/cronet/${Platform.operatingSystem}64/$buildName');
-  }
+  logger.stdout('Building Sample...');
+  var result = Process.runSync('cmake', [
+    '$sampleSource/CMakeLists.txt',
+    '-B',
+    '$sampleSource/out/${Platform.operatingSystem}'
+  ], environment: {
+    'CURRENTDIR': pwd.path
+  });
+  print(result.stdout);
+  print(result.stderr);
+  result = Process.runSync(
+      'cmake', ['--build', '$sampleSource/out/${Platform.operatingSystem}'],
+      environment: {'CURRENTDIR': pwd.path});
+  print(result.stdout);
+  print(result.stderr);
+  final buildOutputPath = Platform.isLinux
+      ? '$sampleSource/out/${Platform.operatingSystem}/$buildName'
+      : '$sampleSource\\out\\${Platform.operatingSystem}\\Debug\\$buildName';
+
+  logger.stdout('Copying...');
+  final sample = File(buildOutputPath)
+      .copySync('.dart_tool/cronet/${Platform.operatingSystem}64/$buildName');
 
   logger.stdout('Verifying...');
-  final result = Process.runSync(
+  result = Process.runSync(
       '.dart_tool/cronet/${Platform.operatingSystem}64/$buildName', []);
   if (result.exitCode == 0) {
     logger.stdout('${ansi.green}Verified! Cronet is working fine.${ansi.none}');
   } else {
     logger.stderr('${ansi.red}Verification failed!${ansi.none}');
   }
+  sample.deleteSync();
 }
 
 Future<void> main(List<String> args) async {
