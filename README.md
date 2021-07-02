@@ -56,7 +56,7 @@ dart run
 
 ```bash
 dart pub get
-dart run cronet <platform> # Downloads the cronet binaries.
+dart run cronet:setup # Downloads the cronet binaries.
 dart test --platform vm
 ```
 
