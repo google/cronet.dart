@@ -69,4 +69,4 @@ Make sure to have `cmake 3.15`.
 
 2. Run `dart run cronet:setup build` from the root of your project.
 
-**Note for Windows:** Run `step 3` from `x64 Native Tools Command Prompt for VS 2019` shell.
+**Note for Windows:** Run `step 2` from `x64 Native Tools Command Prompt for VS 2019` shell.
