@@ -1,0 +1,35 @@
+name: 'Wrapper'
+description: 'Bindings to Wrapper for Cronet'
+output: 'lib/src/wrapper/generated_bindings.dart'
+headers:
+  entry-points:
+    - 'src/wrapper.h'
+  include-directives:
+  - 'src/wrapper.h'
+  - 'src/wrapper_export.h'
+compiler-opts:
+  - '-Isrc/'
+  - '-Ithird_party/dart-sdk/'
+  - '-DDART_SHARED_LIB'
+
+# Callbacks. ISSUE: https://github.com/dart-lang/sdk/issues/37022
+functions:
+  symbol-address:
+    include:
+      - 'OnRedirectReceived'
+      - 'OnResponseStarted'
+      - 'OnReadCompleted'
+      - 'OnSucceeded'
+      - 'OnFailed'
+      - 'OnCanceled'
+comments:
+  style: any
+  length: full
+preamble: |
+  // Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
+  // for details. All rights reserved. Use of this source code is governed by a
+  // BSD-style license that can be found in the LICENSE file.
+
+  // ignore_for_file: camel_case_types
+  // ignore_for_file: constant_identifier_names
+  // ignore_for_file: non_constant_identifier_names

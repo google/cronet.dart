@@ -2,5 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// Computes the sum of its arguments.
-int mySum(int a, int b) => a + b;
+/// Hints to use with Quic protocol.
+class QuicHint {
+  final String host;
+  final int port;
+  final int alternatePort;
+
+  QuicHint(this.host, this.port, this.alternatePort);
+}
