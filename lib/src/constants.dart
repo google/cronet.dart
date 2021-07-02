@@ -5,10 +5,9 @@
 import 'dart:io' show Platform;
 
 const validPlatforms = ['linux64', 'windows64'];
-const release = '0.0.1';
-// TODO: Change URL and Version
+const tag = 'binaries-v0.0.1';
 const cronetBinaryUrl =
-    'https://github.com/unsuitable001/cronet.dart/releases/download/$release/';
+    'https://github.com/google/cronet.dart/releases/download/$tag/';
 const cronetVersion = "86.0.4240.198";
 
 const binaryStorageDir = '.dart_tool/cronet/';
