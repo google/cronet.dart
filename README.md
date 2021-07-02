@@ -6,6 +6,10 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 ## Usage
 
+### Supported Platforms
+
+Currently, 64 bit Linux and Windows systems are supported.
+
 1. Add package as a dependency in your `pubspec.yaml`.
 
 2. Run this from the `root` of your project.
