@@ -4,11 +4,11 @@ This package binds to Cronet's [native API](https://chromium.googlesource.com/ch
 
 This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757095741652992).
 
-## Usage
-
-### Supported Platforms
+## Supported Platforms
 
 Currently, 64 bit Linux and Windows systems are supported.
+
+## Usage
 
 1. Add package as a dependency in your `pubspec.yaml`.
 
