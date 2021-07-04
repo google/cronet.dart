@@ -9,7 +9,9 @@
 #include "../third_party/dart-sdk/dart_tools_api.h"
 #include <iostream>
 #include <stdarg.h>
+#include <string.h>
 #include <unordered_map>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Globals
@@ -140,8 +142,11 @@ void OnRedirectReceived(Cronet_UrlRequestCallbackPtr self,
                         Cronet_UrlRequestPtr request,
                         Cronet_UrlResponseInfoPtr info,
                         Cronet_String newLocationUrl) {
+  int len = strlen(newLocationUrl);
+  char *newLoc = (char *)malloc(len + 1);
+  memcpy(newLoc, newLocationUrl, len + 1);
   DispatchCallback("OnRedirectReceived", request,
-                   CallbackArgBuilder(2, newLocationUrl, info));
+                   CallbackArgBuilder(2, newLoc, info));
 }
 
 void OnResponseStarted(Cronet_UrlRequestCallbackPtr self,

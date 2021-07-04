@@ -100,8 +100,10 @@ class CallbackHandler {
       switch (reqMessage.method) {
         case 'OnRedirectReceived':
           {
+            final newUrlPtr = Pointer.fromAddress(args[0]).cast<Utf8>();
             log('New Location: '
-                '${Pointer.fromAddress(args[0]).cast<Utf8>().toDartString()}');
+                '${newUrlPtr.toDartString()}');
+            malloc.free(newUrlPtr);
             // If NOT a 3XX status code, throw Exception.
             statusChecker(
                 Pointer.fromAddress(args[1]).cast<Cronet_UrlResponseInfo>(),
