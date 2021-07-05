@@ -21,6 +21,8 @@ extern "C" {
 
 typedef struct SampleExecutor *SampleExecutorPtr;
 
+WRAPPER_EXPORT const char *versionString();
+
 WRAPPER_EXPORT intptr_t InitDartApiDL(void *data);
 WRAPPER_EXPORT void
 InitCronetApi(Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),

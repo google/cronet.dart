@@ -4,12 +4,24 @@
 
 import 'dart:ffi';
 
+import 'package:cli_util/cli_logging.dart';
+import 'package:ffi/ffi.dart';
+
+import 'constants.dart';
 import 'dylib_handler.dart';
 import 'third_party/cronet/generated_bindings.dart';
 import 'wrapper/generated_bindings.dart';
 
 Wrapper loadAndInitWrapper() {
   final wrapper = Wrapper(loadWrapper());
+  if (wrapperVersion != wrapper.versionString().cast<Utf8>().toDartString()) {
+    final logger = Logger.standard();
+    final ansi = Ansi(Ansi.terminalSupportsAnsi);
+    logger.stderr('${ansi.red}Wrapper is outdated.${ansi.none}');
+    logger.stdout('Update wrapper by running: '
+        '${ansi.yellow}dart run cronet:setup${ansi.none}');
+    throw Error();
+  }
   // Initialize Dart Native API dynamically.
   wrapper.InitDartApiDL(NativeApi.initializeApiDLData);
   // Registers few cronet functions that are required by the wrapper.

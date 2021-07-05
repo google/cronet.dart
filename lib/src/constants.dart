@@ -9,6 +9,7 @@ const tag = 'binaries-v0.0.1';
 const cronetBinaryUrl =
     'https://github.com/google/cronet.dart/releases/download/$tag/';
 const cronetVersion = "86.0.4240.198";
+const wrapperVersion = "1.0";
 
 const binaryStorageDir = '.dart_tool/cronet/';
 

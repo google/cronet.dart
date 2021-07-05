@@ -64,7 +64,7 @@ jobs:
         name: Download Cronet Binaries
         run: dart run cronet:setup
       - id: build_wrapper
-        name: Download Cronet Wrapper Dylib
+        name: Build Cronet Wrapper Dylib
         run: dart run cronet:setup build
       - name: Run VM tests
         run: dart test --platform vm

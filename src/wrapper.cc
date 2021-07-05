@@ -13,6 +13,20 @@
 #include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////
+// Versioning
+#define STRINGIFY_(x) #x
+#define STRINGIFY(x) STRINGIFY_(x)
+
+#define MAJOR_V 1
+#define MINOR_V 0
+
+#define WRAPPER_VER STRINGIFY(MAJOR_V) "." STRINGIFY(MINOR_V)
+
+const char *versionString() { return WRAPPER_VER; }
+
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 // Globals
 
 std::unordered_map<Cronet_UrlRequestPtr, Dart_Port> requestNativePorts;

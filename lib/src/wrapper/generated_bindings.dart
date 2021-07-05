@@ -26,6 +26,15 @@ class Wrapper {
           lookup)
       : _lookup = lookup;
 
+  ffi.Pointer<ffi.Int8> versionString() {
+    return _versionString();
+  }
+
+  late final _versionString_ptr =
+      _lookup<ffi.NativeFunction<_c_versionString>>('versionString');
+  late final _dart_versionString _versionString =
+      _versionString_ptr.asFunction<_dart_versionString>();
+
   int InitDartApiDL(
     ffi.Pointer<ffi.Void> data,
   ) {
@@ -341,6 +350,10 @@ class Cronet_RunnablePtr extends ffi.Opaque {}
 class Cronet_UrlRequest extends ffi.Opaque {}
 
 class Cronet_UrlRequestCallbackPtr extends ffi.Opaque {}
+
+typedef _c_versionString = ffi.Pointer<ffi.Int8> Function();
+
+typedef _dart_versionString = ffi.Pointer<ffi.Int8> Function();
 
 typedef _c_InitDartApiDL = ffi.IntPtr Function(
   ffi.Pointer<ffi.Void> data,
