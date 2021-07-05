@@ -32,8 +32,8 @@ void main() {
       expect(
           resp,
           emitsInOrder(<Matcher>[
-            emitsError(isA<HttpException>()
-                .having((exception) => exception.message, 'message', '404')),
+            emitsError(isA<HttpException>().having(
+                (exception) => exception.message, 'message', 'Not Found')),
             emitsDone
           ]));
     });
@@ -44,8 +44,8 @@ void main() {
       expect(
           resp,
           emitsInOrder(<Matcher>[
-            emitsError(isA<HttpException>()
-                .having((exception) => exception.message, 'message', '401')),
+            emitsError(isA<HttpException>().having(
+                (exception) => exception.message, 'message', 'Unauthorized')),
             emitsDone
           ]));
     });
@@ -56,8 +56,10 @@ void main() {
       expect(
           resp,
           emitsInOrder(<Matcher>[
-            emitsError(isA<HttpException>()
-                .having((exception) => exception.message, 'message', '503')),
+            emitsError(isA<HttpException>().having(
+                (exception) => exception.message,
+                'message',
+                'Service Unavailable')),
             emitsDone
           ]));
     });

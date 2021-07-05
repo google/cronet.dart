@@ -19,6 +19,7 @@ functions:
       - 'Cronet_Buffer_InitWithAlloc'
       - 'Cronet_UrlResponseInfo_http_status_code_get'
       - 'Cronet_Error_message_get'
+      - 'Cronet_UrlResponseInfo_http_status_text_get'
       # For executor.
       - 'Cronet_Executor_CreateWith'
       - 'Cronet_Executor_SetClientContext'

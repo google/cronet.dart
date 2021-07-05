@@ -64,12 +64,12 @@ class CallbackHandler {
   }
 
   /// Checks status of an URL response.
-  int statusChecker(
-      int respCode, int lBound, int uBound, void Function() callback) {
+  int statusChecker(int respCode, Pointer<Utf8> status, int lBound, int uBound,
+      void Function() callback) {
     if (!(respCode >= lBound && respCode <= uBound)) {
       // If NOT in range.
       callback();
-      final exception = HttpException('$respCode');
+      final exception = HttpException(status.toDartString());
       _controller.addError(exception);
       _controller.close();
     }
@@ -100,8 +100,8 @@ class CallbackHandler {
                 '${newUrlPtr.toDartString()}');
             malloc.free(newUrlPtr);
             // If NOT a 3XX status code, throw Exception.
-            statusChecker(
-                args[1], 300, 399, () => cleanUpRequest(reqPtr, cleanUpClient));
+            statusChecker(args[1], Pointer.fromAddress(args[2]), 300, 399,
+                () => cleanUpRequest(reqPtr, cleanUpClient));
             if (followRedirects && maxRedirects > 0) {
               final res = cronet.Cronet_UrlRequest_FollowRedirect(reqPtr);
               if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
@@ -119,8 +119,8 @@ class CallbackHandler {
         case 'OnResponseStarted':
           {
             // If NOT a 1XX or 2XX status code, throw Exception.
-            statusChecker(
-                args[0], 100, 299, () => cleanUpRequest(reqPtr, cleanUpClient));
+            statusChecker(args[0], Pointer.fromAddress(args[2]), 100, 299,
+                () => cleanUpRequest(reqPtr, cleanUpClient));
             log('Response started');
             final res = cronet.Cronet_UrlRequest_Read(
                 reqPtr, Pointer.fromAddress(args[1]).cast<Cronet_Buffer>());
@@ -142,8 +142,8 @@ class CallbackHandler {
 
             log('Recieved: $bytesRead');
             // If NOT a 1XX or 2XX status code, throw Exception.
-            statusChecker(
-                args[1], 100, 299, () => cleanUpRequest(reqPtr, cleanUpClient));
+            statusChecker(args[1], Pointer.fromAddress(args[4]), 100, 299,
+                () => cleanUpRequest(reqPtr, cleanUpClient));
             final data = cronet.Cronet_Buffer_GetData(buffer)
                 .cast<Uint8>()
                 .asTypedList(bytesRead);

@@ -3023,7 +3023,8 @@ class Cronet {
   }
 
   late final _Cronet_UrlResponseInfo_http_status_text_get_ptr = _lookup<
-          ffi.NativeFunction<_c_Cronet_UrlResponseInfo_http_status_text_get>>(
+          ffi.NativeFunction<
+              Native_Cronet_UrlResponseInfo_http_status_text_get>>(
       'Cronet_UrlResponseInfo_http_status_text_get');
   late final _dart_Cronet_UrlResponseInfo_http_status_text_get
       _Cronet_UrlResponseInfo_http_status_text_get =
@@ -4686,6 +4687,11 @@ class _SymbolAddresses {
               Native_Cronet_UrlResponseInfo_http_status_code_get>>
       get Cronet_UrlResponseInfo_http_status_code_get =>
           _library._Cronet_UrlResponseInfo_http_status_code_get_ptr;
+  ffi.Pointer<
+          ffi.NativeFunction<
+              Native_Cronet_UrlResponseInfo_http_status_text_get>>
+      get Cronet_UrlResponseInfo_http_status_text_get =>
+          _library._Cronet_UrlResponseInfo_http_status_text_get_ptr;
 }
 
 class Cronet_Buffer extends ffi.Opaque {}
@@ -6773,8 +6779,8 @@ typedef _dart_Cronet_UrlResponseInfo_http_status_code_get = int Function(
   ffi.Pointer<Cronet_UrlResponseInfo> self,
 );
 
-typedef _c_Cronet_UrlResponseInfo_http_status_text_get = ffi.Pointer<ffi.Int8>
-    Function(
+typedef Native_Cronet_UrlResponseInfo_http_status_text_get
+    = ffi.Pointer<ffi.Int8> Function(
   ffi.Pointer<Cronet_UrlResponseInfo> self,
 );
 
