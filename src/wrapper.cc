@@ -12,7 +12,6 @@
 #include <string.h>
 #include <unordered_map>
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Globals
 
@@ -22,6 +21,9 @@ Cronet_RESULT (*_Cronet_Engine_Shutdown)(Cronet_EnginePtr self);
 void (*_Cronet_Engine_Destroy)(Cronet_EnginePtr self);
 Cronet_BufferPtr (*_Cronet_Buffer_Create)(void);
 void (*_Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr self, uint64_t size);
+int32_t (*_Cronet_UrlResponseInfo_http_status_code_get)(
+    const Cronet_UrlResponseInfoPtr self);
+Cronet_String (*_Cronet_Error_message_get)(const Cronet_ErrorPtr self);
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,13 +34,17 @@ intptr_t InitDartApiDL(void *data) { return Dart_InitializeApiDL(data); }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize required cronet functions
-void InitCronetApi(Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
-                   void (*Cronet_Engine_Destroy)(Cronet_EnginePtr),
-                   Cronet_BufferPtr (*Cronet_Buffer_Create)(void),
-                   void (*Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr,
-                                                       uint64_t)) {
+void InitCronetApi(
+    Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
+    void (*Cronet_Engine_Destroy)(Cronet_EnginePtr),
+    Cronet_BufferPtr (*Cronet_Buffer_Create)(void),
+    void (*Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr, uint64_t),
+    int32_t (*Cronet_UrlResponseInfo_http_status_code_get)(
+        const Cronet_UrlResponseInfoPtr),
+    Cronet_String (*Cronet_Error_message_get)(const Cronet_ErrorPtr)) {
   if (!(Cronet_Engine_Shutdown && Cronet_Engine_Destroy &&
-        Cronet_Buffer_Create && Cronet_Buffer_InitWithAlloc)) {
+        Cronet_Buffer_Create && Cronet_Buffer_InitWithAlloc &&
+        Cronet_UrlResponseInfo_http_status_code_get)) {
     std::cerr << "Invalid pointer(s): null" << std::endl;
     return;
   }
@@ -46,6 +52,9 @@ void InitCronetApi(Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
   _Cronet_Engine_Destroy = Cronet_Engine_Destroy;
   _Cronet_Buffer_Create = Cronet_Buffer_Create;
   _Cronet_Buffer_InitWithAlloc = Cronet_Buffer_InitWithAlloc;
+  _Cronet_UrlResponseInfo_http_status_code_get =
+      Cronet_UrlResponseInfo_http_status_code_get;
+  _Cronet_Error_message_get = Cronet_Error_message_get;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,8 +154,9 @@ void OnRedirectReceived(Cronet_UrlRequestCallbackPtr self,
   int len = strlen(newLocationUrl);
   char *newLoc = (char *)malloc(len + 1);
   memcpy(newLoc, newLocationUrl, len + 1);
+  int statusCode = _Cronet_UrlResponseInfo_http_status_code_get(info);
   DispatchCallback("OnRedirectReceived", request,
-                   CallbackArgBuilder(2, newLoc, info));
+                   CallbackArgBuilder(2, newLoc, statusCode));
 }
 
 void OnResponseStarted(Cronet_UrlRequestCallbackPtr self,
@@ -156,27 +166,35 @@ void OnResponseStarted(Cronet_UrlRequestCallbackPtr self,
   // Create and allocate 32kb buffer.
   Cronet_BufferPtr buffer = _Cronet_Buffer_Create();
   _Cronet_Buffer_InitWithAlloc(buffer, 32 * 1024);
-
+  int statusCode = _Cronet_UrlResponseInfo_http_status_code_get(info);
   DispatchCallback("OnResponseStarted", request,
-                   CallbackArgBuilder(2, info, buffer));
+                   CallbackArgBuilder(2, statusCode, buffer));
 }
 
 void OnReadCompleted(Cronet_UrlRequestCallbackPtr self,
                      Cronet_UrlRequestPtr request,
                      Cronet_UrlResponseInfoPtr info, Cronet_BufferPtr buffer,
                      uint64_t bytes_read) {
-  DispatchCallback("OnReadCompleted", request,
-                   CallbackArgBuilder(4, request, info, buffer, bytes_read));
+  int statusCode = _Cronet_UrlResponseInfo_http_status_code_get(info);
+  DispatchCallback(
+      "OnReadCompleted", request,
+      CallbackArgBuilder(4, request, statusCode, buffer, bytes_read));
 }
 
 void OnSucceeded(Cronet_UrlRequestCallbackPtr self,
                  Cronet_UrlRequestPtr request, Cronet_UrlResponseInfoPtr info) {
-  DispatchCallback("OnSucceeded", request, CallbackArgBuilder(1, info));
+  int statusCode = _Cronet_UrlResponseInfo_http_status_code_get(info);
+  DispatchCallback("OnSucceeded", request, CallbackArgBuilder(1, statusCode));
 }
 
 void OnFailed(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request,
               Cronet_UrlResponseInfoPtr info, Cronet_ErrorPtr error) {
-  DispatchCallback("OnFailed", request, CallbackArgBuilder(1, error));
+  Cronet_String errStr = _Cronet_Error_message_get(error);
+  int len = strlen(errStr);
+  char *dupStr = (char *) malloc(len + 1);
+  memcpy(dupStr, errStr, len + 1);
+
+  DispatchCallback("OnFailed", request, CallbackArgBuilder(1, dupStr));
 }
 
 void OnCanceled(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request,

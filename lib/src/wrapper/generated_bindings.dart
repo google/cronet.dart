@@ -44,12 +44,17 @@ class Wrapper {
     ffi.Pointer<ffi.NativeFunction<_typedefC_2>> Cronet_Engine_Destroy,
     ffi.Pointer<ffi.NativeFunction<_typedefC_3>> Cronet_Buffer_Create,
     ffi.Pointer<ffi.NativeFunction<_typedefC_4>> Cronet_Buffer_InitWithAlloc,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_5>>
+        Cronet_UrlResponseInfo_http_status_code_get,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_6>> Cronet_Error_message_get,
   ) {
     return _InitCronetApi(
       Cronet_Engine_Shutdown,
       Cronet_Engine_Destroy,
       Cronet_Buffer_Create,
       Cronet_Buffer_InitWithAlloc,
+      Cronet_UrlResponseInfo_http_status_code_get,
+      Cronet_Error_message_get,
     );
   }
 
@@ -60,14 +65,14 @@ class Wrapper {
 
   /// Forward declaration. Implementation on sample_executor.cc
   void InitCronetExecutorApi(
-    ffi.Pointer<ffi.NativeFunction<_typedefC_5>> Cronet_Executor_CreateWith,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_6>>
+    ffi.Pointer<ffi.NativeFunction<_typedefC_7>> Cronet_Executor_CreateWith,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_8>>
         Cronet_Executor_SetClientContext,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_7>>
+    ffi.Pointer<ffi.NativeFunction<_typedefC_9>>
         Cronet_Executor_GetClientContext,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_8>> Cronet_Executor_Destroy,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_9>> Cronet_Runnable_Run,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_10>> Cronet_Runnable_Destroy,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_10>> Cronet_Executor_Destroy,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_11>> Cronet_Runnable_Run,
+    ffi.Pointer<ffi.NativeFunction<_typedefC_12>> Cronet_Runnable_Destroy,
   ) {
     return _InitCronetExecutorApi(
       Cronet_Executor_CreateWith,
@@ -322,6 +327,10 @@ class Cronet_EnginePtr extends ffi.Opaque {}
 
 class Cronet_BufferPtr extends ffi.Opaque {}
 
+class Cronet_UrlResponseInfoPtr extends ffi.Opaque {}
+
+class Cronet_ErrorPtr extends ffi.Opaque {}
+
 class Cronet_ExecutorPtr extends ffi.Opaque {}
 
 class Cronet_RunnablePtr extends ffi.Opaque {}
@@ -329,10 +338,6 @@ class Cronet_RunnablePtr extends ffi.Opaque {}
 class Cronet_UrlRequest extends ffi.Opaque {}
 
 class Cronet_UrlRequestCallbackPtr extends ffi.Opaque {}
-
-class Cronet_UrlResponseInfoPtr extends ffi.Opaque {}
-
-class Cronet_ErrorPtr extends ffi.Opaque {}
 
 typedef _c_InitDartApiDL = ffi.IntPtr Function(
   ffi.Pointer<ffi.Void> data,
@@ -357,11 +362,22 @@ typedef _typedefC_4 = ffi.Void Function(
   ffi.Uint64,
 );
 
+typedef _typedefC_5 = ffi.Int32 Function(
+  ffi.Pointer<Cronet_UrlResponseInfoPtr>,
+);
+
+typedef _typedefC_6 = ffi.Pointer<ffi.Int8> Function(
+  ffi.Pointer<Cronet_ErrorPtr>,
+);
+
 typedef _c_InitCronetApi = ffi.Void Function(
   ffi.Pointer<ffi.NativeFunction<_typedefC_1>> Cronet_Engine_Shutdown,
   ffi.Pointer<ffi.NativeFunction<_typedefC_2>> Cronet_Engine_Destroy,
   ffi.Pointer<ffi.NativeFunction<_typedefC_3>> Cronet_Buffer_Create,
   ffi.Pointer<ffi.NativeFunction<_typedefC_4>> Cronet_Buffer_InitWithAlloc,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_5>>
+      Cronet_UrlResponseInfo_http_status_code_get,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_6>> Cronet_Error_message_get,
 );
 
 typedef _dart_InitCronetApi = void Function(
@@ -369,6 +385,9 @@ typedef _dart_InitCronetApi = void Function(
   ffi.Pointer<ffi.NativeFunction<_typedefC_2>> Cronet_Engine_Destroy,
   ffi.Pointer<ffi.NativeFunction<_typedefC_3>> Cronet_Buffer_Create,
   ffi.Pointer<ffi.NativeFunction<_typedefC_4>> Cronet_Buffer_InitWithAlloc,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_5>>
+      Cronet_UrlResponseInfo_http_status_code_get,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_6>> Cronet_Error_message_get,
 );
 
 typedef Cronet_Executor_ExecuteFunc = ffi.Void Function(
@@ -376,47 +395,47 @@ typedef Cronet_Executor_ExecuteFunc = ffi.Void Function(
   ffi.Pointer<Cronet_RunnablePtr>,
 );
 
-typedef _typedefC_5 = ffi.Pointer<Cronet_ExecutorPtr> Function(
+typedef _typedefC_7 = ffi.Pointer<Cronet_ExecutorPtr> Function(
   ffi.Pointer<ffi.NativeFunction<Cronet_Executor_ExecuteFunc>>,
-);
-
-typedef _typedefC_6 = ffi.Void Function(
-  ffi.Pointer<Cronet_ExecutorPtr>,
-  ffi.Pointer<ffi.Void>,
-);
-
-typedef _typedefC_7 = ffi.Pointer<ffi.Void> Function(
-  ffi.Pointer<Cronet_ExecutorPtr>,
 );
 
 typedef _typedefC_8 = ffi.Void Function(
   ffi.Pointer<Cronet_ExecutorPtr>,
+  ffi.Pointer<ffi.Void>,
 );
 
-typedef _typedefC_9 = ffi.Void Function(
-  ffi.Pointer<Cronet_RunnablePtr>,
+typedef _typedefC_9 = ffi.Pointer<ffi.Void> Function(
+  ffi.Pointer<Cronet_ExecutorPtr>,
 );
 
 typedef _typedefC_10 = ffi.Void Function(
+  ffi.Pointer<Cronet_ExecutorPtr>,
+);
+
+typedef _typedefC_11 = ffi.Void Function(
+  ffi.Pointer<Cronet_RunnablePtr>,
+);
+
+typedef _typedefC_12 = ffi.Void Function(
   ffi.Pointer<Cronet_RunnablePtr>,
 );
 
 typedef _c_InitCronetExecutorApi = ffi.Void Function(
-  ffi.Pointer<ffi.NativeFunction<_typedefC_5>> Cronet_Executor_CreateWith,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_6>> Cronet_Executor_SetClientContext,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_7>> Cronet_Executor_GetClientContext,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_8>> Cronet_Executor_Destroy,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_9>> Cronet_Runnable_Run,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_10>> Cronet_Runnable_Destroy,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_7>> Cronet_Executor_CreateWith,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_8>> Cronet_Executor_SetClientContext,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_9>> Cronet_Executor_GetClientContext,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_10>> Cronet_Executor_Destroy,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_11>> Cronet_Runnable_Run,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_12>> Cronet_Runnable_Destroy,
 );
 
 typedef _dart_InitCronetExecutorApi = void Function(
-  ffi.Pointer<ffi.NativeFunction<_typedefC_5>> Cronet_Executor_CreateWith,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_6>> Cronet_Executor_SetClientContext,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_7>> Cronet_Executor_GetClientContext,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_8>> Cronet_Executor_Destroy,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_9>> Cronet_Runnable_Run,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_10>> Cronet_Runnable_Destroy,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_7>> Cronet_Executor_CreateWith,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_8>> Cronet_Executor_SetClientContext,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_9>> Cronet_Executor_GetClientContext,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_10>> Cronet_Executor_Destroy,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_11>> Cronet_Runnable_Run,
+  ffi.Pointer<ffi.NativeFunction<_typedefC_12>> Cronet_Runnable_Destroy,
 );
 
 typedef _c_RegisterHttpClient = ffi.Void Function(

@@ -26,7 +26,10 @@ WRAPPER_EXPORT void
 InitCronetApi(Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
               void (*Cronet_Engine_Destroy)(Cronet_EnginePtr),
               Cronet_BufferPtr (*Cronet_Buffer_Create)(void),
-              void (*Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr, uint64_t));
+              void (*Cronet_Buffer_InitWithAlloc)(Cronet_BufferPtr, uint64_t),
+              int32_t (*Cronet_UrlResponseInfo_http_status_code_get)(
+                  const Cronet_UrlResponseInfoPtr),
+              Cronet_String (*Cronet_Error_message_get)(const Cronet_ErrorPtr));
 
 /* Forward declaration. Implementation on sample_executor.cc */
 WRAPPER_EXPORT void InitCronetExecutorApi(

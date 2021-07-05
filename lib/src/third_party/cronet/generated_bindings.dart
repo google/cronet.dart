@@ -1691,7 +1691,7 @@ class Cronet {
   }
 
   late final _Cronet_Error_message_get_ptr =
-      _lookup<ffi.NativeFunction<_c_Cronet_Error_message_get>>(
+      _lookup<ffi.NativeFunction<Native_Cronet_Error_message_get>>(
           'Cronet_Error_message_get');
   late final _dart_Cronet_Error_message_get _Cronet_Error_message_get =
       _Cronet_Error_message_get_ptr.asFunction<
@@ -3006,7 +3006,8 @@ class Cronet {
   }
 
   late final _Cronet_UrlResponseInfo_http_status_code_get_ptr = _lookup<
-          ffi.NativeFunction<_c_Cronet_UrlResponseInfo_http_status_code_get>>(
+          ffi.NativeFunction<
+              Native_Cronet_UrlResponseInfo_http_status_code_get>>(
       'Cronet_UrlResponseInfo_http_status_code_get');
   late final _dart_Cronet_UrlResponseInfo_http_status_code_get
       _Cronet_UrlResponseInfo_http_status_code_get =
@@ -4678,6 +4679,13 @@ class _SymbolAddresses {
       get Cronet_Engine_Destroy => _library._Cronet_Engine_Destroy_ptr;
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Engine_Shutdown>>
       get Cronet_Engine_Shutdown => _library._Cronet_Engine_Shutdown_ptr;
+  ffi.Pointer<ffi.NativeFunction<Native_Cronet_Error_message_get>>
+      get Cronet_Error_message_get => _library._Cronet_Error_message_get_ptr;
+  ffi.Pointer<
+          ffi.NativeFunction<
+              Native_Cronet_UrlResponseInfo_http_status_code_get>>
+      get Cronet_UrlResponseInfo_http_status_code_get =>
+          _library._Cronet_UrlResponseInfo_http_status_code_get_ptr;
 }
 
 class Cronet_Buffer extends ffi.Opaque {}
@@ -6048,7 +6056,7 @@ typedef _dart_Cronet_Error_error_code_get = int Function(
   ffi.Pointer<Cronet_Error> self,
 );
 
-typedef _c_Cronet_Error_message_get = ffi.Pointer<ffi.Int8> Function(
+typedef Native_Cronet_Error_message_get = ffi.Pointer<ffi.Int8> Function(
   ffi.Pointer<Cronet_Error> self,
 );
 
@@ -6757,7 +6765,7 @@ typedef _dart_Cronet_UrlResponseInfo_url_chain_clear = void Function(
   ffi.Pointer<Cronet_UrlResponseInfo> self,
 );
 
-typedef _c_Cronet_UrlResponseInfo_http_status_code_get = ffi.Int32 Function(
+typedef Native_Cronet_UrlResponseInfo_http_status_code_get = ffi.Int32 Function(
   ffi.Pointer<Cronet_UrlResponseInfo> self,
 );
 
