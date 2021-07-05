@@ -192,7 +192,6 @@ void OnResponseStarted(Cronet_UrlRequestCallbackPtr self,
   _Cronet_Buffer_InitWithAlloc(buffer, 32 * 1024);
   int statusCode = _Cronet_UrlResponseInfo_http_status_code_get(info);
   // If NOT a 1XX or 2XX status code.
-
   DispatchCallback("OnResponseStarted", request,
                    CallbackArgBuilder(3, statusCode, buffer,
                                       statusText(info, statusCode, 100, 299)));
@@ -222,7 +221,6 @@ void OnFailed(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request,
   int len = strlen(errStr);
   char *dupStr = (char *)malloc(len + 1);
   memcpy(dupStr, errStr, len + 1);
-
   DispatchCallback("OnFailed", request, CallbackArgBuilder(1, dupStr));
 }
 

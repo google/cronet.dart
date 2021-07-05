@@ -64,21 +64,22 @@ class CallbackHandler {
   }
 
   /// Checks status of an URL response.
-  int statusChecker(int respCode, Pointer<Utf8> status, int lBound, int uBound,
+  bool statusChecker(int respCode, Pointer<Utf8> status, int lBound, int uBound,
       void Function() callback) {
     if (!(respCode >= lBound && respCode <= uBound)) {
       // If NOT in range.
-      callback();
       if (status == nullptr) {
         _controller.addError(HttpException('$respCode'));
       } else {
-        _controller.addError(HttpException(status.toDartString()));
+        final statusStr = status.toDartString();
+        _controller.addError(
+            HttpException(statusStr.isNotEmpty ? statusStr : '$respCode'));
         malloc.free(status);
       }
-
-      _controller.close();
+      callback();
+      return false;
     }
-    return respCode;
+    return true;
   }
 
   /// This listens to the messages sent by native cronet library.
@@ -105,8 +106,11 @@ class CallbackHandler {
                 '${newUrlPtr.toDartString()}');
             malloc.free(newUrlPtr);
             // If NOT a 3XX status code, throw Exception.
-            statusChecker(args[1], Pointer.fromAddress(args[2]), 300, 399,
-                () => cleanUpRequest(reqPtr, cleanUpClient));
+            final status = statusChecker(args[1], Pointer.fromAddress(args[2]),
+                300, 399, () => cronet.Cronet_UrlRequest_Cancel(reqPtr));
+            if (!status) {
+              break;
+            }
             if (followRedirects && maxRedirects > 0) {
               final res = cronet.Cronet_UrlRequest_FollowRedirect(reqPtr);
               if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
@@ -124,9 +128,12 @@ class CallbackHandler {
         case 'OnResponseStarted':
           {
             // If NOT a 1XX or 2XX status code, throw Exception.
-            statusChecker(args[0], Pointer.fromAddress(args[2]), 100, 299,
-                () => cleanUpRequest(reqPtr, cleanUpClient));
+            final status = statusChecker(args[0], Pointer.fromAddress(args[2]),
+                100, 299, () => cronet.Cronet_UrlRequest_Cancel(reqPtr));
             log('Response started');
+            if (!status) {
+              break;
+            }
             final res = cronet.Cronet_UrlRequest_Read(
                 reqPtr, Pointer.fromAddress(args[1]).cast<Cronet_Buffer>());
             if (res != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
@@ -147,8 +154,11 @@ class CallbackHandler {
 
             log('Recieved: $bytesRead');
             // If NOT a 1XX or 2XX status code, throw Exception.
-            statusChecker(args[1], Pointer.fromAddress(args[4]), 100, 299,
-                () => cleanUpRequest(reqPtr, cleanUpClient));
+            final status = statusChecker(args[1], Pointer.fromAddress(args[4]),
+                100, 299, () => cronet.Cronet_UrlRequest_Cancel(reqPtr));
+            if (!status) {
+              break;
+            }
             final data = cronet.Cronet_Buffer_GetData(buffer)
                 .cast<Uint8>()
                 .asTypedList(bytesRead);
