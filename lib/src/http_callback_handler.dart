@@ -69,8 +69,13 @@ class CallbackHandler {
     if (!(respCode >= lBound && respCode <= uBound)) {
       // If NOT in range.
       callback();
-      final exception = HttpException(status.toDartString());
-      _controller.addError(exception);
+      if (status == nullptr) {
+        _controller.addError(HttpException('$respCode'));
+      } else {
+        _controller.addError(HttpException(status.toDartString()));
+        malloc.free(status);
+      }
+
       _controller.close();
     }
     return respCode;
