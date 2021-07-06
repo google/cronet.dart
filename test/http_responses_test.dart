@@ -23,6 +23,9 @@ void main() {
       server.listen((io.HttpRequest request) {
         if (request.method != 'GET' && request.method != 'POST') {
           request.response.write(request.method);
+        } else if (request.uri.path == '/301') {
+          request.response.headers.add('Location', '/');
+          request.response.statusCode = 301;
         } else {
           request.response.write(sentData);
         }
@@ -96,6 +99,21 @@ void main() {
       final resp = await request.close();
       final dataStream = resp.transform(utf8.decoder);
       expect(dataStream, emitsInOrder(<Matcher>[equals('DELETE'), emitsDone]));
+    });
+
+    test('Rediect to the root path and fetch Hello, world response', () async {
+      final request = await client.getUrl(Uri.parse('http://$host:$port/301'));
+      final resp = await request.close();
+      final dataStream = resp.transform(utf8.decoder);
+      expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
+    });
+
+    test('Cancel request in case of redirects', () async {
+      final request = await client.getUrl(Uri.parse('http://$host:$port/301'));
+      request.followRedirects = false;
+      final resp = await request.close();
+      final dataStream = resp.transform(utf8.decoder);
+      expect(dataStream, emitsInOrder(<Matcher>[emitsDone]));
     });
 
     tearDown(() {

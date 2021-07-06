@@ -52,10 +52,12 @@ abstract class HttpClientRequest implements io.IOSink {
 
   /// Follow the redirects.
   bool get followRedirects;
+  set followRedirects(bool follow);
 
   /// Maximum numbers of redirects to follow.
   /// Have no effect if [followRedirects] is set to false.
   int get maxRedirects;
+  set maxRedirects(int redirects);
 
   /// The uri of the request.
   Uri get uri;
@@ -149,6 +151,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   /// Follow the redirects.
   @override
   bool get followRedirects => _callbackHandler.followRedirects;
+  @override
   set followRedirects(bool follow) {
     _callbackHandler.followRedirects = follow;
   }
@@ -157,6 +160,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   /// Have no effect if [followRedirects] is set to false.
   @override
   int get maxRedirects => _callbackHandler.maxRedirects;
+  @override
   set maxRedirects(int redirects) {
     _callbackHandler.maxRedirects = redirects;
   }
