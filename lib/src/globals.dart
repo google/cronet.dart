@@ -14,7 +14,7 @@ import 'wrapper/generated_bindings.dart';
 
 Wrapper loadAndInitWrapper() {
   final wrapper = Wrapper(loadWrapper());
-  if (wrapperVersion != wrapper.versionString().cast<Utf8>().toDartString()) {
+  if (wrapperVersion != wrapper.VersionString().cast<Utf8>().toDartString()) {
     final logger = Logger.standard();
     final ansi = Ansi(Ansi.terminalSupportsAnsi);
     logger.stderr('${ansi.red}Wrapper is outdated.${ansi.none}');

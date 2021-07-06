@@ -80,8 +80,12 @@ void buildWrapper() {
   Directory.current = Directory(wrapperPath);
   logger.stdout('Building Wrapper...');
   try {
-    final result = Process.runSync(
-        'cmake', ['CMakeLists.txt', '-B', 'out/${Platform.operatingSystem}']);
+    final result = Process.runSync('cmake', [
+      'CMakeLists.txt',
+      '-B',
+      'out/${Platform.operatingSystem}',
+      '-DCMAKE_BUILD_TYPE=Release'
+    ]);
     print(result.stdout);
     print(result.stderr);
   } catch (error) {
@@ -95,8 +99,8 @@ void buildWrapper() {
     }
     return;
   }
-  var result =
-      Process.runSync('cmake', ['--build', 'out/${Platform.operatingSystem}']);
+  var result = Process.runSync('cmake',
+      ['--build', 'out/${Platform.operatingSystem}', '--config', 'Release']);
   print(result.stdout);
   print(result.stderr);
   if (result.exitCode != 0) return;
@@ -105,7 +109,7 @@ void buildWrapper() {
   Directory(moveLocation).createSync(recursive: true);
   final buildOutputPath = Platform.isLinux
       ? '$wrapperPath/out/${Platform.operatingSystem}/${getWrapperName()}'
-      : '$wrapperPath\\out\\${Platform.operatingSystem}\\Debug\\${getWrapperName()}';
+      : '$wrapperPath\\out\\${Platform.operatingSystem}\\Release\\${getWrapperName()}';
   File(buildOutputPath).copySync('$moveLocation/${getWrapperName()}');
   logger.stdout(
       '${ansi.green}Wrapper moved to $moveLocation. Success!${ansi.none}');
