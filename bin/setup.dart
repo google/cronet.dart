@@ -37,9 +37,6 @@ void placeBinaries(String platform, String fileName) {
   logger.stdout('Done! Cleaning up...');
 
   File(fileName).deleteSync();
-  logger.stdout(
-      '${ansi.green}Done! Cronet support for $platform is now available!'
-      '${ansi.none}');
 }
 
 /// Download `cronet` library from Github Releases.
@@ -63,8 +60,11 @@ Future<void> downloadCronetBinaries(String platform) async {
     } catch (error) {
       Exception("Can't download. Check your network connection!");
     }
-
     placeBinaries(platform, fileName);
+    buildWrapper();
+    logger.stdout(
+        '${ansi.green}Done! Cronet support for $platform is now available!'
+        '${ansi.none}');
   } else {
     logger.stdout('${ansi.yellow}Cronet $platform is already available.'
         ' No need to download.${ansi.none}');
@@ -80,8 +80,12 @@ void buildWrapper() {
   Directory.current = Directory(wrapperPath);
   logger.stdout('Building Wrapper...');
   try {
-    final result = Process.runSync(
-        'cmake', ['CMakeLists.txt', '-B', 'out/${Platform.operatingSystem}']);
+    final result = Process.runSync('cmake', [
+      'CMakeLists.txt',
+      '-B',
+      'out/${Platform.operatingSystem}',
+      '-DCMAKE_BUILD_TYPE=Release'
+    ]);
     print(result.stdout);
     print(result.stderr);
   } catch (error) {
@@ -95,8 +99,8 @@ void buildWrapper() {
     }
     return;
   }
-  var result =
-      Process.runSync('cmake', ['--build', 'out/${Platform.operatingSystem}']);
+  var result = Process.runSync('cmake',
+      ['--build', 'out/${Platform.operatingSystem}', '--config', 'Release']);
   print(result.stdout);
   print(result.stderr);
   if (result.exitCode != 0) return;
@@ -105,7 +109,7 @@ void buildWrapper() {
   Directory(moveLocation).createSync(recursive: true);
   final buildOutputPath = Platform.isLinux
       ? '$wrapperPath/out/${Platform.operatingSystem}/${getWrapperName()}'
-      : '$wrapperPath\\out\\${Platform.operatingSystem}\\Debug\\${getWrapperName()}';
+      : '$wrapperPath\\out\\${Platform.operatingSystem}\\Release\\${getWrapperName()}';
   File(buildOutputPath).copySync('$moveLocation/${getWrapperName()}');
   logger.stdout(
       '${ansi.green}Wrapper moved to $moveLocation. Success!${ansi.none}');

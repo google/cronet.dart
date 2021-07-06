@@ -8,6 +8,12 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 Currently, 64 bit Linux and Windows systems are supported.
 
+## Requirements
+
+1. Dart SDK 2.12.0 or above.
+2. CMake 3.15 or above. (If on windows, Visual Studio 2019 with C++ tools)
+3. C++ compiler. (g++/clang/msvc)
+
 ## Usage
 
 1. Add package as a dependency in your `pubspec.yaml`.

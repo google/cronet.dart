@@ -10,7 +10,7 @@ void main(List<String> args) {
   for (var i = 0; i < 3; i++) {
     // Demo - with concurrent requests
     client
-        .getUrl(Uri.parse('https://postman-echo.com/headers'))
+        .getUrl(Uri.parse('https://example.com'))
         .then((HttpClientRequest request) {
       if (i == 2) {
         client.close(); // We will shut down the client after 3 connections.
@@ -21,6 +21,8 @@ void main(List<String> args) {
         print(contents);
       }, onDone: () {
         print('cronet implemenation took: ${stopwatch.elapsedMilliseconds} ms');
+      }, onError: (Object e) {
+        print(e);
       });
     });
   }

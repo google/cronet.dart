@@ -61,7 +61,7 @@ jobs:
         name: Install dependencies
         run: dart pub get
       - id: get_binaries
-        name: Download Cronet Binaries
+        name: Download/Build Cronet Binaries
         run: dart run cronet:setup
       - name: Run VM tests
         run: dart test --platform vm
