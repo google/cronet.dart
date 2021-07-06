@@ -37,9 +37,6 @@ void placeBinaries(String platform, String fileName) {
   logger.stdout('Done! Cleaning up...');
 
   File(fileName).deleteSync();
-  logger.stdout(
-      '${ansi.green}Done! Cronet support for $platform is now available!'
-      '${ansi.none}');
 }
 
 /// Download `cronet` library from Github Releases.
@@ -63,8 +60,11 @@ Future<void> downloadCronetBinaries(String platform) async {
     } catch (error) {
       Exception("Can't download. Check your network connection!");
     }
-
     placeBinaries(platform, fileName);
+    buildWrapper();
+    logger.stdout(
+        '${ansi.green}Done! Cronet support for $platform is now available!'
+        '${ansi.none}');
   } else {
     logger.stdout('${ansi.yellow}Cronet $platform is already available.'
         ' No need to download.${ansi.none}');

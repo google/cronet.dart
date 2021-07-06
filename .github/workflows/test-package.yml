@@ -61,11 +61,8 @@ jobs:
         name: Install dependencies
         run: dart pub get
       - id: get_binaries
-        name: Download Cronet Binaries
+        name: Download/Build Cronet Binaries
         run: dart run cronet:setup
-      - id: build_wrapper
-        name: Build Cronet Wrapper Dylib
-        run: dart run cronet:setup build
       - name: Run VM tests
         run: dart test --platform vm
         if: always() && steps.install.outcome == 'success'

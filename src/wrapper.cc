@@ -17,12 +17,11 @@
 #define STRINGIFY_(x) #x
 #define STRINGIFY(x) STRINGIFY_(x)
 
-#define WRAPPER_MAJOR_V 1
-#define WRAPPER_MINOR_V 0
+#define WRAPPER_VERSION 1
 
-#define WRAPPER_VER STRINGIFY(WRAPPER_MAJOR_V) "." STRINGIFY(WRAPPER_MINOR_V)
+#define WRAPPER_VERSTR STRINGIFY(WRAPPER_VERSION)
 
-const char *VersionString() { return WRAPPER_VER; }
+const char *VersionString() { return WRAPPER_VERSTR; }
 
 ////////////////////////////////////////////////////////////////////////////////
 
