@@ -39,13 +39,13 @@ class CronetBenchmark {
     await run();
   }
 
-  static Future<double> measureFor(Function f, int minimumMillis) async {
-    var minimumMicros = minimumMillis * 1000;
+  static Future<double> measureFor(Function f, Duration duration) async {
+    var durationInMicroseconds = duration.inMicroseconds;
     var iter = 0;
     var watch = Stopwatch();
     watch.start();
     var elapsed = 0;
-    while (elapsed < minimumMicros) {
+    while (elapsed < durationInMicroseconds) {
       await f();
       elapsed = watch.elapsedMicroseconds;
       iter++;
@@ -57,8 +57,8 @@ class CronetBenchmark {
     setup();
     // Warmup. Not measured.
     await warmup();
-    // Run the benchmark for at least 2000ms.
-    var result = await measureFor(run, 2000);
+    // Run the benchmark for at least 2s.
+    var result = await measureFor(run, const Duration(seconds: 2));
     teardown();
     return result;
   }
