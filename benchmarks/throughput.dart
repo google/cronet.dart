@@ -43,6 +43,7 @@ class CronetBenchmark {
     var inTimeReturns = 0;
     var lateReturns = 0;
     var watch = Stopwatch();
+    final completer = Completer<List<int>>();
     watch.start();
     for (int i = 0; i < maxSpawn; i++) {
       f().then((_) {
@@ -52,10 +53,12 @@ class CronetBenchmark {
           watch.stop();
           lateReturns++;
         }
-        if (inTimeReturns + lateReturns == maxSpawn) {}
+        if (inTimeReturns + lateReturns == maxSpawn) {
+          completer.complete([maxSpawn, inTimeReturns]);
+        }
       }).onError((error, stackTrace) {});
     }
-    return Future.delayed(duration, () => [maxSpawn, inTimeReturns]);
+    return completer.future;
   }
 
   Future<List<int>> measure([int spawns = 512]) async {
