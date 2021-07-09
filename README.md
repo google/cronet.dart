@@ -2,6 +2,8 @@
 
 This package binds to Cronet's [native API](https://chromium.googlesource.com/chromium/src/+/master/components/cronet/native/test_instructions.md) to expose them in Dart.
 
+This is an HTTP Client Package with [almost](dart_io_comparison.md#api-comparison) the same API as `dart:io`. By comparison, `package:cronet` is capable of serving [about 4 to 5 times](dart_io_comparison.md#throughput-parallel-requests) more parallel network requests than `dart:io` and on par in making sequential network requests.
+
 This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757095741652992).
 
 ## Supported Platforms
@@ -72,6 +74,17 @@ dart test --platform vm
 
 You can also verify your cronet binaries using `dart run cronet:setup verify`.
 Make sure to have `cmake 3.15`.
+
+## Benchmarking
+
+See benchmark [summary](dart_io_comparison.md#performance-comparison) and [extensive reports](https://github.com/google/cronet.dart/issues/3) for comparison with `dart:io`.
+
+```bash
+dart pub get
+dart run cronet:setup # Downloads the cronet binaries.
+dart run benchmarks/latency.dart # For sequential requests benchmark.
+dart run benchmarks/throughput.dart # For parallel requests benchmark.
+```
 
 ## Building Your Own
 

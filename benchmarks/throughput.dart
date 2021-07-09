@@ -78,7 +78,7 @@ class CronetBenchmark {
         currentThreshold *= 2) {
       final res = await measure(currentThreshold);
       print('Cronet(Throughput): Total Spawned: ${res[0]},'
-          ' In Time Returns: ${res[1]}.');
+          ' Returned in time: ${res[1]}.');
     }
   }
 }
