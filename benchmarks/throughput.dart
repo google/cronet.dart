@@ -3,17 +3,20 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cronet/cronet.dart';
 
-class CronetBenchmark {
+class CronetThroughputBenchmark {
   final String url;
+  final int spawnThreshold;
   late HttpClient client;
 
-  CronetBenchmark(this.url);
+  CronetThroughputBenchmark(this.url, this.spawnThreshold);
 
-  static Future<void> main([String url = 'https://example.com/']) async {
-    await CronetBenchmark(url).report();
+  static Future<List<int>> main(
+      [String url = 'https://example.com/', int spawnThreshold = 1024]) async {
+    return await CronetThroughputBenchmark(url, spawnThreshold).report();
   }
 
   // The benchmark code.
@@ -61,7 +64,7 @@ class CronetBenchmark {
     return completer.future;
   }
 
-  Future<List<int>> measure([int spawns = 512]) async {
+  Future<List<int>> measure(int spawns) async {
     setup();
     // Warmup. Not measured.
     await warmup();
@@ -71,20 +74,36 @@ class CronetBenchmark {
     return result;
   }
 
-  Future<void> report() async {
-    int maxSpawn = 1024;
+  Future<List<int>> report() async {
+    var maxReturn = 0;
+    var throughput = List<int>.empty();
+    // Run the benchmark for 1, 2, 4...spawnThreshold.
     for (int currentThreshold = 1;
-        currentThreshold <= maxSpawn;
+        currentThreshold <= spawnThreshold;
         currentThreshold *= 2) {
       final res = await measure(currentThreshold);
       print('Cronet(Throughput): Total Spawned: ${res[0]},'
           ' Returned in time: ${res[1]}.');
+      if (res[1] > maxReturn) {
+        maxReturn = res[1];
+        throughput = res;
+      }
     }
+    // Return the result that has most returns.
+    return throughput;
   }
 }
 
-void main() async {
-  // Run CronetBenchmark.
-  // URL can be provided as a parameter to ping a specific server.
-  await CronetBenchmark.main();
+void main(List<String> args) async {
+  // Run CronetThroughputBenchmark.
+  // Accepts test url & parallel request threshold as optional cli parameter.
+  if (args.length == 1) {
+    await CronetThroughputBenchmark.main(args[0]);
+  } else if (args.length == 2) {
+    // Parallel request limit is determined as 2^N. N is taken from cli args.
+    await CronetThroughputBenchmark.main(
+        args[0], pow(2, int.parse(args[1])).toInt());
+  } else {
+    await CronetThroughputBenchmark.main();
+  }
 }

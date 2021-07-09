@@ -10,8 +10,8 @@ class CronetBenchmark {
 
   CronetBenchmark(this.url);
 
-  static Future<void> main([String url = 'https://example.com/']) async {
-    await CronetBenchmark(url).report();
+  static Future<double> main([String url = 'https://example.com/']) async {
+    return await CronetBenchmark(url).report();
   }
 
   // The benchmark code.
@@ -63,13 +63,19 @@ class CronetBenchmark {
     return result;
   }
 
-  Future<void> report() async {
-    print('Cronet(RunTime): ${await measure()} us.');
+  Future<double> report() async {
+    final runtime = await measure();
+    print('Cronet(RunTime): $runtime us');
+    return runtime;
   }
 }
 
-void main() async {
+void main(List<String> args) async {
   // Run CronetBenchmark.
-  // URL can be provided as a parameter to ping a specific server.
-  await CronetBenchmark.main();
+  // Accepts test url as optional cli parameter.
+  if (args.length == 1) {
+    await CronetBenchmark.main(args[0]);
+  } else {
+    await CronetBenchmark.main();
+  }
 }

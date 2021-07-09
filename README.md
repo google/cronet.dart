@@ -84,7 +84,10 @@ dart pub get
 dart run cronet:setup # Downloads the cronet binaries.
 dart run benchmarks/latency.dart # For sequential requests benchmark.
 dart run benchmarks/throughput.dart # For parallel requests benchmark.
+dart run benchmarks/run_all.dart # To run all the benchmarks and get reports.
 ```
+
+To know how to setup local test servers, read [benchmarking guide](benchmarks/benchmarking.md).
 
 ## Building Your Own
 
