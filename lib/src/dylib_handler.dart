@@ -34,6 +34,8 @@ String? _resolveLibUri(String name) {
   // If lib is in Present Working Directory's .dart_tool folder.
   if (Platform.isWindows) {
     dartTool += 'windows64';
+  } else if (Platform.isMacOS) {
+    dartTool += 'macos64';
   } else {
     dartTool += 'linux64';
   }

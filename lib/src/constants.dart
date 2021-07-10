@@ -4,7 +4,7 @@
 
 import 'dart:io' show Platform;
 
-const validPlatforms = ['linux64', 'windows64'];
+const validPlatforms = ['linux64', 'windows64', 'macos64'];
 const tag = 'binaries-v0.0.1';
 const cronetBinaryUrl =
     'https://github.com/google/cronet.dart/releases/download/$tag/';

@@ -107,7 +107,7 @@ void buildWrapper() {
   Directory.current = pwd;
   final moveLocation = '$binaryStorageDir${Platform.operatingSystem}64';
   Directory(moveLocation).createSync(recursive: true);
-  final buildOutputPath = Platform.isLinux
+  final buildOutputPath = !Platform.isWindows
       ? '$wrapperPath/out/${Platform.operatingSystem}/${getWrapperName()}'
       : '$wrapperPath\\out\\${Platform.operatingSystem}\\Release\\${getWrapperName()}';
   File(buildOutputPath).copySync('$moveLocation/${getWrapperName()}');
@@ -146,7 +146,7 @@ void verifyCronetBinary() {
       environment: {'CURRENTDIR': pwd.path});
   print(result.stdout);
   print(result.stderr);
-  final buildOutputPath = Platform.isLinux
+  final buildOutputPath = !Platform.isWindows
       ? '$sampleSource/out/${Platform.operatingSystem}/$buildName'
       : '$sampleSource\\out\\${Platform.operatingSystem}\\Debug\\$buildName';
 
