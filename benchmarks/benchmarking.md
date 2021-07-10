@@ -48,7 +48,7 @@ Now, local server should be accessable from <http://localhost:8080>.
 
 Requires golang 1.15 and above installation.
 
-1. Install caddy as per your platform accordingly from [https://caddyserver.com/docs/install](Caddy Official Installation Docs).
+1. Install caddy as per your platform accordingly from [Caddy Official Installation Docs](https://caddyserver.com/docs/install).
 2. Add a domain name to your `/etc/host` file. Edit and paste
 
    ```text
