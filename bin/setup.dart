@@ -18,9 +18,10 @@ void extract(String fileName, [String dir = '']) {
     final filename = file.name;
     if (file.isFile) {
       final data = file.content as List<int>;
-      File(dir + filename)
+      final f = File(dir + filename)
         ..createSync(recursive: true)
         ..writeAsBytesSync(data);
+      print(f.path);
     } else {
       Directory(dir + filename).createSync(recursive: true);
     }

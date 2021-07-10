@@ -15,7 +15,7 @@ void main() {
   logger.stdout('${result.stdout}');
   logger.stderr('${result.stderr}');
   final cronetName = getDylibName('cronet.$cronetVersion');
-  if (!isCronetAvailable(Platform.isLinux ? 'linux64' : 'windows64')) {
+  if (!isCronetAvailable('${Platform.operatingSystem}x64')) {
     logger.stderr('${ansi.yellow}Make sure that your cronet shared library'
         ' is named as $cronetName and either placed in '
         '${Directory.current.path} or, available in your system\'s shared'
