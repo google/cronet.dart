@@ -123,7 +123,7 @@ void verifyCronetBinary() {
   final sampleSource = findPackageRoot()
       .resolve('third_party/cronet_sample')
       .toFilePath(windows: Platform.isWindows);
-  final buildName = Platform.isLinux ? 'cronet_sample' : 'cronet_sample.exe';
+  final buildName = !Platform.isWindows ? 'cronet_sample' : 'cronet_sample.exe';
   final pwd = Directory.current;
   if (!isCronetAvailable('${Platform.operatingSystem}64')) {
     logger.stderr('${ansi.red}Cronet binaries are not available.${ansi.none}');
