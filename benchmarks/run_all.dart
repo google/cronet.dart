@@ -2,11 +2,26 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'latency.dart';
 import 'throughput.dart';
+
+List<int> throughputParserHelper(String aotThroughputStdout) {
+  var aotThroughput = List<int>.filled(2, 0);
+  aotThroughputStdout.split('\n').forEach((line) {
+    final match = RegExp(r'\d+').allMatches(line);
+    if (match.length > 1) {
+      if (int.parse(match.last.group(0)!) > aotThroughput[1]) {
+        aotThroughput[0] = int.parse(match.first.group(0)!);
+        aotThroughput[1] = int.parse(match.last.group(0)!);
+      }
+    }
+  });
+  return aotThroughput;
+}
 
 void main(List<String> args) async {
   var url = 'https://example.com';
@@ -23,43 +38,66 @@ void main(List<String> args) async {
   }
   print('Latency Test against: $url');
   print('JIT');
-  final jitLatency = await CronetBenchmark.main(url);
+  final jitCronetLatency = await CronetLatencyBenchmark.main(url);
+  final jitDartIOLatency = await DartIOLatencyBenchmark.main(url);
+
   print('AOT');
+  print('Compiling...');
   Process.runSync('dart', ['compile', 'exe', 'benchmarks/latency.dart']);
-  final aotLatency = double.parse(
-      Process.runSync('benchmarks/latency.exe', [url])
-          .stdout
-          .toString()
-          .replaceAll(RegExp(r'[^0-9\\.]'), ''));
+  final aotLantencyProc =
+      await Process.start('benchmarks/latency.exe', ['-c', url]);
+  stderr.addStream(aotLantencyProc.stderr);
+  var latencyStdout = '';
+  await for (final chunk in aotLantencyProc.stdout.transform(utf8.decoder)) {
+    latencyStdout += chunk;
+    stdout.write(chunk);
+  }
+  // Delemeter to seperate Cronet and dart:io output.
+  final rawAotLatency = latencyStdout.split('*****');
+  final aotCronetLatency =
+      double.parse(rawAotLatency[0].replaceAll(RegExp(r'[^0-9\\.]'), ''));
+  final aotDartIOLatency =
+      double.parse(rawAotLatency[1].replaceAll(RegExp(r'[^0-9\\.]'), ''));
+
   print('Throughput Test against: $url with 2^$throughputPrallelLimit limit');
   print('JIT');
-  final jitThroughput = await CronetThroughputBenchmark.main(
+  final jitCronetThroughput = await CronetThroughputBenchmark.main(
       url, pow(2, throughputPrallelLimit).toInt());
-  print('AOT');
-  Process.runSync('dart', ['compile', 'exe', 'benchmarks/throughput.dart']);
-  final throughputStdout = Process.runSync(
-          'benchmarks/throughput.exe', [url, throughputPrallelLimit.toString()])
-      .stdout
-      .toString();
-  var aotThroughput = List<int>.filled(2, 0);
-  throughputStdout.split('\n').forEach((line) {
-    final match = RegExp(r'\d+').allMatches(line);
-    if (match.length > 1) {
-      if (int.parse(match.last.group(0)!) > aotThroughput[1]) {
-        aotThroughput[0] = int.parse(match.first.group(0)!);
-        aotThroughput[1] = int.parse(match.last.group(0)!);
-      }
-    }
-  });
+  final jitDartIOThroughput = await DartIOThroughputBenchmark.main(
+      url, pow(2, throughputPrallelLimit).toInt());
 
+  print('AOT');
+  print('Compiling...');
+  Process.runSync('dart', ['compile', 'exe', 'benchmarks/throughput.dart']);
+  final aotThroughputProc = await Process.start('benchmarks/throughput.exe',
+      ['-c', url, throughputPrallelLimit.toString()]);
+  stderr.addStream(aotThroughputProc.stderr);
+  var throughputStdout = '';
+  await for (final chunk in aotThroughputProc.stdout.transform(utf8.decoder)) {
+    throughputStdout += chunk;
+    stdout.write(chunk);
+  }
+  // Delemeter to seperate Cronet and dart:io output.
+  final rawAotThroughput = throughputStdout.split('*****');
+  final aotCronetThroughput = throughputParserHelper(rawAotThroughput[0]);
+  final aotDartIOThroughput = throughputParserHelper(rawAotThroughput[1]);
+
+  print(
+      'Test results may get affected by: https://github.com/google/cronet.dart/issues/11');
   print('Latency Test Results');
-  print('| Mode          | package:cronet |');
-  print('| :-----------: |:-------------: |');
-  print('| JIT           | ${jitLatency.toStringAsFixed(4)} μs |');
-  print('| AOT           | ${aotLatency.toStringAsFixed(4)} μs |');
+  print('| Mode          | package:cronet | dart:io        |');
+  print('| :-----------: |:-------------: | :------------: |');
+  print('| JIT           | ${jitCronetLatency.toStringAsFixed(4)} ms |'
+      ' ${jitDartIOLatency.toStringAsFixed(4)} ms |');
+  print('| AOT           | ${aotCronetLatency.toStringAsFixed(4)} ms |'
+      ' ${aotDartIOLatency.toStringAsFixed(4)} ms |');
   print('\n\nThroughput Test Results');
-  print('| Mode          | package:cronet |');
-  print('| :-----------: |:-------------: |');
-  print('| JIT           | ${jitThroughput[1]} out of ${jitThroughput[0]} |');
-  print('| AOT           | ${aotThroughput[1]} out of ${aotThroughput[0]} |');
+  print('| Mode          | package:cronet  | dart:io        |');
+  print('| :-----------: |:--------------: | :-----------:  |');
+  print('| JIT           | ${jitCronetThroughput[1]} out of'
+      ' ${jitCronetThroughput[0]}  | ${jitDartIOThroughput[1]} out of'
+      ' ${jitDartIOThroughput[0]}  |');
+  print('| AOT           | ${aotCronetThroughput[1]} out of'
+      ' ${aotCronetThroughput[0]} | ${aotDartIOThroughput[1]} out of'
+      ' ${aotDartIOThroughput[0]} |');
 }

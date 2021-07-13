@@ -2,38 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:cronet/cronet.dart';
 
-class CronetBenchmark {
-  final String url;
-  late HttpClient client;
-
-  CronetBenchmark(this.url);
-
-  static Future<double> main([String url = 'https://example.com/']) async {
-    return await CronetBenchmark(url).report();
-  }
-
-  // The benchmark code.
-  Future<void> run() async {
-    try {
-      final request = await client.getUrl(Uri.parse(url));
-      final response = await request.close();
-      await for (final _ in response) {}
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  // Not measured setup code executed prior to the benchmark runs.
-  void setup() {
-    client = HttpClient();
-  }
-
-  // Not measured teardown code executed after the benchmark runs.
-  void teardown() {
-    client.close();
-  }
+abstract class LatencyBenchmark {
+  Future<void> run();
+  void setup();
+  void teardown();
 
   Future<void> warmup() async {
     await run();
@@ -65,17 +41,95 @@ class CronetBenchmark {
 
   Future<double> report() async {
     final runtime = await measure();
-    print('Cronet(RunTime): $runtime us');
+    print('$runtimeType(RunTime): $runtime ms');
     return runtime;
   }
 }
 
+class DartIOLatencyBenchmark extends LatencyBenchmark {
+  final String url;
+  late io.HttpClient client;
+
+  DartIOLatencyBenchmark(this.url);
+
+  static Future<double> main(String url) async {
+    return await DartIOLatencyBenchmark(url).report();
+  }
+
+  // The benchmark code.
+  @override
+  Future<void> run() async {
+    try {
+      final request = await client.getUrl(Uri.parse(url));
+      final response = await request.close();
+      await for (final _ in response) {}
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // Not measured setup code executed prior to the benchmark runs.
+  @override
+  void setup() {
+    client = io.HttpClient();
+  }
+
+  // Not measured teardown code executed after the benchmark runs.
+  @override
+  void teardown() {
+    client.close();
+  }
+}
+
+class CronetLatencyBenchmark extends LatencyBenchmark {
+  final String url;
+  late HttpClient client;
+
+  CronetLatencyBenchmark(this.url);
+
+  static Future<double> main(String url) async {
+    return await CronetLatencyBenchmark(url).report();
+  }
+
+  // The benchmark code.
+  @override
+  Future<void> run() async {
+    try {
+      final request = await client.getUrl(Uri.parse(url));
+      final response = await request.close();
+      await for (final _ in response) {}
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // Not measured setup code executed prior to the benchmark runs.
+  @override
+  void setup() {
+    client = HttpClient();
+  }
+
+  // Not measured teardown code executed after the benchmark runs.
+  @override
+  void teardown() {
+    client.close();
+  }
+}
+
 void main(List<String> args) async {
-  // Run CronetBenchmark.
   // Accepts test url as optional cli parameter.
-  if (args.length == 1) {
-    await CronetBenchmark.main(args[0]);
-  } else {
-    await CronetBenchmark.main();
+  // Accepts -c flag to run `dart:io` benchmark also.
+  final params = List<String>.from(args);
+  var url = 'https://example.com';
+  var benchmarkDartIO = params.remove('-c');
+  if (params.isNotEmpty) {
+    url = params[0];
+  }
+  // TODO: https://github.com/google/cronet.dart/issues/11
+  await CronetLatencyBenchmark.main(url);
+  if (benchmarkDartIO) {
+    // Used as an delemeter while parsing output in run_all script.
+    print('*****');
+    await DartIOLatencyBenchmark.main(url);
   }
 }

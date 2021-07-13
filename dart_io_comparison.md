@@ -21,15 +21,17 @@ print(client.userAgent); // Will print myUA/1.0.
 
 ## Performance Comparison
 
+Results may get affected by: <https://github.com/google/cronet.dart/issues/11>.
+
 ### Latency (Sequential Requests)
 
 Server: HTTP/1.1 Local Flask Server
 Payload: Lorem Ipsum Text
 
-| Mode          | package:cronet | dart:io          |
-| :-----------: |:-------------: | :--------------: |
-| JIT           | 1807.8428 μs   | **1801.6621 μs** |
-| AOT           | 1441.2866 μs   | **1049.1442 μs** |
+| Mode          | package:cronet | dart:io        |
+| :-----------: |:-------------: | :-------------:|
+| JIT           | 1.807 ms       | **1.801 ms**   |
+| AOT           | 1.441 ms       | **1.049 ms**   |
 
 Server: HTTP/2 Google Server
 Payload: Google Chrome Debian Package

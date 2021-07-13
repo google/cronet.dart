@@ -87,7 +87,11 @@ dart run benchmarks/throughput.dart # For parallel requests benchmark.
 dart run benchmarks/run_all.dart # To run all the benchmarks and get reports.
 ```
 
+Use `-c` flag with `latency.dart` and `throughput.dart` to run `dart:io` benchmark also. All the benchmarking scripts take test server url as a cli argument. `throughput.dart` and `run_all.dart` also take `N` where `2^N` is the maximum possible parallel requests.
+
 To know how to setup local test servers, read [benchmarking guide](benchmarks/benchmarking.md).
+
+Note: Test results may get affected by: <https://github.com/google/cronet.dart/issues/11>.
 
 ## Building Your Own
 
