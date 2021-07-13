@@ -59,7 +59,7 @@ Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
 ## Run Example
 
 ```bash
-cd example_dart
+cd example
 dart run cronet:setup # Downloads the cronet binaries.
 dart run
 ```
@@ -82,14 +82,14 @@ See benchmark [summary](dart_io_comparison.md#performance-comparison) and [exten
 ```bash
 dart pub get
 dart run cronet:setup # Downloads the cronet binaries.
-dart run benchmarks/latency.dart # For sequential requests benchmark.
-dart run benchmarks/throughput.dart # For parallel requests benchmark.
-dart run benchmarks/run_all.dart # To run all the benchmarks and get reports.
+dart run benchmark/latency.dart # For sequential requests benchmark.
+dart run benchmark/throughput.dart # For parallel requests benchmark.
+dart run benchmark/run_all.dart # To run all the benchmarks and get reports.
 ```
 
 All the benchmarking scripts take test server url as a cli argument. `throughput.dart` and `run_all.dart` also take `N` where `2^N` is the maximum possible parallel requests and the max duration for each run to complete in seconds.
 
-To know how to setup local test servers, read [benchmarking guide](benchmarks/benchmarking.md).
+To know how to setup local test servers, read [benchmarking guide](benchmark/benchmarking.md).
 
 Note: Test results may get affected by: <https://github.com/google/cronet.dart/issues/11>.
 
