@@ -26,15 +26,15 @@ List<int> throughputParserHelper(String aotThroughputStdout) {
 void main(List<String> args) async {
   var url = 'https://example.com';
   var throughputPrallelLimit = 10;
-  switch (args.length) {
-    case 1:
-      url = args[0];
-      break;
-    case 2:
-      url = args[0];
-      throughputPrallelLimit = int.parse(args[1]).toInt();
-      break;
-    default:
+  var duration = const Duration(seconds: 1);
+  if (args.isNotEmpty) {
+    url = args[0];
+  }
+  if (args.length > 1) {
+    throughputPrallelLimit = int.parse(args[1]).toInt();
+  }
+  if (args.length > 2) {
+    duration = Duration(seconds: int.parse(args[2]));
   }
   print('Latency Test against: $url');
   print('JIT');
@@ -44,8 +44,7 @@ void main(List<String> args) async {
   print('AOT');
   print('Compiling...');
   Process.runSync('dart', ['compile', 'exe', 'benchmarks/latency.dart']);
-  final aotLantencyProc =
-      await Process.start('benchmarks/latency.exe', ['-c', url]);
+  final aotLantencyProc = await Process.start('benchmarks/latency.exe', [url]);
   stderr.addStream(aotLantencyProc.stderr);
   var latencyStdout = '';
   await for (final chunk in aotLantencyProc.stdout.transform(utf8.decoder)) {
@@ -62,15 +61,15 @@ void main(List<String> args) async {
   print('Throughput Test against: $url with 2^$throughputPrallelLimit limit');
   print('JIT');
   final jitCronetThroughput = await CronetThroughputBenchmark.main(
-      url, pow(2, throughputPrallelLimit).toInt());
+      url, pow(2, throughputPrallelLimit).toInt(), duration);
   final jitDartIOThroughput = await DartIOThroughputBenchmark.main(
-      url, pow(2, throughputPrallelLimit).toInt());
+      url, pow(2, throughputPrallelLimit).toInt(), duration);
 
   print('AOT');
   print('Compiling...');
   Process.runSync('dart', ['compile', 'exe', 'benchmarks/throughput.dart']);
   final aotThroughputProc = await Process.start('benchmarks/throughput.exe',
-      ['-c', url, throughputPrallelLimit.toString()]);
+      [url, throughputPrallelLimit.toString(), duration.inSeconds.toString()]);
   stderr.addStream(aotThroughputProc.stderr);
   var throughputStdout = '';
   await for (final chunk in aotThroughputProc.stdout.transform(utf8.decoder)) {
@@ -91,7 +90,7 @@ void main(List<String> args) async {
       ' ${jitDartIOLatency.toStringAsFixed(3)} ms   |');
   print('| AOT           | ${aotCronetLatency.toStringAsFixed(3)} ms   |'
       ' ${aotDartIOLatency.toStringAsFixed(3)} ms   |');
-  print('\n\nThroughput Test Results');
+  print('\n\nThroughput Test Results (Duration ${duration.inSeconds}');
   print('| Mode          | package:cronet  | dart:io        |');
   print('| :-----------: |:--------------: | :-----------:  |');
   print('| JIT           | ${jitCronetThroughput[1]} out of'

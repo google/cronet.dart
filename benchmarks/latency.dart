@@ -7,6 +7,10 @@ import 'dart:io' as io;
 import 'package:cronet/cronet.dart';
 
 abstract class LatencyBenchmark {
+  final String url;
+
+  LatencyBenchmark(this.url);
+
   Future<void> run();
   void setup();
   void teardown();
@@ -47,10 +51,9 @@ abstract class LatencyBenchmark {
 }
 
 class DartIOLatencyBenchmark extends LatencyBenchmark {
-  final String url;
   late io.HttpClient client;
 
-  DartIOLatencyBenchmark(this.url);
+  DartIOLatencyBenchmark(String url) : super(url);
 
   static Future<double> main(String url) async {
     return await DartIOLatencyBenchmark(url).report();
@@ -82,10 +85,9 @@ class DartIOLatencyBenchmark extends LatencyBenchmark {
 }
 
 class CronetLatencyBenchmark extends LatencyBenchmark {
-  final String url;
   late HttpClient client;
 
-  CronetLatencyBenchmark(this.url);
+  CronetLatencyBenchmark(String url) : super(url);
 
   static Future<double> main(String url) async {
     return await CronetLatencyBenchmark(url).report();
@@ -118,18 +120,13 @@ class CronetLatencyBenchmark extends LatencyBenchmark {
 
 void main(List<String> args) async {
   // Accepts test url as optional cli parameter.
-  // Accepts -c flag to run `dart:io` benchmark also.
-  final params = List<String>.from(args);
   var url = 'https://example.com';
-  var benchmarkDartIO = params.remove('-c');
-  if (params.isNotEmpty) {
-    url = params[0];
+  if (args.isNotEmpty) {
+    url = args[0];
   }
   // TODO: https://github.com/google/cronet.dart/issues/11
   await CronetLatencyBenchmark.main(url);
-  if (benchmarkDartIO) {
-    // Used as an delemeter while parsing output in run_all script.
-    print('*****');
-    await DartIOLatencyBenchmark.main(url);
-  }
+  // Used as an delemeter while parsing output in run_all script.
+  print('*****');
+  await DartIOLatencyBenchmark.main(url);
 }

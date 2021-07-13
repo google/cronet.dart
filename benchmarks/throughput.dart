@@ -9,14 +9,16 @@ import 'dart:math';
 import 'package:cronet/cronet.dart';
 
 abstract class ThroughputBenchmark {
+  final String url;
   final int spawnThreshold;
+  final Duration duration;
 
   Future<void> run();
   void setup();
   void teardown();
   Future<void> warmup();
 
-  ThroughputBenchmark(this.spawnThreshold);
+  ThroughputBenchmark(this.url, this.spawnThreshold, this.duration);
 
   static Future<List<int>> measureFor(
       Future<void> Function() f, Duration duration, int maxSpawn) async {
@@ -46,8 +48,8 @@ abstract class ThroughputBenchmark {
     setup();
     // Warmup. Not measured.
     await warmup();
-    // Run the benchmark for 1s and run [spawns] number of parallel tasks.
-    var result = await measureFor(run, const Duration(seconds: 1), spawns);
+    // Run the benchmark for [duration] with [spawns] number of parallel tasks.
+    var result = await measureFor(run, duration, spawns);
     teardown();
     return result;
   }
@@ -73,14 +75,15 @@ abstract class ThroughputBenchmark {
 }
 
 class DartIOThroughputBenchmark extends ThroughputBenchmark {
-  final String url;
   late io.HttpClient client;
 
-  DartIOThroughputBenchmark(this.url, int spawnThreshold)
-      : super(spawnThreshold);
+  DartIOThroughputBenchmark(String url, int spawnThreshold, Duration duration)
+      : super(url, spawnThreshold, duration);
 
-  static Future<List<int>> main(String url, int spawnThreshold) async {
-    return await DartIOThroughputBenchmark(url, spawnThreshold).report();
+  static Future<List<int>> main(
+      String url, int spawnThreshold, Duration duration) async {
+    return await DartIOThroughputBenchmark(url, spawnThreshold, duration)
+        .report();
   }
 
   // The benchmark code.
@@ -110,14 +113,15 @@ class DartIOThroughputBenchmark extends ThroughputBenchmark {
 }
 
 class CronetThroughputBenchmark extends ThroughputBenchmark {
-  final String url;
   late HttpClient client;
 
-  CronetThroughputBenchmark(this.url, int spawnThreshold)
-      : super(spawnThreshold);
+  CronetThroughputBenchmark(String url, int spawnThreshold, Duration duration)
+      : super(url, spawnThreshold, duration);
 
-  static Future<List<int>> main(String url, int spawnThreshold) async {
-    return await CronetThroughputBenchmark(url, spawnThreshold).report();
+  static Future<List<int>> main(
+      String url, int spawnThreshold, Duration duration) async {
+    return await CronetThroughputBenchmark(url, spawnThreshold, duration)
+        .report();
   }
 
   // The benchmark code.
@@ -148,22 +152,21 @@ class CronetThroughputBenchmark extends ThroughputBenchmark {
 
 void main(List<String> args) async {
   // Accepts test url & parallel request threshold as optional cli parameter.
-  // Accepts -c flag to run `dart:io` benchmark also.
-  final params = List<String>.from(args);
   var url = 'https://example.com';
   var spawnThreshold = 1024;
-  var benchmarkDartIO = params.remove('-c');
-  if (params.length == 1) {
-    url = params[0];
+  var duration = const Duration(seconds: 1);
+  if (args.isNotEmpty) {
+    url = args[0];
   }
-  if (params.length == 2) {
-    spawnThreshold = pow(2, int.parse(params[1])).toInt();
+  if (args.length > 1) {
+    spawnThreshold = pow(2, int.parse(args[1])).toInt();
+  }
+  if (args.length > 2) {
+    duration = Duration(seconds: int.parse(args[2]));
   }
   // TODO: https://github.com/google/cronet.dart/issues/11
-  await CronetThroughputBenchmark.main(url, spawnThreshold);
-  if (benchmarkDartIO) {
-    // Used as an delemeter while parsing output in run_all script.
-    print('*****');
-    await DartIOThroughputBenchmark.main(url, spawnThreshold);
-  }
+  await CronetThroughputBenchmark.main(url, spawnThreshold, duration);
+  // Used as an delemeter while parsing output in run_all script.
+  print('*****');
+  await DartIOThroughputBenchmark.main(url, spawnThreshold, duration);
 }
