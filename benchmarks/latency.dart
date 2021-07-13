@@ -16,14 +16,14 @@ abstract class LatencyBenchmark {
   }
 
   static Future<double> measureFor(Function f, Duration duration) async {
-    var durationInMicroseconds = duration.inMicroseconds;
+    var durationInMilliseconds = duration.inMilliseconds;
     var iter = 0;
     var watch = Stopwatch();
     watch.start();
     var elapsed = 0;
-    while (elapsed < durationInMicroseconds) {
+    while (elapsed < durationInMilliseconds) {
       await f();
-      elapsed = watch.elapsedMicroseconds;
+      elapsed = watch.elapsedMilliseconds;
       iter++;
     }
     return elapsed / iter;

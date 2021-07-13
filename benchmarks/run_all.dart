@@ -87,10 +87,10 @@ void main(List<String> args) async {
   print('Latency Test Results');
   print('| Mode          | package:cronet | dart:io        |');
   print('| :-----------: |:-------------: | :------------: |');
-  print('| JIT           | ${jitCronetLatency.toStringAsFixed(4)} ms |'
-      ' ${jitDartIOLatency.toStringAsFixed(4)} ms |');
-  print('| AOT           | ${aotCronetLatency.toStringAsFixed(4)} ms |'
-      ' ${aotDartIOLatency.toStringAsFixed(4)} ms |');
+  print('| JIT           | ${jitCronetLatency.toStringAsFixed(3)} ms   |'
+      ' ${jitDartIOLatency.toStringAsFixed(3)} ms   |');
+  print('| AOT           | ${aotCronetLatency.toStringAsFixed(3)} ms   |'
+      ' ${aotDartIOLatency.toStringAsFixed(3)} ms   |');
   print('\n\nThroughput Test Results');
   print('| Mode          | package:cronet  | dart:io        |');
   print('| :-----------: |:--------------: | :-----------:  |');
