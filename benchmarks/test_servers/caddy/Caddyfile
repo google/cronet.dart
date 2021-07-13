@@ -1,0 +1,18 @@
+{
+	servers {
+		protocol {
+			allow_h2c
+			experimental_http3
+		}
+	}
+}
+
+localsite.org {
+	tls ./localsite.org.pem localsite.org-key.pem
+	root * www
+	encode zstd gzip
+	templates
+	file_server browse
+
+	metrics /metrics
+}
