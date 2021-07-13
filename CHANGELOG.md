@@ -1,3 +1,6 @@
+## 0.0.2
+* Added support for MacOS.
+
 ## 0.0.1+1
 
 * `HttpClientResponse`'s `followRedirects` and `maxRedirects` are now modifiable.
