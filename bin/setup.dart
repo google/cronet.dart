@@ -71,6 +71,17 @@ Future<void> downloadCronetBinaries(String platform) async {
   }
 }
 
+String _makeBuildOutputPath(String buildFolderPath, String fileName,
+    {bool isDebug = false}) {
+  if (Platform.isWindows) {
+    return '$buildFolderPath\\out\\${Platform.operatingSystem}\\${isDebug ? "Debug" : "Release"}\\$fileName';
+  } else if (Platform.isMacOS || Platform.isLinux) {
+    return '$buildFolderPath/out/${Platform.operatingSystem}/$fileName';
+  } else {
+    throw Exception('Unsupported Platform.');
+  }
+}
+
 /// Builds wrapper from source for the current platform.
 void buildWrapper() {
   final logger = Logger.standard();
@@ -107,13 +118,21 @@ void buildWrapper() {
   Directory.current = pwd;
   final moveLocation = '$binaryStorageDir${Platform.operatingSystem}64';
   Directory(moveLocation).createSync(recursive: true);
-  final buildOutputPath = Platform.isLinux
-      ? '$wrapperPath/out/${Platform.operatingSystem}/${getWrapperName()}'
-      : '$wrapperPath\\out\\${Platform.operatingSystem}\\Release\\${getWrapperName()}';
+  final buildOutputPath = _makeBuildOutputPath(wrapperPath, getWrapperName());
   File(buildOutputPath).copySync('$moveLocation/${getWrapperName()}');
   logger.stdout(
       '${ansi.green}Wrapper moved to $moveLocation. Success!${ansi.none}');
   return;
+}
+
+String _getCronetSampleBuildName() {
+  if (Platform.isWindows) {
+    return 'cronet_sample.exe';
+  } else if (Platform.isMacOS || Platform.isLinux) {
+    return 'cronet_sample';
+  } else {
+    throw Exception('Unsupported Platform.');
+  }
 }
 
 /// Verify if cronet binary is working correctly.
@@ -123,7 +142,7 @@ void verifyCronetBinary() {
   final sampleSource = findPackageRoot()
       .resolve('third_party/cronet_sample')
       .toFilePath(windows: Platform.isWindows);
-  final buildName = Platform.isLinux ? 'cronet_sample' : 'cronet_sample.exe';
+  final buildName = _getCronetSampleBuildName();
   final pwd = Directory.current;
   if (!isCronetAvailable('${Platform.operatingSystem}64')) {
     logger.stderr('${ansi.red}Cronet binaries are not available.${ansi.none}');
@@ -146,9 +165,8 @@ void verifyCronetBinary() {
       environment: {'CURRENTDIR': pwd.path});
   print(result.stdout);
   print(result.stderr);
-  final buildOutputPath = Platform.isLinux
-      ? '$sampleSource/out/${Platform.operatingSystem}/$buildName'
-      : '$sampleSource\\out\\${Platform.operatingSystem}\\Debug\\$buildName';
+  final buildOutputPath =
+      _makeBuildOutputPath(sampleSource, buildName, isDebug: true);
 
   logger.stdout('Copying...');
   final sample = File(buildOutputPath)

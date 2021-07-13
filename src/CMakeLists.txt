@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME "cronet")
 project(${PROJECT_NAME} LANGUAGES C CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 11)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
