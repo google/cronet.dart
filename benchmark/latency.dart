@@ -4,6 +4,7 @@
 
 import 'dart:io' as io;
 
+import 'package:args/args.dart';
 import 'package:cronet/cronet.dart';
 
 abstract class LatencyBenchmark {
@@ -119,11 +120,24 @@ class CronetLatencyBenchmark extends LatencyBenchmark {
 }
 
 void main(List<String> args) async {
-  // Accepts test url as optional cli parameter.
-  var url = 'https://example.com';
-  if (args.isNotEmpty) {
-    url = args[0];
+  final parser = ArgParser();
+  parser
+    ..addOption('url',
+        abbr: 'u',
+        help: 'The server to ping for running this benchmark.',
+        defaultsTo: 'https://example.com')
+    ..addFlag('help',
+        abbr: 'h', negatable: false, help: 'Print this usage information.');
+  final arguments = parser.parse(args);
+  if (arguments.wasParsed('help')) {
+    print(parser.usage);
+    return;
   }
+  if (arguments.rest.isNotEmpty) {
+    print(parser.usage);
+    throw ArgumentError();
+  }
+  final url = arguments['url'] as String;
   // TODO: https://github.com/google/cronet.dart/issues/11
   await CronetLatencyBenchmark.main(url);
   // Used as an delemeter while parsing output in run_all script.

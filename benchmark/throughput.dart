@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io' as io;
 import 'dart:math';
 
+import 'package:args/args.dart';
 import 'package:cronet/cronet.dart';
 
 abstract class ThroughputBenchmark {
@@ -151,19 +152,36 @@ class CronetThroughputBenchmark extends ThroughputBenchmark {
 }
 
 void main(List<String> args) async {
-  // Accepts test url & parallel request threshold as optional cli parameter.
-  var url = 'https://example.com';
-  var spawnThreshold = 1024;
-  var duration = const Duration(seconds: 1);
-  if (args.isNotEmpty) {
-    url = args[0];
+  final parser = ArgParser();
+  parser
+    ..addOption('url',
+        abbr: 'u',
+        help: 'The server to ping for running this benchmark.',
+        defaultsTo: 'https://example.com')
+    ..addOption('limit',
+        abbr: 'l',
+        help: 'Limits the maximum number of parallel requests to 2^N where N'
+            ' is provided through this option.',
+        defaultsTo: '10')
+    ..addOption('time',
+        abbr: 't',
+        help: 'Maximum second(s) the benchmark should wait for each request.',
+        defaultsTo: '1')
+    ..addFlag('help',
+        abbr: 'h', negatable: false, help: 'Print this usage information.');
+  final arguments = parser.parse(args);
+  if (arguments.wasParsed('help')) {
+    print(parser.usage);
+    return;
   }
-  if (args.length > 1) {
-    spawnThreshold = pow(2, int.parse(args[1])).toInt();
+  if (arguments.rest.isNotEmpty) {
+    print(parser.usage);
+    throw ArgumentError();
   }
-  if (args.length > 2) {
-    duration = Duration(seconds: int.parse(args[2]));
-  }
+  final url = arguments['url'] as String;
+  final spawnThreshold =
+      pow(2, int.parse(arguments['limit'] as String)).toInt();
+  final duration = Duration(seconds: int.parse(arguments['time'] as String));
   // TODO: https://github.com/google/cronet.dart/issues/11
   await CronetThroughputBenchmark.main(url, spawnThreshold, duration);
   // Used as an delemeter while parsing output in run_all script.
