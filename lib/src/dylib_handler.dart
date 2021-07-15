@@ -133,7 +133,7 @@ DynamicLibrary loadDylib(String name) {
     logger.stdout(
         'To download the binaries, please run the following from the root of'
         ' your project:');
-    logger.stdout('${ansi.yellow}dart run cronet <platform>${ansi.none}');
+    logger.stdout('${ansi.yellow}dart run cronet:setup${ansi.none}');
     logger.stdout('${ansi.green}Valid platforms are:');
     for (final platform in validPlatforms) {
       logger.stdout(platform);

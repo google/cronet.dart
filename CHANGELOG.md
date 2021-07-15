@@ -1,4 +1,11 @@
+## 0.0.3
+
+* Using `package:args` for handling CLI arguments.
+* Dependency versions increased.
+* Corrected wrong cli command suggestions in case of un-locateable dylibs.
+
 ## 0.0.2
+
 * Added support for MacOS.
 
 ## 0.0.1+1
