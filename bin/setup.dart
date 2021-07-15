@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:args/command_runner.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:cronet/src/constants.dart';
 import 'package:cronet/src/third_party/ffigen/find_resource.dart';
@@ -183,32 +184,61 @@ void verifyCronetBinary() {
   sample.deleteSync();
 }
 
-Future<void> main(List<String> args) async {
-  const docStr = """
-dart run cronet:setup [option]
-Downloads the cronet binaries.\n
-clean\tClean downloaded or built binaries.
-build\tBuilds the wrapper. Requires cmake.
-verify\tVerifies the cronet binary.
-  """;
-  final logger = Logger.standard();
-  if (args.length > 1) {
-    logger.stderr('Expected 1 argument only.');
-    logger.stdout(docStr);
-  } else if (args.contains('-h')) {
-    logger.stdout(docStr);
-  } else if (args.contains('clean')) {
-    logger.stdout('cleaning...');
-    Directory(binaryStorageDir).deleteSync(recursive: true);
-    logger.stdout('Done!');
-  } else if (args.contains('build')) {
+// Available Commands.
+
+class BuildCommand extends Command<void> {
+  @override
+  String get description => 'Builds the wrapper binaries. Requires cmake.';
+
+  @override
+  String get name => 'build';
+
+  @override
+  void run() {
     buildWrapper();
-  } else if (args.contains('verify')) {
+  }
+}
+
+class CleanCommand extends Command<void> {
+  @override
+  String get description => 'Cleans downloaded or built binaries.';
+
+  @override
+  String get name => 'clean';
+
+  @override
+  void run() {
+    print('cleaning...');
+    Directory(binaryStorageDir).deleteSync(recursive: true);
+  }
+}
+
+class VerifyCommand extends Command<void> {
+  @override
+  String get description => 'Verifies the cronet binary.';
+
+  @override
+  String get name => 'verify';
+
+  @override
+  void run() {
     verifyCronetBinary();
-  } else {
+  }
+}
+
+Future<void> main(List<String> args) async {
+  final runner =
+      CommandRunner<void>('setup', 'Downloads/Builds the cronet binaries.');
+  runner
+    ..addCommand(BuildCommand())
+    ..addCommand(CleanCommand())
+    ..addCommand(VerifyCommand());
+  if (args.isEmpty) {
     // Targeting only 64bit OS. (At least for the time being.)
     if (validPlatforms.contains('${Platform.operatingSystem}64')) {
       await downloadCronetBinaries('${Platform.operatingSystem}64');
     }
+  } else {
+    await runner.run(args);
   }
 }
