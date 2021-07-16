@@ -165,9 +165,8 @@ void main(List<String> args) async {
         defaultsTo: '10')
     ..addOption('time',
         abbr: 't',
-        help:
-            'Maximum milliseconds the benchmark should wait for each request.',
-        defaultsTo: '1000')
+        help: 'Maximum second(s) the benchmark should wait for each request.',
+        defaultsTo: '1')
     ..addFlag('help',
         abbr: 'h', negatable: false, help: 'Print this usage information.');
   final arguments = parser.parse(args);
@@ -182,8 +181,7 @@ void main(List<String> args) async {
   final url = arguments['url'] as String;
   final spawnThreshold =
       pow(2, int.parse(arguments['limit'] as String)).toInt();
-  final duration =
-      Duration(milliseconds: int.parse(arguments['time'] as String));
+  final duration = Duration(seconds: int.parse(arguments['time'] as String));
   // TODO: https://github.com/google/cronet.dart/issues/11
   await CronetThroughputBenchmark.main(url, spawnThreshold, duration);
   // Used as an delemeter while parsing output in run_all script.
