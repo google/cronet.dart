@@ -87,7 +87,7 @@ dart run benchmark/throughput.dart # For parallel requests benchmark.
 dart run benchmark/run_all.dart # To run all the benchmarks and get reports.
 ```
 
-All the benchmarking scripts take test server url as a cli argument. `throughput.dart` and `run_all.dart` also take `N` where `2^N` is the maximum possible parallel requests and the max duration for each run to complete in seconds.
+Use `-h` to see available cli arguments and usage informations.
 
 To know how to setup local test servers, read [benchmarking guide](benchmark/benchmarking.md).
 

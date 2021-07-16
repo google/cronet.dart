@@ -4,7 +4,7 @@
 
 import 'dart:io';
 
-void main(List<String> args) async {
+void main() async {
   final root =
       Directory.fromUri(Platform.script).parent.parent.uri.toFilePath();
 
