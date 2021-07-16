@@ -3,6 +3,7 @@
 * Using `package:args` for handling CLI arguments.
 * Dependency versions increased.
 * Corrected wrong cli command suggestions in case of un-locateable dylibs.
+* Fixed throughput benchmark's `RangeError` in case of 0 result.
 
 ## 0.0.2
 

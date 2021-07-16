@@ -39,8 +39,8 @@ void main(List<String> args) async {
         defaultsTo: '10')
     ..addOption('time',
         abbr: 't',
-        help: 'Maximum second(s) the benchmark should wait for each request.',
-        defaultsTo: '1')
+        help: 'Maximum millisecond the benchmark should wait for each request.',
+        defaultsTo: '1000')
     ..addFlag('help',
         abbr: 'h', negatable: false, help: 'Print this usage information.');
   final arguments = parser.parse(args);
@@ -54,7 +54,8 @@ void main(List<String> args) async {
   }
   final url = arguments['url'] as String;
   final throughputPrallelLimit = int.parse(arguments['limit'] as String);
-  final duration = Duration(seconds: int.parse(arguments['time'] as String));
+  final duration =
+      Duration(milliseconds: int.parse(arguments['time'] as String));
 
   print('Latency Test against: $url');
   print('JIT');
@@ -95,7 +96,7 @@ void main(List<String> args) async {
     '-l',
     throughputPrallelLimit.toString(),
     '-t',
-    duration.inSeconds.toString()
+    duration.inMilliseconds.toString()
   ]);
   stderr.addStream(aotThroughputProc.stderr);
   var throughputStdout = '';
@@ -117,7 +118,7 @@ void main(List<String> args) async {
       ' ${jitDartIOLatency.toStringAsFixed(3)} ms   |');
   print('| AOT           | ${aotCronetLatency.toStringAsFixed(3)} ms   |'
       ' ${aotDartIOLatency.toStringAsFixed(3)} ms   |');
-  print('\nThroughput Test Results (Duration: ${duration.inSeconds} seconds)');
+  print('\nThroughput Test Results (Duration: ${duration.inMilliseconds} ms)');
   print('| Mode          | package:cronet  | dart:io        |');
   print('| :-----------: |:--------------: | :-----------:  |');
   print('| JIT           | ${jitCronetThroughput[1]} out of'
