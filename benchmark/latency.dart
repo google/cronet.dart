@@ -20,7 +20,7 @@ abstract class LatencyBenchmark {
     await run();
   }
 
-  static Future<double> measureFor(Function f, Duration duration) async {
+  Future<double> measureFor(Function f, Duration duration) async {
     var durationInMilliseconds = duration.inMilliseconds;
     var iter = 0;
     var watch = Stopwatch();

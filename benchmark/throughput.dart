@@ -11,7 +11,7 @@ import 'package:cronet/cronet.dart';
 
 abstract class ThroughputBenchmark {
   final String url;
-  final int spawnThreshold;
+  final int parallelLimit;
   final Duration duration;
 
   Future<void> run();
@@ -19,28 +19,39 @@ abstract class ThroughputBenchmark {
   void teardown();
   Future<void> warmup();
 
-  ThroughputBenchmark(this.url, this.spawnThreshold, this.duration);
+  ThroughputBenchmark(this.url, this.parallelLimit, this.duration);
 
-  static Future<List<int>> measureFor(
-      Future<void> Function() f, Duration duration, int maxSpawn) async {
+  Future<List<int>> measureFor(
+      Future<void> Function() f, Duration duration, int parallelLimit) async {
     var durationInMicroseconds = duration.inMicroseconds;
     var inTimeReturns = 0;
     var lateReturns = 0;
+    var spawned = 0;
     var watch = Stopwatch();
     final completer = Completer<List<int>>();
-    watch.start();
-    for (int i = 0; i < maxSpawn; i++) {
-      f().then((_) {
-        if (watch.elapsedMicroseconds < durationInMicroseconds) {
-          inTimeReturns++;
-        } else {
-          watch.stop();
+
+    FutureOr<void> _measureAndRespawn(void _) {
+      if (watch.elapsedMicroseconds < durationInMicroseconds) {
+        inTimeReturns++;
+        f().then(_measureAndRespawn).onError((error, stackTrace) {
           lateReturns++;
+        });
+        spawned++;
+      } else {
+        watch.stop();
+        lateReturns++;
+        if (inTimeReturns + lateReturns == spawned) {
+          completer.complete([parallelLimit, inTimeReturns]);
         }
-        if (inTimeReturns + lateReturns == maxSpawn) {
-          completer.complete([maxSpawn, inTimeReturns]);
-        }
-      }).onError((error, stackTrace) {});
+      }
+    }
+
+    watch.start();
+    for (int i = 0; i < parallelLimit; i++) {
+      f().then(_measureAndRespawn).onError((error, stackTrace) {
+        lateReturns++;
+      });
+      spawned++;
     }
     return completer.future;
   }
@@ -58,12 +69,12 @@ abstract class ThroughputBenchmark {
   Future<List<int>> report() async {
     var maxReturn = 0;
     var throughput = [0, 0];
-    // Run the benchmark for 1, 2, 4...spawnThreshold.
+    // Run the benchmark for 1, 2, 4...parallelLimit.
     for (int currentThreshold = 1;
-        currentThreshold <= spawnThreshold;
+        currentThreshold <= parallelLimit;
         currentThreshold *= 2) {
       final res = await measure(currentThreshold);
-      print('$runtimeType: Total Spawned: ${res[0]},'
+      print('$runtimeType: Parallel Requests: ${res[0]},'
           ' Returned in time: ${res[1]}.');
       if (res[1] > maxReturn) {
         maxReturn = res[1];

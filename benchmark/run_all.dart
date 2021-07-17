@@ -118,12 +118,13 @@ void main(List<String> args) async {
   print('| AOT           | ${aotCronetLatency.toStringAsFixed(3)} ms   |'
       ' ${aotDartIOLatency.toStringAsFixed(3)} ms   |');
   print('\nThroughput Test Results (Duration: ${duration.inSeconds}s)');
-  print('| Mode          | package:cronet  | dart:io        |');
-  print('| :-----------: |:--------------: | :-----------:  |');
-  print('| JIT           | ${jitCronetThroughput[1]} out of'
-      ' ${jitCronetThroughput[0]}  | ${jitDartIOThroughput[1]} out of'
-      ' ${jitDartIOThroughput[0]}  |');
-  print('| AOT           | ${aotCronetThroughput[1]} out of'
-      ' ${aotCronetThroughput[0]} | ${aotDartIOThroughput[1]} out of'
-      ' ${aotDartIOThroughput[0]} |');
+  print('Considering the best appearing value only');
+  print('| Mode | package:cronet             | dart:io                   |');
+  print('| :--: |:-------------------------: | :----------------------:  |');
+  print('| JIT  | ${jitCronetThroughput[1]} (Parallel Requests:'
+      ' ${jitCronetThroughput[0]})| ${jitDartIOThroughput[1]}'
+      ' (Parallel Requests: ${jitDartIOThroughput[0]})|');
+  print('| AOT  | ${aotCronetThroughput[1]} (Parallel Requests: '
+      ' ${aotCronetThroughput[0]})| ${aotDartIOThroughput[1]}'
+      ' (Parallel Requests: ${aotDartIOThroughput[0]})|');
 }
