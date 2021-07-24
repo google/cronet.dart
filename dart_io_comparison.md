@@ -33,6 +33,14 @@ Payload: Lorem Ipsum Text
 | JIT           | 1.807 ms       | **1.801 ms**   |
 | AOT           | 1.441 ms       | **1.049 ms**   |
 
+Server: HTTP/2 example.com Server
+Payload: example.com index.html page
+
+| Mode          | package:cronet | dart:io        |
+| :-----------: |:-------------: | :------------: |
+| JIT           | **90.696 ms**  | 104.150 ms     |
+| AOT           | **89.348 ms**  | 104.050 ms     |
+
 Server: HTTP/2 Google Server
 Payload: Google Chrome Debian Package
 
@@ -43,24 +51,11 @@ Payload: Google Chrome Debian Package
 
 ### Throughput (Parallel Requests)
 
-_Contents written as, x concurrent requests succesfully completed out of y requests spawned within 1 second._
-
-Server: HTTP/2 Local Caddy Server
-Payload: example.org 's index.html page
-
-| Mode          | package:cronet     | dart:io         |
-| :-----------: |:------------------:| :--------------:|
-| JIT           |**2982 out of 4096**| 512 out of 512  |
-| AOT           |**2883 out of 4096**| 512 out of 512  |
-
-*`dart:io`'s successful requests went down to 1 when more than 512 requests are spawned.*
-
 Server: HTTP/2 example.com Server
 Payload: example.com index.html page
 
-| Mode          | package:cronet     | dart:io        |
-| :-----------: |:------------------:| :-------------:|
-| JIT           |**178 out of 512**  | 39 out of 128  |
-| AOT           |**214 out of 512**  | 49 out of 128  |
-
-*These are the best results. `dart:io`'s successful requests went down to rapidly to 0 as we reach 512 requests mark.*
+Considering the best appearing value only
+| Mode | package:cronet               | dart:io                      |
+| :--: |:-------------------------:   | :----------------------:     |
+| JIT  | 855 (Parallel Requests: 256) | 1078 (Parallel Requests: 256)|
+| AOT  | 789 (Parallel Requests: 128) | 1306 (Parallel Requests: 512)|
