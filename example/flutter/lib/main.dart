@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+// Copyright (c) 2021, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
-import 'package:flutter/services.dart';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cronet/cronet.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,31 +18,43 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  String data = '';
+  bool _fetching = false;
+  final client = HttpClient();
+  final _stopwatch = Stopwatch();
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    request();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await Cronet.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
+  void request() {
     setState(() {
-      _platformVersion = platformVersion;
+      _fetching = true;
+      data = '';
+    });
+    client
+        .getUrl(Uri.parse('http://info.cern.ch/'))
+        .then((HttpClientRequest request) {
+      _stopwatch.reset();
+      _stopwatch.start();
+      return request.close();
+    }).then((Stream<List<int>> response) {
+      response.transform(utf8.decoder).listen((contents) {
+        setState(() {
+          data += contents;
+        });
+      }, onDone: () {
+        _stopwatch.stop();
+        setState(() {
+          _fetching = false;
+        });
+      }, onError: (dynamic e) {
+        setState(() {
+          data = e.toString();
+        });
+      });
     });
   }
 
@@ -47,10 +63,20 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Cronet Flutter Example'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+            child: Column(children: [
+          Text('Cronet Version: ${client.httpClientVersion}'),
+          _fetching
+              ? CircularProgressIndicator()
+              : Expanded(child: SingleChildScrollView(child: Text(data))),
+          Text('Time taken: ${_stopwatch.elapsedMilliseconds} ms')
+        ])),
+        floatingActionButton: FloatingActionButton(
+          tooltip: 'Reload',
+          child: Icon(Icons.replay_outlined),
+          onPressed: () => request(),
         ),
       ),
     );
