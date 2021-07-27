@@ -56,8 +56,10 @@ Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
 
 ## Run Example
 
+### Dart CLI
+
 ```bash
-cd example
+cd example/cli
 dart run cronet:setup # Downloads the cronet binaries.
 dart run
 ```
