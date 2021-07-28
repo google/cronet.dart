@@ -6,13 +6,14 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 ## Supported Platforms
 
-Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
+Currently, Android and 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
 
 ## Requirements
 
 1. Dart SDK 2.12.0 or above.
 2. CMake 3.15 or above. (If on windows, Visual Studio 2019 with C++ tools)
 3. C++ compiler. (g++/clang/msvc)
+4. Android NDK if targeting Android.
 
 ## Usage
 
@@ -26,6 +27,22 @@ Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
    dart pub get
    dart run cronet:setup # Downloads the cronet binaries.
    ```
+
+   **Flutter**
+
+   ```bash
+   flutter pub get
+   flutter run cronet:setup # Downloads the cronet binaries.
+   ```
+
+   ***Note for Android:** Remember to add the following permissions in `AndroidManifest.xml` file.
+
+   ```xml
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+   ```
+
+   You may also like to enable cleartext traffic by adding `android:usesCleartextTraffic="true"` to `AndroidManifest.xml` file.
 
 3. Import
 
@@ -56,10 +73,20 @@ Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
 
 ## Run Example
 
+### Flutter
+
+```bash
+cd example/flutter
+flutter pub get
+flutter run cronet:setup # Downloads the cronet binaries.
+flutter run
+```
+
 ### Dart CLI
 
 ```bash
 cd example/cli
+dart pub get
 dart run cronet:setup # Downloads the cronet binaries.
 dart run
 ```
@@ -100,3 +127,5 @@ Note: Test results may get affected by: <https://github.com/google/cronet.dart/i
 2. Run `dart run cronet:setup build` from the root of your project.
 
 **Note for Windows:** Run `step 2` from `x64 Native Tools Command Prompt for VS 2019` shell.
+
+**Note for Android:** Copy the produced jar files in `android/libs` and `.so` files in `android/src/main/jniLibs` subdirectory from the root of this package.
