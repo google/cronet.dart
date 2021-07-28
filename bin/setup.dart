@@ -9,6 +9,7 @@ import 'package:args/command_runner.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:cronet/src/constants.dart';
 import 'package:cronet/src/third_party/ffigen/find_resource.dart';
+import 'package:path/path.dart';
 
 // Extracts a tar.gz file.
 void extract(String fileName, [String dir = '']) {
@@ -28,6 +29,30 @@ void extract(String fileName, [String dir = '']) {
   }
 }
 
+/// Places downloaded mobile binaries to proper location.
+void placeMobileBinaries(String platform, String fileName) {
+  final android =
+      '${findPackageRoot().toFilePath(windows: Platform.isWindows)}/android';
+  Directory('$android/libs').createSync();
+  Directory('$binaryStorageDir/$platform/libs').listSync().forEach((jar) {
+    if (jar is File) {
+      jar.renameSync('$android/libs/${basename(jar.path)}');
+    }
+  });
+  Directory('$android/src/main/jniLibs').createSync();
+  Directory('$binaryStorageDir/$platform/jniLibs')
+      .listSync(recursive: true)
+      .forEach((cronet) {
+    if (cronet is File) {
+      Directory('$android/src/main/jniLibs/${basename(cronet.parent.path)}')
+          .createSync();
+      cronet.renameSync(
+          '$android/src/main/jniLibs/${basename(cronet.parent.path)}'
+          '/${basename(cronet.path)}');
+    }
+  });
+}
+
 /// Places downloaded binaries to proper location.
 void placeBinaries(String platform, String fileName) {
   final logger = Logger.standard();
@@ -35,6 +60,9 @@ void placeBinaries(String platform, String fileName) {
   logger.stdout('${ansi.yellow}Extracting Cronet for $platform${ansi.none}');
   Directory(binaryStorageDir).createSync(recursive: true);
   extract(fileName, binaryStorageDir);
+  if (mobilePlatforms.contains(platform)) {
+    placeMobileBinaries(platform, fileName);
+  }
   logger.stdout('Done! Cleaning up...');
 
   File(fileName).deleteSync();
@@ -237,6 +265,9 @@ Future<void> main(List<String> args) async {
     // Targeting only 64bit OS. (At least for the time being.)
     if (validPlatforms.contains('${Platform.operatingSystem}64')) {
       await downloadCronetBinaries('${Platform.operatingSystem}64');
+    }
+    if (Directory('android').existsSync()) {
+      await downloadCronetBinaries('android');
     }
   } else {
     await runner.run(args);

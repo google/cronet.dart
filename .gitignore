@@ -27,6 +27,7 @@ doc/api/
 .history
 .vscode
 compile_commands.json
+*.log
 
 # IntelliJ
 *.iml
