@@ -28,8 +28,8 @@ final tempAndroidDownloadPath = {
 // Contains paths where downloaded binaries are located for Android.
 final androidRoot = p.fromUri(findPackageRoot().resolve('android'));
 Map<String, String> androidPaths = {
-  'cronet.jar': p.join(androidPaths['root']!, 'libs'),
-  'cronet.so': p.join(androidPaths['root']!, 'src', 'main', 'jniLibs')
+  'cronet.jar': p.join(androidRoot, 'libs'),
+  'cronet.so': p.join(androidRoot, 'src', 'main', 'jniLibs')
 };
 
 String getDylibName(String name, [String platform = '']) {
