@@ -6,44 +6,47 @@
 import 'dart:io';
 
 import 'package:cronet/src/constants.dart';
-import 'package:cronet/src/third_party/ffigen/find_resource.dart';
 import 'package:path/path.dart';
 
 void main() {
-  Directory.current = Directory.current.uri.resolve('.dart_tool/cronet').path;
+  final pwd = Directory.current;
+  Directory.current =
+      Directory.current.uri.resolve(join('.dart_tool', 'cronet')).path;
   for (final platform in desktopPlatforms) {
-    if (File('$platform/${getCronetName(platform)}').existsSync()) {
+    if (File(join(platform, getCronetName(platform))).existsSync()) {
       final result =
           Process.runSync('tar', ['-czvf', '$platform.tar.gz', platform]);
       print(result.stdout);
       print(result.stderr);
     } else {
-      print(
-          '${getCronetName(platform)} not found in .dart_tool/cronet/$platform');
+      print('${getCronetName(platform)} not found in' +
+          join('.dart_tool', 'cronet', platform));
     }
   }
   // Make tarball for android releases.
-  final android =
-      '${findPackageRoot().toFilePath(windows: Platform.isWindows)}/android';
-  if (!Directory('$android/libs').existsSync()) return;
-  Directory('android/libs').createSync(recursive: true);
-  Directory('$android/libs/').listSync().forEach((jar) {
+  Directory.current = pwd;
+  if (!Directory(androidPaths['cronet.jar']!).existsSync()) return;
+  Directory(tempAndroidDownloadPath['cronet.jar']!).createSync(recursive: true);
+  Directory(androidPaths['cronet.jar']!).listSync().forEach((jar) {
     if (jar is File) {
-      print(jar);
-      jar.copySync('android/libs/${basename(jar.path)}');
+      jar.copySync(
+          join(tempAndroidDownloadPath['cronet.jar']!, basename(jar.path)));
     }
   });
-  Directory('android/jniLibs').createSync(recursive: true);
-  Directory('$android/src/main/jniLibs/')
+  Directory(tempAndroidDownloadPath['cronet.so']!).createSync(recursive: true);
+  Directory(androidPaths['cronet.so']!)
       .listSync(recursive: true)
       .forEach((cronet) {
     if (cronet is File) {
-      print(cronet);
-      Directory('android/jniLibs/${basename(cronet.parent.path)}').createSync();
-      cronet.copySync('android/jniLibs/${basename(cronet.parent.path)}'
-          '/${basename(cronet.path)}');
+      Directory(join(tempAndroidDownloadPath['cronet.so']!,
+              basename(cronet.parent.path)))
+          .createSync(recursive: true);
+      cronet.copySync(join(tempAndroidDownloadPath['cronet.so']!,
+          basename(cronet.parent.path), basename(cronet.path)));
     }
   });
+  Directory.current =
+      Directory.current.uri.resolve(join('.dart_tool', 'cronet')).path;
   final result = Process.runSync('tar', ['-czvf', 'android.tar.gz', 'android']);
   print(result.stdout);
   print(result.stderr);

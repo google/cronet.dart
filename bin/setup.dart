@@ -31,24 +31,21 @@ void extract(String fileName, [String dir = '']) {
 
 /// Places downloaded mobile binaries to proper location.
 void placeMobileBinaries(String platform, String fileName) {
-  final android =
-      '${findPackageRoot().toFilePath(windows: Platform.isWindows)}/android';
-  Directory('$android/libs').createSync();
-  Directory('$binaryStorageDir/$platform/libs').listSync().forEach((jar) {
+  Directory(androidPaths['cronet.jar']!).createSync(recursive: true);
+  Directory(tempAndroidDownloadPath['cronet.jar']!).listSync().forEach((jar) {
     if (jar is File) {
-      jar.renameSync('$android/libs/${basename(jar.path)}');
+      jar.renameSync(join(androidPaths['cronet.jar']!, basename(jar.path)));
     }
   });
-  Directory('$android/src/main/jniLibs').createSync();
-  Directory('$binaryStorageDir/$platform/jniLibs')
+  Directory(androidPaths['cronet.so']!).createSync(recursive: true);
+  Directory(tempAndroidDownloadPath['cronet.so']!)
       .listSync(recursive: true)
       .forEach((cronet) {
     if (cronet is File) {
-      Directory('$android/src/main/jniLibs/${basename(cronet.parent.path)}')
-          .createSync();
-      cronet.renameSync(
-          '$android/src/main/jniLibs/${basename(cronet.parent.path)}'
-          '/${basename(cronet.path)}');
+      Directory(join(androidPaths['cronet.so']!, basename(cronet.parent.path)))
+          .createSync(recursive: true);
+      cronet.renameSync(join(androidPaths['cronet.so']!,
+          basename(cronet.parent.path), basename(cronet.path)));
     }
   });
 }
@@ -103,9 +100,10 @@ Future<void> downloadCronetBinaries(String platform) async {
 String _makeBuildOutputPath(String buildFolderPath, String fileName,
     {bool isDebug = false}) {
   if (Platform.isWindows) {
-    return '$buildFolderPath\\out\\${Platform.operatingSystem}\\${isDebug ? "Debug" : "Release"}\\$fileName';
+    return join(buildFolderPath, 'out', Platform.operatingSystem,
+        isDebug ? 'Debug' : 'Release', fileName);
   } else if (Platform.isMacOS || Platform.isLinux) {
-    return '$buildFolderPath/out/${Platform.operatingSystem}/$fileName';
+    return join(buildFolderPath, 'out', Platform.operatingSystem, fileName);
   } else {
     throw Exception('Unsupported Platform.');
   }
@@ -123,7 +121,7 @@ void buildWrapper() {
     final result = Process.runSync('cmake', [
       'CMakeLists.txt',
       '-B',
-      'out/${Platform.operatingSystem}',
+      join('out', Platform.operatingSystem),
       '-DCMAKE_BUILD_TYPE=Release'
     ]);
     print(result.stdout);
@@ -139,8 +137,12 @@ void buildWrapper() {
     }
     return;
   }
-  var result = Process.runSync('cmake',
-      ['--build', 'out/${Platform.operatingSystem}', '--config', 'Release']);
+  var result = Process.runSync('cmake', [
+    '--build',
+    join('out', Platform.operatingSystem),
+    '--config',
+    'Release'
+  ]);
   print(result.stdout);
   print(result.stderr);
   if (result.exitCode != 0) return;
@@ -148,7 +150,7 @@ void buildWrapper() {
   final moveLocation = '$binaryStorageDir${Platform.operatingSystem}64';
   Directory(moveLocation).createSync(recursive: true);
   final buildOutputPath = _makeBuildOutputPath(wrapperPath, getWrapperName());
-  File(buildOutputPath).copySync('$moveLocation/${getWrapperName()}');
+  File(buildOutputPath).copySync(join(moveLocation, getWrapperName()));
   logger.stdout(
       '${ansi.green}Wrapper moved to $moveLocation. Success!${ansi.none}');
   return;
@@ -169,7 +171,7 @@ void verifyCronetBinary() {
   final logger = Logger.standard();
   final ansi = Ansi(Ansi.terminalSupportsAnsi);
   final sampleSource = findPackageRoot()
-      .resolve('third_party/cronet_sample')
+      .resolve(join('third_party', 'cronet_sample'))
       .toFilePath(windows: Platform.isWindows);
   final buildName = _getCronetSampleBuildName();
   final pwd = Directory.current;
@@ -181,16 +183,16 @@ void verifyCronetBinary() {
 
   logger.stdout('Building Sample...');
   var result = Process.runSync('cmake', [
-    '$sampleSource/CMakeLists.txt',
+    join(sampleSource, 'CMakeLists.txt'),
     '-B',
-    '$sampleSource/out/${Platform.operatingSystem}'
+    join(sampleSource, 'out', Platform.operatingSystem)
   ], environment: {
     'CURRENTDIR': pwd.path
   });
   print(result.stdout);
   print(result.stderr);
   result = Process.runSync(
-      'cmake', ['--build', '$sampleSource/out/${Platform.operatingSystem}'],
+      'cmake', ['--build', join(sampleSource, 'out', Platform.operatingSystem)],
       environment: {'CURRENTDIR': pwd.path});
   print(result.stdout);
   print(result.stderr);
@@ -198,12 +200,13 @@ void verifyCronetBinary() {
       _makeBuildOutputPath(sampleSource, buildName, isDebug: true);
 
   logger.stdout('Copying...');
-  final sample = File(buildOutputPath)
-      .copySync('.dart_tool/cronet/${Platform.operatingSystem}64/$buildName');
+  final sample = File(buildOutputPath).copySync(
+      join('.dart_tool', 'cronet', Platform.operatingSystem + '64', buildName));
 
   logger.stdout('Verifying...');
   result = Process.runSync(
-      '.dart_tool/cronet/${Platform.operatingSystem}64/$buildName', []);
+      join('.dart_tool', 'cronet', Platform.operatingSystem + '64', buildName),
+      []);
   if (result.exitCode == 0) {
     logger.stdout('${ansi.green}Verified! Cronet is working fine.${ansi.none}');
   } else {

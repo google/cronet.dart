@@ -4,6 +4,10 @@
 
 import 'dart:io' show Platform;
 
+import 'package:path/path.dart' as p;
+
+import 'third_party/ffigen/find_resource.dart';
+
 const desktopPlatforms = ['linux64', 'windows64', 'macos64'];
 const mobilePlatforms = ['android'];
 List<String> get validPlatforms => desktopPlatforms + mobilePlatforms;
@@ -14,6 +18,19 @@ const cronetVersion = "86.0.4240.198";
 const wrapperVersion = "1";
 
 const binaryStorageDir = '.dart_tool/cronet/';
+
+// Contains paths where downloaded binaries are stored temporarily.
+final tempAndroidDownloadPath = {
+  'cronet.jar': p.join(binaryStorageDir, 'android', 'libs'),
+  'cronet.so': p.join(binaryStorageDir, 'android', 'jniLibs')
+};
+
+// Contains paths where downloaded binaries are located for Android.
+final androidRoot = p.fromUri(findPackageRoot().resolve('android'));
+Map<String, String> androidPaths = {
+  'cronet.jar': p.join(androidPaths['root']!, 'libs'),
+  'cronet.so': p.join(androidPaths['root']!, 'src', 'main', 'jniLibs')
+};
 
 String getDylibName(String name, [String platform = '']) {
   var ext = '.so';
