@@ -27,7 +27,7 @@ final tempAndroidDownloadPath = {
 
 // Contains paths where downloaded binaries are located for Android.
 final androidRoot = p.fromUri(findPackageRoot().resolve('android'));
-Map<String, String> androidPaths = {
+final androidPaths = {
   'cronet.jar': p.join(androidRoot, 'libs'),
   'cronet.so': p.join(androidRoot, 'src', 'main', 'jniLibs')
 };
