@@ -29,3 +29,7 @@ flutter:
       android:
         package: dev.google.cronet
         pluginClass: CronetPlugin
+      linux:
+        pluginClass: CronetPlugin
+      windows:
+        pluginClass: CronetPlugin
