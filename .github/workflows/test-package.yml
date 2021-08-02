@@ -32,12 +32,12 @@ jobs:
           sdk: ${{ matrix.sdk }}
       - id: install
         name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed .
+        run: flutter format --set-exit-if-changed .
         if: always() && steps.install.outcome == 'success'
       - name: Analyze code
-        run: dart analyze --fatal-infos
+        run: flutter analyze --fatal-infos
         if: always() && steps.install.outcome == 'success'
 
   # Run tests on a matrix consisting of two dimensions:
@@ -59,10 +59,10 @@ jobs:
           sdk: ${{ matrix.sdk }}
       - id: install
         name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
       - id: get_binaries
         name: Download/Build Cronet Binaries
-        run: dart run cronet:setup
+        run: flutter pub run cronet:setup
       - name: Run VM tests
-        run: dart test --platform vm
+        run: flutter test
         if: always() && steps.install.outcome == 'success'

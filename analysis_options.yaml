@@ -5,7 +5,6 @@
 include: package:lints/recommended.yaml
 
 analyzer:
-  exclude: [example/flutter/**]
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
