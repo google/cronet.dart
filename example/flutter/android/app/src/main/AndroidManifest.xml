@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.google.cronet_example">
-    <!-- Flutter Boilerplate Modifications: Internet & netwrok Permissions -->
+    <!-- Flutter Boilerplate Modifications: Internet & network permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
    <!-- Flutter Boilerplate Modifications: Enable cleartext traffic -->
