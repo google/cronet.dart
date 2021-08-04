@@ -1,3 +1,7 @@
+## 0.0.4+1
+
+* Fix benchmarking instructions.
+
 ## 0.0.4
 
 * Added support for Android and Flutter Desktops (Windows/Linux).
