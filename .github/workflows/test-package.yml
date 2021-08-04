@@ -18,7 +18,7 @@ env:
 
 jobs:
   # Check code formatting and static analysis on a single OS (linux)
-  # against Dart stable.
+  # against Flutter stable.
   analyze:
     runs-on: ubuntu-latest
     strategy:
@@ -27,9 +27,12 @@ jobs:
         sdk: [stable]
     steps:
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1.0
+      - uses: actions/setup-java@v1
         with:
-          sdk: ${{ matrix.sdk }}
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ matrix.sdk }}
       - id: install
         name: Install dependencies
         run: flutter pub get
@@ -51,12 +54,15 @@ jobs:
       matrix:
         # Add macos-latest and/or windows-latest if relevant for this package.
         os: [ubuntu-latest, macos-latest, windows-latest]
-        sdk: [2.13.0, dev]
+        sdk: [stable, dev]
     steps:
       - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1.0
+      - uses: actions/setup-java@v1
         with:
-          sdk: ${{ matrix.sdk }}
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ matrix.sdk }}
       - id: install
         name: Install dependencies
         run: flutter pub get

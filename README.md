@@ -6,7 +6,7 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 ## Supported Platforms
 
-Currently, Android and 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
+Currently, 64 bit Android and Desktop Platforms (Linux, Windows and MacOS) are supported.
 
 ## Requirements
 
