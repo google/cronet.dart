@@ -151,7 +151,7 @@ char *statusText(Cronet_UrlResponseInfoPtr info, int statusCode, int lBound,
                  int uBound) {
   if (!(statusCode >= lBound && statusCode <= uBound)) {
     Cronet_String status = _Cronet_UrlResponseInfo_http_status_text_get(info);
-    int statusLen = strlen(status);
+    size_t statusLen = strlen(status);
     char *statusDup = (char *)malloc(statusLen + 1);
     memcpy(statusDup, status, statusLen + 1);
     return statusDup;
@@ -186,7 +186,7 @@ void OnRedirectReceived(Cronet_UrlRequestCallbackPtr self,
                         Cronet_UrlRequestPtr request,
                         Cronet_UrlResponseInfoPtr info,
                         Cronet_String newLocationUrl) {
-  int len = strlen(newLocationUrl);
+  size_t len = strlen(newLocationUrl);
   char *newLoc = (char *)malloc(len + 1);
   memcpy(newLoc, newLocationUrl, len + 1);
   int statusCode = _Cronet_UrlResponseInfo_http_status_code_get(info);
@@ -231,7 +231,7 @@ void OnSucceeded(Cronet_UrlRequestCallbackPtr self,
 void OnFailed(Cronet_UrlRequestCallbackPtr self, Cronet_UrlRequestPtr request,
               Cronet_UrlResponseInfoPtr info, Cronet_ErrorPtr error) {
   Cronet_String errStr = _Cronet_Error_message_get(error);
-  int len = strlen(errStr);
+  size_t len = strlen(errStr);
   char *dupStr = (char *)malloc(len + 1);
   memcpy(dupStr, errStr, len + 1);
   DispatchCallback("OnFailed", request, CallbackArgBuilder(1, dupStr));

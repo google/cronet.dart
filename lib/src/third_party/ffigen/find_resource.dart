@@ -60,5 +60,8 @@ bool isCronetAvailable(String platform) {
               .existsSync() &&
           File.fromUri(Directory.current.uri.resolve(getCronetName(platform)))
               .existsSync();
-  return cronetBinaries || inRoot;
+  final inAndroidDir = platform == 'android' &&
+      File.fromUri(findPackageRoot().resolve('android/libs/cronet_api.jar'))
+          .existsSync();
+  return cronetBinaries || inRoot || inAndroidDir;
 }

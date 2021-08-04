@@ -6,13 +6,14 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 ## Supported Platforms
 
-Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
+Currently, 64 bit Android and Desktop Platforms (Linux, Windows and MacOS) are supported.
 
 ## Requirements
 
 1. Dart SDK 2.12.0 or above.
-2. CMake 3.15 or above. (If on windows, Visual Studio 2019 with C++ tools)
+2. CMake 3.10 or above. (If on windows, Visual Studio 2019 with C++ tools)
 3. C++ compiler. (g++/clang/msvc)
+4. Android NDK if targeting Android.
 
 ## Usage
 
@@ -20,12 +21,21 @@ Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
 
 2. Run this from the `root` of your project.
 
-   **Dart CLI**
-
    ```bash
-   dart pub get
-   dart run cronet:setup # Downloads the cronet binaries.
+   flutter pub get
+   flutter pub run cronet:setup # Downloads the cronet binaries.
    ```
+
+   We need to use `flutter pub` even if we want to use it with Dart CLI. See <https://github.com/dart-lang/pub/issues/2606> for further details.
+
+   ***Note for Android:** Remember to Add the following permissions in `AndroidManifest.xml` file.
+
+   ```xml
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+   ```
+
+   Optionally, enable cleartext traffic by adding `android:usesCleartextTraffic="true"` to `AndroidManifest.xml` file.
 
 3. Import
 
@@ -56,22 +66,34 @@ Currently, 64 bit Desktop Platforms (Linux, Windows and MacOS) are supported.
 
 ## Run Example
 
+### Flutter
+
 ```bash
-cd example
-dart run cronet:setup # Downloads the cronet binaries.
-dart run
+cd example/flutter
+flutter pub get
+flutter pub run cronet:setup # Downloads the cronet binaries.
+flutter run
+```
+
+### Dart CLI
+
+```bash
+cd example/cli
+flutter pub get
+flutter pub run cronet:setup # Downloads the cronet binaries.
+dart run bin/example_dart.dart
 ```
 
 ## Run Tests
 
 ```bash
-dart pub get
-dart run cronet:setup # Downloads the cronet binaries.
-dart test --platform vm
+flutter pub get
+flutter pub run cronet:setup # Downloads the cronet binaries.
+flutter test
 ```
 
 You can also verify your cronet binaries using `dart run cronet:setup verify`.
-Make sure to have `cmake 3.15`.
+Make sure to have `cmake 3.10`.
 
 ## Benchmarking
 
@@ -98,3 +120,5 @@ Note: Test results may get affected by: <https://github.com/google/cronet.dart/i
 2. Run `dart run cronet:setup build` from the root of your project.
 
 **Note for Windows:** Run `step 2` from `x64 Native Tools Command Prompt for VS 2019` shell.
+
+**Note for Android:** Copy the produced jar files in `android/libs` and `.so` files in `android/src/main/jniLibs` subdirectory from the root of this package.

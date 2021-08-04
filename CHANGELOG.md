@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Added support for Android and Flutter Desktops (Windows/Linux).
+
 ## 0.0.3
 
 * Using `package:args` for handling CLI arguments.

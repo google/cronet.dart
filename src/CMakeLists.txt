@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
 set(PROJECT_NAME "cronet")
 project(${PROJECT_NAME} LANGUAGES C CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -8,7 +8,9 @@ set(CMAKE_CXX_STANDARD 11)
 # not be changed
 set(PLUGIN_NAME "wrapper")
 
-add_compile_definitions(DART_SHARED_LIB)
+if(NOT ANDROID)
+  add_compile_definitions(DART_SHARED_LIB)
+endif (NOT ANDROID)
 
 add_library(${PLUGIN_NAME} SHARED
   "wrapper.cc"
@@ -26,11 +28,6 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/cronet"
 
 )
-if (WIN32)
-  set(DART_DIR "C:/tools/dart-sdk/bin")
-  find_library(DART_LIB dart.lib ${DART_DIR})
-  target_link_libraries(${PLUGIN_NAME} PRIVATE ${DART_LIB})
-endif (WIN32)
 
 if (MSVC)
   set(MSVC_DISABLED_WARNINGS_LIST
