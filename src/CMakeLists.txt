@@ -28,11 +28,6 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/cronet"
 
 )
-if (WIN32)
-  set(DART_DIR "C:/tools/dart-sdk/bin")
-  find_library(DART_LIB dart.lib ${DART_DIR})
-  target_link_libraries(${PLUGIN_NAME} PRIVATE ${DART_LIB})
-endif (WIN32)
 
 if (MSVC)
   set(MSVC_DISABLED_WARNINGS_LIST
