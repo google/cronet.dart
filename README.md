@@ -100,8 +100,8 @@ Make sure to have `cmake 3.10`.
 See benchmark [summary](dart_io_comparison.md#performance-comparison) and [extensive reports](https://github.com/google/cronet.dart/issues/3) for comparison with `dart:io`.
 
 ```bash
-dart pub get
-dart run cronet:setup # Downloads the cronet binaries.
+flutter pub get
+flutter pub run cronet:setup # Downloads the cronet binaries.
 dart run benchmark/latency.dart # For sequential requests benchmark.
 dart run benchmark/throughput.dart # For parallel requests benchmark.
 dart run benchmark/run_all.dart # To run all the benchmarks and get reports.
