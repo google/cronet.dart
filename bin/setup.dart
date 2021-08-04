@@ -145,7 +145,7 @@ void buildWrapper() {
   ]);
   print(result.stdout);
   print(result.stderr);
-  if (result.exitCode != 0) return;
+  if (result.exitCode != 0) exit(result.exitCode);
   Directory.current = pwd;
   final moveLocation = '$binaryStorageDir${Platform.operatingSystem}64';
   Directory(moveLocation).createSync(recursive: true);
