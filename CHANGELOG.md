@@ -1,6 +1,10 @@
+## 0.0.4+2
+
+* Added `HttpClient` force close feature.
+
 ## 0.0.4+1
 
-* Fix benchmarking instructions.
+* Fixed benchmarking instructions.
 
 ## 0.0.4
 
