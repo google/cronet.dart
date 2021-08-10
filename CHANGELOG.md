@@ -1,3 +1,7 @@
+## 0.0.4+3
+
+* Fixed type casting issue between `Uint8List` and `Uint64List` while passing callback arguments from C side to Dart side.
+
 ## 0.0.4+2
 
 * Added `HttpClient` force close feature.
