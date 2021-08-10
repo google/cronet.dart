@@ -132,7 +132,7 @@ Dart_CObject CallbackArgBuilder(int num, ...) {
   }
 
   c_request_data.type = Dart_CObject_kExternalTypedData;
-  c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint64;
+  c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint8;
   c_request_data.value.as_external_typed_data.length = sizeof(uint64_t) * num;
   c_request_data.value.as_external_typed_data.data =
       static_cast<uint8_t *>(request_buffer);

@@ -1,3 +1,9 @@
+## 0.0.4+3
+
+* Fixed type casting issue between `Uint8List` and `Uint64List` while passing callback arguments from C side to Dart side.
+
+Note the changes in behavior of `Dart_PostCObject` with `Dart_TypedData_kUint64` at <https://dart-review.googlesource.com/c/sdk/+/207865>.
+
 ## 0.0.4+2
 
 * Added `HttpClient` force close feature.
