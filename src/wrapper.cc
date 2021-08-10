@@ -124,16 +124,16 @@ Dart_CObject CallbackArgBuilder(int num, ...) {
   Dart_CObject c_request_data;
   va_list valist;
   va_start(valist, num);
-  void *request_buffer = malloc(sizeof(uint64_t) * num);
-  uint64_t *buf = reinterpret_cast<uint64_t *>(request_buffer);
+  void *request_buffer = malloc(sizeof(intptr_t) * num);
+  intptr_t *buf = reinterpret_cast<intptr_t *>(request_buffer);
 
   for (int i = 0; i < num; i++) {
-    buf[i] = va_arg(valist, uint64_t);
+    buf[i] = va_arg(valist, intptr_t);
   }
 
   c_request_data.type = Dart_CObject_kExternalTypedData;
-  c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint64;
-  c_request_data.value.as_external_typed_data.length = sizeof(uint64_t) * num;
+  c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint8;
+  c_request_data.value.as_external_typed_data.length = sizeof(intptr_t) * num;
   c_request_data.value.as_external_typed_data.data =
       static_cast<uint8_t *>(request_buffer);
   c_request_data.value.as_external_typed_data.peer = request_buffer;
