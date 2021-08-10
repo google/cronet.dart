@@ -76,6 +76,16 @@ class HttpClientRequestImpl implements HttpClientRequest {
   /// Implemented by: http_client.dart.
   final void Function(HttpClientRequest) _clientCleanup;
 
+  /// Pointer associated with [this] request.
+  ///
+  /// This is not a part of public api.
+  Pointer<Cronet_UrlRequest> get requestPtr => _request;
+
+  /// [CallbackHandler] handling this request.
+  ///
+  /// This is not a part of public api.
+  CallbackHandler get callbackHandler => _callbackHandler;
+
   @override
   Encoding encoding;
 

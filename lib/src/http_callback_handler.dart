@@ -48,10 +48,13 @@ class CallbackHandler {
   /// Registers the [NativePort] to the cronet side.
   CallbackHandler(this.executor, this.receivePort);
 
-  /// [Stream] controller for [HttpClientResponse]
+  /// [Stream] for [HttpClientResponse].
   Stream<List<int>> get stream {
     return _controller.stream;
   }
+
+  /// [Stream] controller for [HttpClientResponse].
+  StreamController<List<int>> get controller => _controller;
 
   // Clean up tasks for a request.
   //

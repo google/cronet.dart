@@ -40,7 +40,24 @@ void main() {
       final resp = await request.close();
       client.close();
       final dataStream = resp.transform(utf8.decoder);
-      expect(dataStream, emitsInOrder(<dynamic>[equals(sentData), emitsDone]));
+      expect(dataStream, emitsInOrder(<Matcher>[equals(sentData), emitsDone]));
+    });
+
+    test(
+        'Force closing after starting a request cancels previous connections'
+        ' with error event', () async {
+      final client = HttpClient();
+      final request =
+          await client.openUrl('GET', Uri.parse('http://$host:$port'));
+      final resp = await request.close();
+      client.close(force: true);
+      final dataStream = resp.transform(utf8.decoder);
+      expect(
+          dataStream,
+          emitsInAnyOrder(<Matcher>[
+            mayEmit(isA<Stream<String>>()),
+            emitsInOrder(<Matcher>[emitsError(isA<HttpException>()), emitsDone])
+          ]));
     });
 
     tearDown(() {

@@ -42,7 +42,7 @@ class HttpClient {
   final Pointer<Cronet_Engine> _cronetEngine;
   // Keep all the request reference in a list so if the client is being
   // explicitly closed, we can clean up the requests.
-  final _requests = List<HttpClientRequest>.empty(growable: true);
+  final _requests = List<HttpClientRequestImpl>.empty(growable: true);
   var _stop = false;
 
   static const int defaultHttpPort = 80;
@@ -118,11 +118,24 @@ class HttpClient {
 
   /// Shuts down the [HttpClient].
   ///
-  /// The HttpClient will be kept alive until all active connections are done.
-  /// Trying to establish a new connection after calling close, will throw an
-  /// exception.
-  void close() {
+  /// The [HttpClient] will be kept alive until all active connections are done.
+  /// If [force] is true any active connections will be closed to immediately
+  /// release all resources. These closed connections will receive an error
+  /// event to indicate that the client was shut down. Trying to establish a
+  /// new connection after calling close, will throw an [Exception].
+  void close({bool force = false}) {
+    if (_stop) return;
     _stop = true;
+    if (force) {
+      // Deep copying the list because the original list may get modified
+      // during the traversal as cronet sends onCancel callbacks.
+      final requests = _requests.toList();
+      for (final request in requests) {
+        cronet.Cronet_UrlRequest_Cancel(request.requestPtr);
+        request.callbackHandler.controller
+            .addError(HttpException('HttpClient: Force Closed'));
+      }
+    }
   }
 
   /// Constructs [Uri] from [host], [port] & [path].
