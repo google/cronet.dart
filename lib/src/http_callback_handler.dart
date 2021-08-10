@@ -98,7 +98,7 @@ class CallbackHandler {
     receivePort.listen((dynamic message) {
       final reqMessage =
           _CallbackRequestMessage.fromCppMessage(message as List);
-      Uint64List args = reqMessage.data.buffer.asUint64List();
+      final args = reqMessage.data.buffer.asUint64List();
 
       switch (reqMessage.method) {
         case 'OnRedirectReceived':
