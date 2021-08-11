@@ -9,6 +9,7 @@
 #include "../third_party/dart-sdk/dart_tools_api.h"
 #include <iostream>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
 
@@ -124,11 +125,14 @@ Dart_CObject CallbackArgBuilder(int num, ...) {
   Dart_CObject c_request_data;
   va_list valist;
   va_start(valist, num);
-  void *request_buffer = malloc(sizeof(uint64_t) * num);
+  // Initializing [request_buffer] with 0 will allow us to ensure padding in
+  // the higher 32 bits of 64 bit uint in case of systems with word size of 4
+  // bytes.
+  void *request_buffer = calloc(num, sizeof(uint64_t));
   uint64_t *buf = reinterpret_cast<uint64_t *>(request_buffer);
 
   for (int i = 0; i < num; i++) {
-    buf[i] = va_arg(valist, uint64_t);
+    buf[i] = va_arg(valist, intptr_t);
   }
 
   c_request_data.type = Dart_CObject_kExternalTypedData;
