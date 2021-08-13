@@ -128,8 +128,10 @@ Dart_CObject CallbackArgBuilder(int num, ...) {
   void *request_buffer = malloc(sizeof(uint64_t) * num);
   uint64_t *buf = reinterpret_cast<uint64_t *>(request_buffer);
 
-  // uintptr_r will get implicitly casted to uint64_t. So, in a 32 bit machine,
-  // the upper 32 bit of buf[i] will be 0 extended automatically.
+  // uintptr_r will get implicitly casted to uint64_t. So, when the code is
+  // executed in 32 bit mode, the upper 32 bit of buf[i] will be 0 extended
+  // automatically. This is required because, on the Dart side these addresses
+  // are viewed as 64 bit integers.
   for (int i = 0; i < num; i++) {
     buf[i] = va_arg(valist, uintptr_t);
   }
