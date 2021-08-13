@@ -1,3 +1,7 @@
+## 0.0.4+4
+
+* Added support for 32 bit architecture.
+
 ## 0.0.4+3
 
 * Fixed type casting issue between `Uint8List` and `Uint64List` while passing callback arguments from C side to Dart side.
