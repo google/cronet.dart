@@ -14,6 +14,7 @@ import 'exceptions.dart';
 import 'globals.dart';
 import 'http_callback_handler.dart';
 import 'http_client_response.dart';
+import 'http_headers.dart';
 import 'third_party/cronet/generated_bindings.dart';
 
 /// HTTP request for a client connection.
@@ -61,6 +62,8 @@ abstract class HttpClientRequest implements io.IOSink {
 
   /// The uri of the request.
   Uri get uri;
+
+  HttpHeaders get headers;
 }
 
 /// Implementation of [HttpClientRequest].
@@ -70,6 +73,8 @@ class HttpClientRequestImpl implements HttpClientRequest {
   final Pointer<Cronet_Engine> _cronetEngine;
   final CallbackHandler _callbackHandler;
   final Pointer<Cronet_UrlRequest> _request;
+  final _requestParams = cronet.Cronet_UrlRequestParams_Create();
+  late final HttpHeadersImpl _headers;
 
   /// Holds the function to clean up after the request is done (if nessesary).
   ///
@@ -97,6 +102,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
       : _callbackHandler =
             CallbackHandler(wrapper.SampleExecutorCreate(), ReceivePort()),
         _request = cronet.Cronet_UrlRequest_Create() {
+    _headers = HttpHeadersImpl(_requestParams);
     // Register the native port to C side.
     wrapper.RegisterCallbackHandler(
         _callbackHandler.receivePort.sendPort.nativePort, _request.cast());
@@ -104,11 +110,10 @@ class HttpClientRequestImpl implements HttpClientRequest {
 
   // Starts the request.
   void _startRequest() {
-    final requestParams = cronet.Cronet_UrlRequestParams_Create();
-    if (requestParams == nullptr) throw Error();
+    if (_requestParams == nullptr) throw Error();
     // TODO: ISSUE https://github.com/dart-lang/ffigen/issues/22
     cronet.Cronet_UrlRequestParams_http_method_set(
-        requestParams, _method.toNativeUtf8().cast<Int8>());
+        _requestParams, _method.toNativeUtf8().cast<Int8>());
     wrapper.InitSampleExecutor(_callbackHandler.executor);
     final cronetCallbacks = cronet.Cronet_UrlRequestCallback_CreateWith(
       wrapper.addresses.OnRedirectReceived.cast(),
@@ -122,7 +127,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
         _request,
         _cronetEngine,
         _uri.toString().toNativeUtf8().cast<Int8>(),
-        requestParams,
+        _requestParams,
         cronetCallbacks,
         wrapper.SampleExecutor_Cronet_ExecutorPtr_get(_callbackHandler.executor)
             .cast());
@@ -138,13 +143,14 @@ class HttpClientRequestImpl implements HttpClientRequest {
     _callbackHandler.listen(_request, () => _clientCleanup(this));
   }
 
-  /// Returns [Future] of [HttpClientResponse] which can be listened for server
-  /// response.
+  /// Closes the request for input.
   ///
-  /// Throws [UrlRequestError] if request can't be initiated.
+  /// Returns [Future] of [HttpClientResponse] which can be listened for server
+  /// response. Throws [UrlRequestError] if request can't be initiated.
   @override
   Future<HttpClientResponse> close() {
     return Future(() {
+      _headers.isImmutable = true;
       _startRequest();
       return HttpClientResponseImpl(_callbackHandler.stream);
     });
@@ -235,4 +241,8 @@ class HttpClientRequestImpl implements HttpClientRequest {
     write(object);
     write('\n');
   }
+
+  @override
+  // TODO: implement headers
+  HttpHeaders get headers => _headers;
 }
