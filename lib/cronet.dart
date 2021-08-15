@@ -7,4 +7,5 @@ export 'src/exceptions.dart';
 export 'src/http_client.dart';
 export 'src/http_client_request.dart' hide HttpClientRequestImpl;
 export 'src/http_client_response.dart' hide HttpClientResponseImpl;
+export 'src/http_headers.dart' hide HttpHeadersImpl;
 export 'src/quic_hint.dart';

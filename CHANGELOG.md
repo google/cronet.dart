@@ -1,3 +1,7 @@
+## 0.0.4+5
+
+* Added support for adding user specified headers in `HttpClientRequest`.
+
 ## 0.0.4+4
 
 * Added support for 32 bit architecture.
