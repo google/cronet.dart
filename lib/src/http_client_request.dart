@@ -243,6 +243,5 @@ class HttpClientRequestImpl implements HttpClientRequest {
   }
 
   @override
-  // TODO: implement headers
   HttpHeaders get headers => _headers;
 }
