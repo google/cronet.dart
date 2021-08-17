@@ -12,8 +12,17 @@ import 'third_party/cronet/generated_bindings.dart';
 /// Headers for HTTP requests.
 ///
 /// In some situations, headers are immutable:
-/// * [HttpClientRequest] have immutable headers from the moment the body is
-/// written to.
+/// [HttpClientRequest] have immutable headers from the moment the body is
+/// written to. In this situation, the mutating methods throw exceptions.
+///
+/// For all operations on HTTP headers the header name is case-insensitive.
+///
+/// To set the value of a header use the `set()` method:
+///
+/// ```dart
+/// request.headers.set('Content-Type',
+///                    'application/json');
+/// ```
 abstract class HttpHeaders {
   /// Sets the header [name] to [value].
   void set(String name, Object value);

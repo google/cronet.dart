@@ -145,8 +145,8 @@ class HttpClientRequestImpl implements HttpClientRequest {
 
   /// Closes the request for input.
   ///
-  /// Returns [Future] of [HttpClientResponse] which can be listened for server
-  /// response. Throws [UrlRequestError] if request can't be initiated.
+  /// Returns [Future] of [HttpClientResponse] which can be listened to the
+  /// server response. Throws [UrlRequestError] if request can't be initiated.
   @override
   Future<HttpClientResponse> close() {
     return Future(() {

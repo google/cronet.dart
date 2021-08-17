@@ -1,4 +1,4 @@
-## 0.0.4+5
+## 0.0.5
 
 * Added support for adding user specified headers in `HttpClientRequest`.
 
