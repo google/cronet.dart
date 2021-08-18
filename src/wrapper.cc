@@ -4,13 +4,12 @@
 
 #include "wrapper.h"
 #include "../third_party/cronet_impl/sample_executor.h"
-#include "wrapper_utils.h"
 #include "upload_data_provider.h"
+#include "wrapper_utils.h"
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Versioning
@@ -223,33 +222,32 @@ UploadDataProviderPtr UploadDataProviderCreate() {
 void UploadDataProviderDestroy(UploadDataProviderPtr upload_data_provider) {
   delete upload_data_provider;
 }
-void UploadDataProviderSetData(UploadDataProviderPtr self, char *data,
-                               int64_t length) {
-  std::cout << self << std::endl;
-  self->SetData(data, length);
-}
 
-void UploadDataProviderInit(UploadDataProviderPtr self, int64_t length, Cronet_UrlRequestPtr request) {
+void UploadDataProviderInit(UploadDataProviderPtr self, int64_t length,
+                            Cronet_UrlRequestPtr request) {
   self->Init(length, request);
 }
 
 int64_t UploadDataProvider_GetLength(Cronet_UploadDataProviderPtr self) {
-  std::cout << self << std::endl;
-  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
   return instance->GetLength();
 }
 void UploadDataProvider_Read(Cronet_UploadDataProviderPtr self,
                              Cronet_UploadDataSinkPtr upload_data_sink,
                              Cronet_BufferPtr buffer) {
-  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
   instance->ReadFunc(upload_data_sink, buffer);
 }
 void UploadDataProvider_Rewind(Cronet_UploadDataProviderPtr self,
                                Cronet_UploadDataSinkPtr upload_data_sink) {
-  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
   instance->RewindFunc(upload_data_sink);
 }
 void UploadDataProvider_CloseFunc(Cronet_UploadDataProviderPtr self) {
-  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
   instance->CloseFunc();
 }

@@ -19,7 +19,6 @@
 class UploadDataProvider {
     public:
         // Sets the data to be uploaded.
-        void SetData(char *data, int64_t length);
         void Init(int64_t length, Cronet_UrlRequestPtr request_);
         void ReadFunc(Cronet_UploadDataSinkPtr upload_data_sink,
                 Cronet_BufferPtr buffer);
@@ -28,13 +27,10 @@ class UploadDataProvider {
         // Gets the length of the data to be uploaded.
         int64_t GetLength();
     private:
-        char *data_;
-        // Length of the data.
+        // Length of the data to be uploaded.
         int64_t length_ = 0;
         // Pointer to the request |this| is providing to.
         Cronet_UrlRequestPtr request_;
-        // Holds how many bytes of data has been uploaded.
-        uint64_t bytesSent_ = 0;
 };
 
 #endif // UPLOAD_DATA_PROVIDER_H_

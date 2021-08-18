@@ -105,28 +105,6 @@ class Wrapper {
   late final _dart_InitCronetExecutorApi _InitCronetExecutorApi =
       _InitCronetExecutorApi_ptr.asFunction<_dart_InitCronetExecutorApi>();
 
-  void InitCronetUploadApi(
-    ffi.Pointer<ffi.NativeFunction<_typedefC_15>> Cronet_Buffer_GetData,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_16>> Cronet_Buffer_GetSize,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_17>>
-        Cronet_UploadDataSink_OnReadSucceeded,
-    ffi.Pointer<ffi.NativeFunction<_typedefC_18>>
-        Cronet_UploadDataSink_OnRewindSucceeded,
-  ) {
-    return _InitCronetUploadApi(
-      Cronet_Buffer_GetData,
-      Cronet_Buffer_GetSize,
-      Cronet_UploadDataSink_OnReadSucceeded,
-      Cronet_UploadDataSink_OnRewindSucceeded,
-    );
-  }
-
-  late final _InitCronetUploadApi_ptr =
-      _lookup<ffi.NativeFunction<_c_InitCronetUploadApi>>(
-          'InitCronetUploadApi');
-  late final _dart_InitCronetUploadApi _InitCronetUploadApi =
-      _InitCronetUploadApi_ptr.asFunction<_dart_InitCronetUploadApi>();
-
   void RegisterHttpClient(
     Object h,
     ffi.Pointer<Cronet_EnginePtr> ce,
@@ -365,25 +343,6 @@ class Wrapper {
       _UploadDataProviderDestroy_ptr.asFunction<
           _dart_UploadDataProviderDestroy>();
 
-  void UploadDataProviderSetData(
-    ffi.Pointer<UploadDataProvider> self,
-    ffi.Pointer<ffi.Int8> data,
-    int length,
-  ) {
-    return _UploadDataProviderSetData(
-      self,
-      data,
-      length,
-    );
-  }
-
-  late final _UploadDataProviderSetData_ptr =
-      _lookup<ffi.NativeFunction<_c_UploadDataProviderSetData>>(
-          'UploadDataProviderSetData');
-  late final _dart_UploadDataProviderSetData _UploadDataProviderSetData =
-      _UploadDataProviderSetData_ptr.asFunction<
-          _dart_UploadDataProviderSetData>();
-
   void UploadDataProviderInit(
     ffi.Pointer<UploadDataProvider> self,
     int length,
@@ -515,11 +474,11 @@ class Cronet_ExecutorPtr extends ffi.Opaque {}
 
 class Cronet_RunnablePtr extends ffi.Opaque {}
 
-class Cronet_UploadDataSinkPtr extends ffi.Opaque {}
-
 class Cronet_UrlRequest extends ffi.Opaque {}
 
 class Cronet_UrlRequestCallbackPtr extends ffi.Opaque {}
+
+class Cronet_UploadDataSinkPtr extends ffi.Opaque {}
 
 typedef _c_VersionString = ffi.Pointer<ffi.Int8> Function();
 
@@ -642,42 +601,6 @@ typedef _dart_InitCronetExecutorApi = void Function(
   ffi.Pointer<ffi.NativeFunction<_typedefC_12>> Cronet_Executor_Destroy,
   ffi.Pointer<ffi.NativeFunction<_typedefC_13>> Cronet_Runnable_Run,
   ffi.Pointer<ffi.NativeFunction<_typedefC_14>> Cronet_Runnable_Destroy,
-);
-
-typedef _typedefC_15 = ffi.Pointer<ffi.Void> Function(
-  ffi.Pointer<Cronet_BufferPtr>,
-);
-
-typedef _typedefC_16 = ffi.Uint64 Function(
-  ffi.Pointer<Cronet_BufferPtr>,
-);
-
-typedef _typedefC_17 = ffi.Void Function(
-  ffi.Pointer<Cronet_UploadDataSinkPtr>,
-  ffi.Uint64,
-  ffi.Uint8,
-);
-
-typedef _typedefC_18 = ffi.Void Function(
-  ffi.Pointer<Cronet_UploadDataSinkPtr>,
-);
-
-typedef _c_InitCronetUploadApi = ffi.Void Function(
-  ffi.Pointer<ffi.NativeFunction<_typedefC_15>> Cronet_Buffer_GetData,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_16>> Cronet_Buffer_GetSize,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_17>>
-      Cronet_UploadDataSink_OnReadSucceeded,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_18>>
-      Cronet_UploadDataSink_OnRewindSucceeded,
-);
-
-typedef _dart_InitCronetUploadApi = void Function(
-  ffi.Pointer<ffi.NativeFunction<_typedefC_15>> Cronet_Buffer_GetData,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_16>> Cronet_Buffer_GetSize,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_17>>
-      Cronet_UploadDataSink_OnReadSucceeded,
-  ffi.Pointer<ffi.NativeFunction<_typedefC_18>>
-      Cronet_UploadDataSink_OnRewindSucceeded,
 );
 
 typedef _c_RegisterHttpClient = ffi.Void Function(
@@ -830,18 +753,6 @@ typedef _c_UploadDataProviderDestroy = ffi.Void Function(
 
 typedef _dart_UploadDataProviderDestroy = void Function(
   ffi.Pointer<UploadDataProvider> upload_data_provided,
-);
-
-typedef _c_UploadDataProviderSetData = ffi.Void Function(
-  ffi.Pointer<UploadDataProvider> self,
-  ffi.Pointer<ffi.Int8> data,
-  ffi.Int64 length,
-);
-
-typedef _dart_UploadDataProviderSetData = void Function(
-  ffi.Pointer<UploadDataProvider> self,
-  ffi.Pointer<ffi.Int8> data,
-  int length,
 );
 
 typedef _c_UploadDataProviderInit = ffi.Void Function(

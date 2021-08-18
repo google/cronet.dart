@@ -75,6 +75,8 @@ class HttpClientRequestImpl implements HttpClientRequest {
   final Pointer<Cronet_UrlRequest> _request;
   final _requestParams = cronet.Cronet_UrlRequestParams_Create();
   late final HttpHeadersImpl _headers;
+  final io.BytesBuilder _dataToUpload = io.BytesBuilder();
+  bool isImmutable = false;
 
   /// Holds the function to clean up after the request is done (if nessesary).
   ///
@@ -123,21 +125,21 @@ class HttpClientRequestImpl implements HttpClientRequest {
       wrapper.addresses.OnFailed.cast(),
       wrapper.addresses.OnCanceled.cast(),
     );
-    final provider = cronet.Cronet_UploadDataProvider_CreateWith(
-        wrapper.addresses.UploadDataProvider_GetLength.cast(),
-        wrapper.addresses.UploadDataProvider_Read.cast(),
-        wrapper.addresses.UploadDataProvider_Rewind.cast(),
-        wrapper.addresses.UploadDataProvider_CloseFunc.cast());
-    final _pov = wrapper.UploadDataProviderCreate();
-    cronet.Cronet_UploadDataProvider_SetClientContext(provider, _pov.cast());
-    final uploadableData = '{"title": "Foo","body": "Bar", "userId": 99}';
-    wrapper.UploadDataProviderSetData(_pov,
-        uploadableData.toNativeUtf8().cast<Int8>(), uploadableData.length);
-    wrapper.UploadDataProviderInit(
-        _pov, uploadableData.length, _request.cast());
-    // print('provider: $provider, _pov: $_pov');
-    cronet.Cronet_UrlRequestParams_upload_data_provider_set(
-        _requestParams, provider);
+
+    if (_dataToUpload.isNotEmpty) {
+      final provider = cronet.Cronet_UploadDataProvider_CreateWith(
+          wrapper.addresses.UploadDataProvider_GetLength.cast(),
+          wrapper.addresses.UploadDataProvider_Read.cast(),
+          wrapper.addresses.UploadDataProvider_Rewind.cast(),
+          wrapper.addresses.UploadDataProvider_CloseFunc.cast());
+      final _pov = wrapper.UploadDataProviderCreate();
+      cronet.Cronet_UploadDataProvider_SetClientContext(provider, _pov.cast());
+      wrapper.UploadDataProviderInit(
+          _pov, _dataToUpload.length, _request.cast());
+      cronet.Cronet_UrlRequestParams_upload_data_provider_set(
+          _requestParams, provider);
+    }
+
     final res = cronet.Cronet_UrlRequest_InitWithParams(
         _request,
         _cronetEngine,
@@ -155,7 +157,8 @@ class HttpClientRequestImpl implements HttpClientRequest {
     if (res2 != Cronet_RESULT.Cronet_RESULT_SUCCESS) {
       throw UrlRequestError(res2);
     }
-    _callbackHandler.listen(_request, () => _clientCleanup(this));
+    _callbackHandler.listen(
+        _request, () => _clientCleanup(this), _dataToUpload.takeBytes());
   }
 
   /// Closes the request for input.
@@ -165,7 +168,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   @override
   Future<HttpClientResponse> close() {
     return Future(() {
-      _headers.isImmutable = true;
+      _headers.isImmutable = isImmutable = true;
       _startRequest();
       return HttpClientResponseImpl(_callbackHandler.stream);
     });
@@ -202,24 +205,26 @@ class HttpClientRequestImpl implements HttpClientRequest {
 
   @override
   void add(List<int> data) {
-    // TODO: implement add
+    if (isImmutable) throw StateError('Can not mutate the request body');
+    _dataToUpload.add(data);
   }
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    // TODO: implement addError
+    // StackTrace is ignored due to https://github.com/dart-lang/sdk/issues/30741.
+    throw error;
   }
 
   @override
   Future addStream(Stream<List<int>> stream) {
-    // TODO: implement addStream
-    throw UnimplementedError();
+    return stream.forEach((bytes) {
+      _dataToUpload.add(bytes);
+    });
   }
 
   @override
   Future flush() {
-    // TODO: implement flush
-    throw UnimplementedError();
+    return Future<void>(() => _dataToUpload.clear());
   }
 
   @override

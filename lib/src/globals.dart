@@ -45,11 +45,6 @@ Wrapper loadAndInitWrapper() {
       cronet.addresses.Cronet_Executor_Destroy.cast(),
       cronet.addresses.Cronet_Runnable_Run.cast(),
       cronet.addresses.Cronet_Runnable_Destroy.cast());
-  wrapper.InitCronetUploadApi(
-      cronet.addresses.Cronet_Buffer_GetData.cast(),
-      cronet.addresses.Cronet_Buffer_GetSize.cast(),
-      cronet.addresses.Cronet_UploadDataSink_OnReadSucceeded.cast(),
-      cronet.addresses.Cronet_UploadDataSink_OnRewindSucceeded.cast());
   return wrapper;
 }
 

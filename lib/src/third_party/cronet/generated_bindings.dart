@@ -132,7 +132,7 @@ class Cronet {
   }
 
   late final _Cronet_Buffer_GetSize_ptr =
-      _lookup<ffi.NativeFunction<Native_Cronet_Buffer_GetSize>>(
+      _lookup<ffi.NativeFunction<_c_Cronet_Buffer_GetSize>>(
           'Cronet_Buffer_GetSize');
   late final _dart_Cronet_Buffer_GetSize _Cronet_Buffer_GetSize =
       _Cronet_Buffer_GetSize_ptr.asFunction<_dart_Cronet_Buffer_GetSize>();
@@ -146,7 +146,7 @@ class Cronet {
   }
 
   late final _Cronet_Buffer_GetData_ptr =
-      _lookup<ffi.NativeFunction<Native_Cronet_Buffer_GetData>>(
+      _lookup<ffi.NativeFunction<_c_Cronet_Buffer_GetData>>(
           'Cronet_Buffer_GetData');
   late final _dart_Cronet_Buffer_GetData _Cronet_Buffer_GetData =
       _Cronet_Buffer_GetData_ptr.asFunction<_dart_Cronet_Buffer_GetData>();
@@ -1020,7 +1020,7 @@ class Cronet {
   }
 
   late final _Cronet_UploadDataSink_OnReadSucceeded_ptr =
-      _lookup<ffi.NativeFunction<Native_Cronet_UploadDataSink_OnReadSucceeded>>(
+      _lookup<ffi.NativeFunction<_c_Cronet_UploadDataSink_OnReadSucceeded>>(
           'Cronet_UploadDataSink_OnReadSucceeded');
   late final _dart_Cronet_UploadDataSink_OnReadSucceeded
       _Cronet_UploadDataSink_OnReadSucceeded =
@@ -1053,9 +1053,9 @@ class Cronet {
     );
   }
 
-  late final _Cronet_UploadDataSink_OnRewindSucceeded_ptr = _lookup<
-          ffi.NativeFunction<Native_Cronet_UploadDataSink_OnRewindSucceeded>>(
-      'Cronet_UploadDataSink_OnRewindSucceeded');
+  late final _Cronet_UploadDataSink_OnRewindSucceeded_ptr =
+      _lookup<ffi.NativeFunction<_c_Cronet_UploadDataSink_OnRewindSucceeded>>(
+          'Cronet_UploadDataSink_OnRewindSucceeded');
   late final _dart_Cronet_UploadDataSink_OnRewindSucceeded
       _Cronet_UploadDataSink_OnRewindSucceeded =
       _Cronet_UploadDataSink_OnRewindSucceeded_ptr.asFunction<
@@ -4662,10 +4662,6 @@ class _SymbolAddresses {
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Buffer_InitWithAlloc>>
       get Cronet_Buffer_InitWithAlloc =>
           _library._Cronet_Buffer_InitWithAlloc_ptr;
-  ffi.Pointer<ffi.NativeFunction<Native_Cronet_Buffer_GetSize>>
-      get Cronet_Buffer_GetSize => _library._Cronet_Buffer_GetSize_ptr;
-  ffi.Pointer<ffi.NativeFunction<Native_Cronet_Buffer_GetData>>
-      get Cronet_Buffer_GetData => _library._Cronet_Buffer_GetData_ptr;
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Runnable_Destroy>>
       get Cronet_Runnable_Destroy => _library._Cronet_Runnable_Destroy_ptr;
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Runnable_Run>>
@@ -4685,13 +4681,6 @@ class _SymbolAddresses {
       get Cronet_Engine_Destroy => _library._Cronet_Engine_Destroy_ptr;
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Engine_Shutdown>>
       get Cronet_Engine_Shutdown => _library._Cronet_Engine_Shutdown_ptr;
-  ffi.Pointer<ffi.NativeFunction<Native_Cronet_UploadDataSink_OnReadSucceeded>>
-      get Cronet_UploadDataSink_OnReadSucceeded =>
-          _library._Cronet_UploadDataSink_OnReadSucceeded_ptr;
-  ffi.Pointer<
-          ffi.NativeFunction<Native_Cronet_UploadDataSink_OnRewindSucceeded>>
-      get Cronet_UploadDataSink_OnRewindSucceeded =>
-          _library._Cronet_UploadDataSink_OnRewindSucceeded_ptr;
   ffi.Pointer<
           ffi.NativeFunction<Native_Cronet_UploadDataProvider_GetClientContext>>
       get Cronet_UploadDataProvider_GetClientContext =>
@@ -4920,7 +4909,7 @@ typedef _dart_Cronet_Buffer_InitWithAlloc = void Function(
   int size,
 );
 
-typedef Native_Cronet_Buffer_GetSize = ffi.Uint64 Function(
+typedef _c_Cronet_Buffer_GetSize = ffi.Uint64 Function(
   ffi.Pointer<Cronet_Buffer> self,
 );
 
@@ -4928,7 +4917,7 @@ typedef _dart_Cronet_Buffer_GetSize = int Function(
   ffi.Pointer<Cronet_Buffer> self,
 );
 
-typedef Native_Cronet_Buffer_GetData = ffi.Pointer<ffi.Void> Function(
+typedef _c_Cronet_Buffer_GetData = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<Cronet_Buffer> self,
 );
 
@@ -5582,7 +5571,7 @@ typedef _dart_Cronet_UploadDataSink_GetClientContext = ffi.Pointer<ffi.Void>
   ffi.Pointer<Cronet_UploadDataSink> self,
 );
 
-typedef Native_Cronet_UploadDataSink_OnReadSucceeded = ffi.Void Function(
+typedef _c_Cronet_UploadDataSink_OnReadSucceeded = ffi.Void Function(
   ffi.Pointer<Cronet_UploadDataSink> self,
   ffi.Uint64 bytes_read,
   ffi.Uint8 final_chunk,
@@ -5604,7 +5593,7 @@ typedef _dart_Cronet_UploadDataSink_OnReadError = void Function(
   ffi.Pointer<ffi.Int8> error_message,
 );
 
-typedef Native_Cronet_UploadDataSink_OnRewindSucceeded = ffi.Void Function(
+typedef _c_Cronet_UploadDataSink_OnRewindSucceeded = ffi.Void Function(
   ffi.Pointer<Cronet_UploadDataSink> self,
 );
 

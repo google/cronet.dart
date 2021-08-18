@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ffi';
 import 'dart:isolate';
+import 'dart:math' as m;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
@@ -89,8 +90,8 @@ class CallbackHandler {
   ///
   /// This also invokes the appropriate callbacks that are registered,
   /// according to the network events sent from cronet side.
-  void listen(
-      Pointer<Cronet_UrlRequest> reqPtr, void Function() cleanUpClient) {
+  void listen(Pointer<Cronet_UrlRequest> reqPtr, void Function() cleanUpClient,
+      Uint8List dataToUpload) {
     // Registers the listener on the receivePort.
     //
     // The message parameter contains both the name of the event and
@@ -99,6 +100,9 @@ class CallbackHandler {
       final reqMessage =
           _CallbackRequestMessage.fromCppMessage(message as List);
       final args = reqMessage.data.buffer.asUint64List();
+
+      /// Count of how many bytes has been uploaded to the server.
+      int bytesSent = 0;
 
       switch (reqMessage.method) {
         case 'OnRedirectReceived':
@@ -203,17 +207,34 @@ class CallbackHandler {
           break;
         case 'ReadFunc':
           {
-            print('ReadFunc dart');
+            final size =
+                cronet.Cronet_Buffer_GetSize(Pointer.fromAddress(args[1]));
+            final remainintBytes = dataToUpload.length - bytesSent;
+            final chunkSize = m.min(size, remainintBytes);
+            final buff =
+                cronet.Cronet_Buffer_GetData(Pointer.fromAddress(args[1]))
+                    .cast<Uint8>();
+            int i = 0;
+            // memcopy from our buffer to cronet buffer.
+            for (final byte in dataToUpload.getRange(bytesSent, chunkSize)) {
+              buff[i] = byte;
+              i++;
+            }
+            bytesSent += chunkSize;
+            cronet.Cronet_UploadDataSink_OnReadSucceeded(
+                Pointer.fromAddress(args[0]).cast(), chunkSize, false);
             break;
           }
         case 'RewindFunc':
           {
-            print('RewindFunc dart');
+            bytesSent = 0;
+            cronet.Cronet_UploadDataSink_OnRewindSucceeded(
+                Pointer.fromAddress(args[0]));
             break;
           }
         case 'CloseFunc':
           {
-            print('CloseFunc dart');
+            wrapper.UploadDataProviderDestroy(Pointer.fromAddress(args[0]));
             break;
           }
         default:

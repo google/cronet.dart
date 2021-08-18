@@ -16,12 +16,14 @@ compiler-opts:
 functions:
   symbol-address:
     include:
+      # Callbacks for receiving data.
       - 'OnRedirectReceived'
       - 'OnResponseStarted'
       - 'OnReadCompleted'
       - 'OnSucceeded'
       - 'OnFailed'
       - 'OnCanceled'
+      # Callbacks for sending data.
       - 'UploadDataProvider_GetLength'
       - 'UploadDataProvider_Read'
       - 'UploadDataProvider_Rewind'
