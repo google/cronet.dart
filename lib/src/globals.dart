@@ -33,7 +33,8 @@ Wrapper loadAndInitWrapper() {
       cronet.addresses.Cronet_Buffer_InitWithAlloc.cast(),
       cronet.addresses.Cronet_UrlResponseInfo_http_status_code_get.cast(),
       cronet.addresses.Cronet_Error_message_get.cast(),
-      cronet.addresses.Cronet_UrlResponseInfo_http_status_text_get.cast());
+      cronet.addresses.Cronet_UrlResponseInfo_http_status_text_get.cast(),
+      cronet.addresses.Cronet_UploadDataProvider_GetClientContext.cast());
   // Registers few cronet functions that are required by the executor
   // run from the wrapper for executing network requests.
   // Casting because of https://github.com/dart-lang/ffigen/issues/22
@@ -44,6 +45,11 @@ Wrapper loadAndInitWrapper() {
       cronet.addresses.Cronet_Executor_Destroy.cast(),
       cronet.addresses.Cronet_Runnable_Run.cast(),
       cronet.addresses.Cronet_Runnable_Destroy.cast());
+  wrapper.InitCronetUploadApi(
+      cronet.addresses.Cronet_Buffer_GetData.cast(),
+      cronet.addresses.Cronet_Buffer_GetSize.cast(),
+      cronet.addresses.Cronet_UploadDataSink_OnReadSucceeded.cast(),
+      cronet.addresses.Cronet_UploadDataSink_OnRewindSucceeded.cast());
   return wrapper;
 }
 

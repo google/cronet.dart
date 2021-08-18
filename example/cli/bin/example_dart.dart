@@ -11,23 +11,24 @@ import 'package:cronet/cronet.dart';
 void main(List<String> args) {
   final stopwatch = Stopwatch()..start();
   final client = HttpClient();
-  for (var i = 0; i < 3; i++) {
-    // Demo - with concurrent requests
-    client
-        .getUrl(Uri.parse('https://example.com'))
-        .then((HttpClientRequest request) {
-      if (i == 2) {
-        client.close(); // We will shut down the client after 3 connections.
-      }
-      return request.close();
-    }).then((HttpClientResponse response) {
-      response.transform(utf8.decoder).listen((contents) {
-        print(contents);
-      }, onDone: () {
-        print('cronet implemenation took: ${stopwatch.elapsedMilliseconds} ms');
-      }, onError: (Object e) {
-        print(e);
-      });
+  // for (var i = 0; i < 3; i++) {
+  // Demo - with concurrent requests
+  client
+      .postUrl(Uri.parse('https://jsonplaceholder.typicode.com/posts'))
+      .then((HttpClientRequest request) {
+    request.headers.set('Content-Type', 'application/json; charset=UTF-8');
+    // if (i == 2) {
+    //   client.close(); // We will shut down the client after 3 connections.
+    // }
+    return request.close();
+  }).then((HttpClientResponse response) {
+    response.transform(utf8.decoder).listen((contents) {
+      print(contents);
+    }, onDone: () {
+      print('cronet implemenation took: ${stopwatch.elapsedMilliseconds} ms');
+    }, onError: (Object e) {
+      print(e);
     });
-  }
+  });
+  // }
 }

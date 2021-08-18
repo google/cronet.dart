@@ -3,12 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 #include "wrapper.h"
-#include "wrapper_utils.h"
 #include "../third_party/cronet_impl/sample_executor.h"
+#include "wrapper_utils.h"
+#include "upload_data_provider.h"
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Versioning
@@ -37,6 +39,8 @@ int32_t (*_Cronet_UrlResponseInfo_http_status_code_get)(
 Cronet_String (*_Cronet_Error_message_get)(const Cronet_ErrorPtr self);
 Cronet_String (*_Cronet_UrlResponseInfo_http_status_text_get)(
     const Cronet_UrlResponseInfoPtr self);
+Cronet_ClientContext (*_Cronet_UploadDataProvider_GetClientContext)(
+    Cronet_UploadDataProviderPtr self);
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,11 +60,14 @@ void InitCronetApi(
         const Cronet_UrlResponseInfoPtr),
     Cronet_String (*Cronet_Error_message_get)(const Cronet_ErrorPtr),
     Cronet_String (*Cronet_UrlResponseInfo_http_status_text_get)(
-        const Cronet_UrlResponseInfoPtr)) {
+        const Cronet_UrlResponseInfoPtr),
+    Cronet_ClientContext (*Cronet_UploadDataProvider_GetClientContext)(
+        Cronet_UploadDataProviderPtr self)) {
   if (!(Cronet_Engine_Shutdown && Cronet_Engine_Destroy &&
         Cronet_Buffer_Create && Cronet_Buffer_InitWithAlloc &&
         Cronet_UrlResponseInfo_http_status_code_get &&
-        Cronet_UrlResponseInfo_http_status_text_get)) {
+        Cronet_UrlResponseInfo_http_status_text_get &&
+        Cronet_UploadDataProvider_GetClientContext)) {
     std::cerr << "Invalid pointer(s): null" << std::endl;
     return;
   }
@@ -73,10 +80,11 @@ void InitCronetApi(
   _Cronet_Error_message_get = Cronet_Error_message_get;
   _Cronet_UrlResponseInfo_http_status_text_get =
       Cronet_UrlResponseInfo_http_status_text_get;
+  _Cronet_UploadDataProvider_GetClientContext =
+      Cronet_UploadDataProvider_GetClientContext;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
 
 /* Callback Helpers */
 
@@ -205,4 +213,43 @@ void InitSampleExecutor(SampleExecutorPtr self) { return self->Init(); }
 Cronet_ExecutorPtr
 SampleExecutor_Cronet_ExecutorPtr_get(SampleExecutorPtr self) {
   return self->GetExecutor();
+}
+
+/* Upload Data Provider C APIs */
+UploadDataProviderPtr UploadDataProviderCreate() {
+  return new UploadDataProvider();
+}
+
+void UploadDataProviderDestroy(UploadDataProviderPtr upload_data_provider) {
+  delete upload_data_provider;
+}
+void UploadDataProviderSetData(UploadDataProviderPtr self, char *data,
+                               int64_t length) {
+  std::cout << self << std::endl;
+  self->SetData(data, length);
+}
+
+void UploadDataProviderInit(UploadDataProviderPtr self, int64_t length, Cronet_UrlRequestPtr request) {
+  self->Init(length, request);
+}
+
+int64_t UploadDataProvider_GetLength(Cronet_UploadDataProviderPtr self) {
+  std::cout << self << std::endl;
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  return instance->GetLength();
+}
+void UploadDataProvider_Read(Cronet_UploadDataProviderPtr self,
+                             Cronet_UploadDataSinkPtr upload_data_sink,
+                             Cronet_BufferPtr buffer) {
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  instance->ReadFunc(upload_data_sink, buffer);
+}
+void UploadDataProvider_Rewind(Cronet_UploadDataProviderPtr self,
+                               Cronet_UploadDataSinkPtr upload_data_sink) {
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  instance->RewindFunc(upload_data_sink);
+}
+void UploadDataProvider_CloseFunc(Cronet_UploadDataProviderPtr self) {
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(_Cronet_UploadDataProvider_GetClientContext(self));
+  instance->CloseFunc();
 }

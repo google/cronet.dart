@@ -27,6 +27,12 @@ functions:
       - 'Cronet_Executor_Destroy'
       - 'Cronet_Runnable_Run'
       - 'Cronet_Runnable_Destroy'
+      # For uploader.
+      - 'Cronet_Buffer_GetData'
+      - 'Cronet_Buffer_GetSize'
+      - 'Cronet_UploadDataSink_OnReadSucceeded'
+      - 'Cronet_UploadDataSink_OnRewindSucceeded'
+      - 'Cronet_UploadDataProvider_GetClientContext'
 preamble: |
   // Copyright 2017 The Chromium Authors. All rights reserved.
   // Use of this source code is governed by a BSD-style license that can be

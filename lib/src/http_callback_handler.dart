@@ -201,6 +201,21 @@ class CallbackHandler {
             cronet.Cronet_UrlRequest_Destroy(reqPtr);
           }
           break;
+        case 'ReadFunc':
+          {
+            print('ReadFunc dart');
+            break;
+          }
+        case 'RewindFunc':
+          {
+            print('RewindFunc dart');
+            break;
+          }
+        case 'CloseFunc':
+          {
+            print('CloseFunc dart');
+            break;
+          }
         default:
           {
             break;

@@ -15,6 +15,7 @@ endif (NOT ANDROID)
 add_library(${PLUGIN_NAME} SHARED
   "wrapper.cc"
   "wrapper_utils.cc"
+  "upload_data_provider.cc"
   "../third_party/cronet_impl/sample_executor.cc"
   "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk/dart_api_dl.c"
 )

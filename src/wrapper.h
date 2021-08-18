@@ -20,6 +20,8 @@ extern "C" {
 #include <stdint.h>
 
 typedef struct SampleExecutor *SampleExecutorPtr;
+typedef struct UploadDataProvider *UploadDataProviderPtr;
+
 
 WRAPPER_EXPORT const char *VersionString();
 
@@ -33,7 +35,9 @@ InitCronetApi(Cronet_RESULT (*Cronet_Engine_Shutdown)(Cronet_EnginePtr),
                   const Cronet_UrlResponseInfoPtr),
               Cronet_String (*Cronet_Error_message_get)(const Cronet_ErrorPtr),
               Cronet_String (*Cronet_UrlResponseInfo_http_status_text_get)(
-                  const Cronet_UrlResponseInfoPtr));
+                  const Cronet_UrlResponseInfoPtr),
+              Cronet_ClientContext
+(*Cronet_UploadDataProvider_GetClientContext)(Cronet_UploadDataProviderPtr self));
 
 /* Forward declaration. Implementation on sample_executor.cc */
 WRAPPER_EXPORT void InitCronetExecutorApi(
@@ -46,6 +50,13 @@ WRAPPER_EXPORT void InitCronetExecutorApi(
     void (*Cronet_Executor_Destroy)(Cronet_ExecutorPtr),
     void (*Cronet_Runnable_Run)(Cronet_RunnablePtr),
     void (*Cronet_Runnable_Destroy)(Cronet_RunnablePtr));
+
+WRAPPER_EXPORT void InitCronetUploadApi(
+    Cronet_RawDataPtr (*Cronet_Buffer_GetData)(Cronet_BufferPtr),
+    uint64_t (*Cronet_Buffer_GetSize)(Cronet_BufferPtr),
+    void (*Cronet_UploadDataSink_OnReadSucceeded)(Cronet_UploadDataSinkPtr,
+                                                  uint64_t, bool),
+    void (*Cronet_UploadDataSink_OnRewindSucceeded)(Cronet_UploadDataSinkPtr));
 
 WRAPPER_EXPORT void RegisterHttpClient(Dart_Handle h, Cronet_Engine *ce);
 WRAPPER_EXPORT void RegisterCallbackHandler(Dart_Port nativePort,
@@ -91,6 +102,24 @@ WRAPPER_EXPORT void InitSampleExecutor(SampleExecutorPtr self);
 WRAPPER_EXPORT Cronet_ExecutorPtr
 SampleExecutor_Cronet_ExecutorPtr_get(SampleExecutorPtr self);
 
+
+/* Upload Data Provider C APIs */
+WRAPPER_EXPORT UploadDataProviderPtr UploadDataProviderCreate();
+WRAPPER_EXPORT void
+UploadDataProviderDestroy(UploadDataProviderPtr upload_data_provided);
+WRAPPER_EXPORT void UploadDataProviderSetData(UploadDataProviderPtr self,
+                                              char *data, int64_t length);
+WRAPPER_EXPORT void UploadDataProviderInit(UploadDataProviderPtr self, int64_t length, Cronet_UrlRequestPtr request);
+
+WRAPPER_EXPORT int64_t UploadDataProvider_GetLength(Cronet_UploadDataProviderPtr self);
+WRAPPER_EXPORT void
+UploadDataProvider_Read(Cronet_UploadDataProviderPtr self,
+                        Cronet_UploadDataSinkPtr upload_data_sink,
+                        Cronet_BufferPtr buffer);
+WRAPPER_EXPORT void
+UploadDataProvider_Rewind(Cronet_UploadDataProviderPtr self,
+                          Cronet_UploadDataSinkPtr upload_data_sink);
+WRAPPER_EXPORT void UploadDataProvider_CloseFunc(Cronet_UploadDataProviderPtr self);
 #ifdef __cplusplus
 }
 #endif

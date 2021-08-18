@@ -123,6 +123,21 @@ class HttpClientRequestImpl implements HttpClientRequest {
       wrapper.addresses.OnFailed.cast(),
       wrapper.addresses.OnCanceled.cast(),
     );
+    final provider = cronet.Cronet_UploadDataProvider_CreateWith(
+        wrapper.addresses.UploadDataProvider_GetLength.cast(),
+        wrapper.addresses.UploadDataProvider_Read.cast(),
+        wrapper.addresses.UploadDataProvider_Rewind.cast(),
+        wrapper.addresses.UploadDataProvider_CloseFunc.cast());
+    final _pov = wrapper.UploadDataProviderCreate();
+    cronet.Cronet_UploadDataProvider_SetClientContext(provider, _pov.cast());
+    final uploadableData = '{"title": "Foo","body": "Bar", "userId": 99}';
+    wrapper.UploadDataProviderSetData(_pov,
+        uploadableData.toNativeUtf8().cast<Int8>(), uploadableData.length);
+    wrapper.UploadDataProviderInit(
+        _pov, uploadableData.length, _request.cast());
+    // print('provider: $provider, _pov: $_pov');
+    cronet.Cronet_UrlRequestParams_upload_data_provider_set(
+        _requestParams, provider);
     final res = cronet.Cronet_UrlRequest_InitWithParams(
         _request,
         _cronetEngine,
