@@ -18,8 +18,9 @@ Wrapper loadAndInitWrapper() {
     final logger = Logger.standard();
     final ansi = Ansi(Ansi.terminalSupportsAnsi);
     logger.stderr('${ansi.red}Wrapper is outdated.${ansi.none}');
-    logger.stdout('Update wrapper by running: '
-        '${ansi.yellow}dart run cronet:setup${ansi.none}');
+    logger.stdout('Update wrapper by running:\n'
+        '${ansi.yellow}flutter pub run cronet:setup clean\n'
+        'flutter pub run cronet:setup${ansi.none}');
     throw Error();
   }
   // Initialize Dart Native API dynamically.

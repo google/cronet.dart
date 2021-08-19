@@ -80,7 +80,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
   final Pointer<Cronet_UrlRequest> _request;
   final _requestParams = cronet.Cronet_UrlRequestParams_Create();
   late final HttpHeadersImpl _headers;
-  final io.BytesBuilder _dataToUpload = io.BytesBuilder();
+  final _dataToUpload = io.BytesBuilder();
   bool isImmutable = false;
 
   /// Holds the function to clean up after the request is done (if nessesary).

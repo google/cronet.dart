@@ -14,23 +14,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Expose Cronet_Buffer_GetSize, Cronet_Buffer_GetData;
-
+// This class is implemented as a wrapper as we are yet to fix
+// https://github.com/dart-lang/sdk/issues/37022.
 class UploadDataProvider {
-    public:
-        // Sets the data to be uploaded.
-        void Init(int64_t length, Cronet_UrlRequestPtr request_);
-        void ReadFunc(Cronet_UploadDataSinkPtr upload_data_sink,
+public:
+  // Sets the data to be uploaded.
+  void Init(int64_t length, Cronet_UrlRequestPtr request_);
+  void ReadFunc(Cronet_UploadDataSinkPtr upload_data_sink,
                 Cronet_BufferPtr buffer);
-        void RewindFunc(Cronet_UploadDataSinkPtr upload_data_sink);
-        void CloseFunc();
-        // Gets the length of the data to be uploaded.
-        int64_t GetLength();
-    private:
-        // Length of the data to be uploaded.
-        int64_t length_ = 0;
-        // Pointer to the request |this| is providing to.
-        Cronet_UrlRequestPtr request_;
+  void RewindFunc(Cronet_UploadDataSinkPtr upload_data_sink);
+  void CloseFunc();
+  // Gets the length of the data to be uploaded.
+  int64_t GetLength();
+
+private:
+  // Length of the data to be uploaded.
+  int64_t length_ = 0;
+  // Pointer to the request |this| is providing to.
+  Cronet_UrlRequestPtr request_;
 };
 
 #endif // UPLOAD_DATA_PROVIDER_H_

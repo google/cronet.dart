@@ -8,7 +8,10 @@ import 'package:archive/archive.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_util/cli_logging.dart' show Ansi, Logger;
 import 'package:cronet/src/constants.dart';
+import 'package:cronet/src/dylib_handler.dart';
 import 'package:cronet/src/third_party/ffigen/find_resource.dart';
+import 'package:cronet/src/wrapper/generated_bindings.dart';
+import 'package:ffi/ffi.dart';
 import 'package:path/path.dart';
 
 // Extracts a tar.gz file.
@@ -92,8 +95,15 @@ Future<void> downloadCronetBinaries(String platform) async {
         '${ansi.green}Done! Cronet support for $platform is now available!'
         '${ansi.none}');
   } else {
-    logger.stdout('${ansi.yellow}Cronet $platform is already available.'
-        ' No need to download.${ansi.none}');
+    if (wrapperVersion !=
+        Wrapper(loadWrapper()).VersionString().cast<Utf8>().toDartString()) {
+      logger.stdout('${ansi.red}Wrapper is outdated for $platform.${ansi.none} '
+          'Run: \nflutter pub run cronet:setup clean\n'
+          'flutter pub run cronet:setup');
+    } else {
+      logger.stdout('${ansi.yellow}Cronet $platform is already available.'
+          ' No need to download.${ansi.none}');
+    }
   }
 }
 
