@@ -63,6 +63,11 @@ abstract class HttpClientRequest implements io.IOSink {
   /// The uri of the request.
   Uri get uri;
 
+  /// The [Encoding] used when writing strings.
+  @override
+  late Encoding encoding;
+
+  /// Returns the client request headers.
   HttpHeaders get headers;
 }
 
@@ -127,17 +132,21 @@ class HttpClientRequestImpl implements HttpClientRequest {
     );
 
     if (_dataToUpload.isNotEmpty) {
-      final provider = cronet.Cronet_UploadDataProvider_CreateWith(
+      /// Data upload provider with registered callbacks (from cronet side).
+      final cronetUploadProvider = cronet.Cronet_UploadDataProvider_CreateWith(
           wrapper.addresses.UploadDataProvider_GetLength.cast(),
           wrapper.addresses.UploadDataProvider_Read.cast(),
           wrapper.addresses.UploadDataProvider_Rewind.cast(),
           wrapper.addresses.UploadDataProvider_CloseFunc.cast());
-      final _pov = wrapper.UploadDataProviderCreate();
-      cronet.Cronet_UploadDataProvider_SetClientContext(provider, _pov.cast());
+
+      /// Data upload provider implementation (wrapper).
+      final wrapperUploadProvider = wrapper.UploadDataProviderCreate();
+      cronet.Cronet_UploadDataProvider_SetClientContext(
+          cronetUploadProvider, wrapperUploadProvider.cast());
       wrapper.UploadDataProviderInit(
-          _pov, _dataToUpload.length, _request.cast());
+          wrapperUploadProvider, _dataToUpload.length, _request.cast());
       cronet.Cronet_UrlRequestParams_upload_data_provider_set(
-          _requestParams, provider);
+          _requestParams, cronetUploadProvider);
     }
 
     final res = cronet.Cronet_UrlRequest_InitWithParams(
