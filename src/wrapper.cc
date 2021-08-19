@@ -4,11 +4,9 @@
 
 #include "wrapper.h"
 #include "../third_party/cronet_impl/sample_executor.h"
-#include "../third_party/dart-sdk/dart_api.h"
-#include "../third_party/dart-sdk/dart_native_api.h"
-#include "../third_party/dart-sdk/dart_tools_api.h"
+#include "upload_data_provider.h"
+#include "wrapper_utils.h"
 #include <iostream>
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
@@ -18,7 +16,7 @@
 #define STRINGIFY_(x) #x
 #define STRINGIFY(x) STRINGIFY_(x)
 
-#define WRAPPER_VERSION 1
+#define WRAPPER_VERSION 2
 
 #define WRAPPER_VERSTR STRINGIFY(WRAPPER_VERSION)
 
@@ -29,7 +27,7 @@ const char *VersionString() { return WRAPPER_VERSTR; }
 ////////////////////////////////////////////////////////////////////////////////
 // Globals
 
-std::unordered_map<Cronet_UrlRequestPtr, Dart_Port> requestNativePorts;
+extern std::unordered_map<Cronet_UrlRequestPtr, Dart_Port> requestNativePorts;
 
 Cronet_RESULT (*_Cronet_Engine_Shutdown)(Cronet_EnginePtr self);
 void (*_Cronet_Engine_Destroy)(Cronet_EnginePtr self);
@@ -40,6 +38,8 @@ int32_t (*_Cronet_UrlResponseInfo_http_status_code_get)(
 Cronet_String (*_Cronet_Error_message_get)(const Cronet_ErrorPtr self);
 Cronet_String (*_Cronet_UrlResponseInfo_http_status_text_get)(
     const Cronet_UrlResponseInfoPtr self);
+Cronet_ClientContext (*_Cronet_UploadDataProvider_GetClientContext)(
+    Cronet_UploadDataProviderPtr self);
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,11 +59,14 @@ void InitCronetApi(
         const Cronet_UrlResponseInfoPtr),
     Cronet_String (*Cronet_Error_message_get)(const Cronet_ErrorPtr),
     Cronet_String (*Cronet_UrlResponseInfo_http_status_text_get)(
-        const Cronet_UrlResponseInfoPtr)) {
+        const Cronet_UrlResponseInfoPtr),
+    Cronet_ClientContext (*Cronet_UploadDataProvider_GetClientContext)(
+        Cronet_UploadDataProviderPtr self)) {
   if (!(Cronet_Engine_Shutdown && Cronet_Engine_Destroy &&
         Cronet_Buffer_Create && Cronet_Buffer_InitWithAlloc &&
         Cronet_UrlResponseInfo_http_status_code_get &&
-        Cronet_UrlResponseInfo_http_status_text_get)) {
+        Cronet_UrlResponseInfo_http_status_text_get &&
+        Cronet_UploadDataProvider_GetClientContext)) {
     std::cerr << "Invalid pointer(s): null" << std::endl;
     return;
   }
@@ -76,11 +79,11 @@ void InitCronetApi(
   _Cronet_Error_message_get = Cronet_Error_message_get;
   _Cronet_UrlResponseInfo_http_status_text_get =
       Cronet_UrlResponseInfo_http_status_text_get;
+  _Cronet_UploadDataProvider_GetClientContext =
+      Cronet_UploadDataProvider_GetClientContext;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-static void FreeFinalizer(void *, void *value) { free(value); }
 
 /* Callback Helpers */
 
@@ -90,63 +93,6 @@ static void FreeFinalizer(void *, void *value) { free(value); }
 // This is required to send the data
 void RegisterCallbackHandler(Dart_Port send_port, Cronet_UrlRequestPtr rp) {
   requestNativePorts[rp] = send_port;
-}
-
-// This sends the callback name and the associated data with it to the Dart
-// side via NativePort.
-//
-// Sent data is broken into 2 parts.
-// message[0] is the method name, which is a string.
-// message[1] contains all the data to pass to that method.
-//
-// Using this due to the lack of support for asynchronous callbacks in dart:ffi.
-// See Issue: https://github.com/dart-lang/sdk/issues/37022.
-void DispatchCallback(const char *methodname, Cronet_UrlRequestPtr request,
-                      Dart_CObject args) {
-  Dart_CObject c_method_name;
-  c_method_name.type = Dart_CObject_kString;
-  c_method_name.value.as_string = const_cast<char *>(methodname);
-
-  Dart_CObject *c_request_arr[] = {&c_method_name, &args};
-  Dart_CObject c_request;
-
-  c_request.type = Dart_CObject_kArray;
-  c_request.value.as_array.values = c_request_arr;
-  c_request.value.as_array.length =
-      sizeof(c_request_arr) / sizeof(c_request_arr[0]);
-
-  Dart_PostCObject_DL(requestNativePorts[request], &c_request);
-}
-
-// Builds the arguments to pass to the Dart side as a parameter to the
-// callbacks. [num] is the number of arguments to be passed and rest are the
-// arguments.
-Dart_CObject CallbackArgBuilder(int num, ...) {
-  Dart_CObject c_request_data;
-  va_list valist;
-  va_start(valist, num);
-  void *request_buffer = malloc(sizeof(uint64_t) * num);
-  uint64_t *buf = reinterpret_cast<uint64_t *>(request_buffer);
-
-  // uintptr_r will get implicitly casted to uint64_t. So, when the code is
-  // executed in 32 bit mode, the upper 32 bit of buf[i] will be 0 extended
-  // automatically. This is required because, on the Dart side these addresses
-  // are viewed as 64 bit integers.
-  for (int i = 0; i < num; i++) {
-    buf[i] = va_arg(valist, uintptr_t);
-  }
-
-  c_request_data.type = Dart_CObject_kExternalTypedData;
-  c_request_data.value.as_external_typed_data.type = Dart_TypedData_kUint8;
-  c_request_data.value.as_external_typed_data.length = sizeof(uint64_t) * num;
-  c_request_data.value.as_external_typed_data.data =
-      static_cast<uint8_t *>(request_buffer);
-  c_request_data.value.as_external_typed_data.peer = request_buffer;
-  c_request_data.value.as_external_typed_data.callback = FreeFinalizer;
-
-  va_end(valist);
-
-  return c_request_data;
 }
 
 /// Status Text is only returned to throw more meaningful HttpExceptions.
@@ -266,4 +212,42 @@ void InitSampleExecutor(SampleExecutorPtr self) { return self->Init(); }
 Cronet_ExecutorPtr
 SampleExecutor_Cronet_ExecutorPtr_get(SampleExecutorPtr self) {
   return self->GetExecutor();
+}
+
+/* Upload Data Provider C APIs */
+UploadDataProviderPtr UploadDataProviderCreate() {
+  return new UploadDataProvider();
+}
+
+void UploadDataProviderDestroy(UploadDataProviderPtr upload_data_provider) {
+  delete upload_data_provider;
+}
+
+void UploadDataProviderInit(UploadDataProviderPtr self, int64_t length,
+                            Cronet_UrlRequestPtr request) {
+  self->Init(length, request);
+}
+
+int64_t UploadDataProvider_GetLength(Cronet_UploadDataProviderPtr self) {
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
+  return instance->GetLength();
+}
+void UploadDataProvider_Read(Cronet_UploadDataProviderPtr self,
+                             Cronet_UploadDataSinkPtr upload_data_sink,
+                             Cronet_BufferPtr buffer) {
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
+  instance->ReadFunc(upload_data_sink, buffer);
+}
+void UploadDataProvider_Rewind(Cronet_UploadDataProviderPtr self,
+                               Cronet_UploadDataSinkPtr upload_data_sink) {
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
+  instance->RewindFunc(upload_data_sink);
+}
+void UploadDataProvider_CloseFunc(Cronet_UploadDataProviderPtr self) {
+  UploadDataProvider *instance = static_cast<UploadDataProvider *>(
+      _Cronet_UploadDataProvider_GetClientContext(self));
+  instance->CloseFunc();
 }

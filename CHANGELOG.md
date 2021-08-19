@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Added data upload feature for `POST`, `PUT` and similar requests.
+
 ## 0.0.5
 
 * Added support for adding user specified headers in `HttpClientRequest`.

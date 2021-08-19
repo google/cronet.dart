@@ -1148,7 +1148,8 @@ class Cronet {
   }
 
   late final _Cronet_UploadDataProvider_GetClientContext_ptr = _lookup<
-          ffi.NativeFunction<_c_Cronet_UploadDataProvider_GetClientContext>>(
+          ffi.NativeFunction<
+              Native_Cronet_UploadDataProvider_GetClientContext>>(
       'Cronet_UploadDataProvider_GetClientContext');
   late final _dart_Cronet_UploadDataProvider_GetClientContext
       _Cronet_UploadDataProvider_GetClientContext =
@@ -4680,6 +4681,10 @@ class _SymbolAddresses {
       get Cronet_Engine_Destroy => _library._Cronet_Engine_Destroy_ptr;
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Engine_Shutdown>>
       get Cronet_Engine_Shutdown => _library._Cronet_Engine_Shutdown_ptr;
+  ffi.Pointer<
+          ffi.NativeFunction<Native_Cronet_UploadDataProvider_GetClientContext>>
+      get Cronet_UploadDataProvider_GetClientContext =>
+          _library._Cronet_UploadDataProvider_GetClientContext_ptr;
   ffi.Pointer<ffi.NativeFunction<Native_Cronet_Error_message_get>>
       get Cronet_Error_message_get => _library._Cronet_Error_message_get_ptr;
   ffi.Pointer<
@@ -5668,8 +5673,8 @@ typedef _dart_Cronet_UploadDataProvider_SetClientContext = void Function(
   ffi.Pointer<ffi.Void> client_context,
 );
 
-typedef _c_Cronet_UploadDataProvider_GetClientContext = ffi.Pointer<ffi.Void>
-    Function(
+typedef Native_Cronet_UploadDataProvider_GetClientContext
+    = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<Cronet_UploadDataProvider> self,
 );
 
