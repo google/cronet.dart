@@ -1,6 +1,10 @@
 # Comparing with dart:io
 
+This page covers the API differences and performance differences.
+
 ## API Comparison
+
+We have `2` API differences between `dart:io` and `package:cronet`.
 
 ### SecurityContext
 
@@ -35,7 +39,7 @@ print(client.userAgent); // Will print myUA/1.0.
 
 Results may get affected by: <https://github.com/google/cronet.dart/issues/11>.
 
-Here we present the result from a general purpose machine (Ryzen 5 2500U, 8GB RAM) with a 1.7MBPS network connection running Ubuntu 20.04 against example.com.
+Here we present the result from a general purpose machine (Ryzen 5 2500U, 8GB RAM) with a `1.7MBPS` network connection running Ubuntu 20.04 against example.com.
 
 ### Latency (Sequential Requests)
 
@@ -52,3 +56,7 @@ Considering the best appearing value only
 | :--: |:-------------------------:   | :----------------------:  |
 | JIT  | 225 (Parallel Requests: 128) | 5 (Parallel Requests: 32) |
 | AOT  | 227 (Parallel Requests:  128)| 2 (Parallel Requests: 4)  |
+
+## Size comparison
+
+We can notice a size increment of `2MB` (on avg.) in Flutter (Android) apps if we use `package:cronet` instead of `dart:io`. We're working on reducing it. The progress can be tracked at <https://github.com/google/cronet.dart/issues/30>.
