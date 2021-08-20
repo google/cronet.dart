@@ -1,6 +1,22 @@
 # Comparing with dart:io
 
+This page covers the API differences and performance differences.
+
 ## API Comparison
+
+We have `2` API differences between `dart:io` and `package:cronet`.
+
+### SecurityContext
+
+#### dart:io
+
+```dart
+HttpClient({SecurityContext? context})
+```
+
+#### package:cronet
+
+`HttpClient` constructor doesn't take `SecurityContext` as a parameter. To use any custom/self-signed SSL certificate, it must be added to the system's trust store.
 
 ### userAgent
 
@@ -23,39 +39,24 @@ print(client.userAgent); // Will print myUA/1.0.
 
 Results may get affected by: <https://github.com/google/cronet.dart/issues/11>.
 
+Here we present the result from a general purpose machine (Ryzen 5 2500U, 8GB RAM) with a `1.7MBPS` network connection running Ubuntu 20.04 against example.com.
+
 ### Latency (Sequential Requests)
 
-Server: HTTP/1.1 Local Flask Server
-Payload: Lorem Ipsum Text
-
-| Mode          | package:cronet | dart:io        |
-| :-----------: |:-------------: | :-------------:|
-| JIT           | 1.807 ms       | **1.801 ms**   |
-| AOT           | 1.441 ms       | **1.049 ms**   |
-
-Server: HTTP/2 example.com Server
-Payload: example.com index.html page
-
-| Mode          | package:cronet | dart:io        |
-| :-----------: |:-------------: | :------------: |
-| JIT           | **90.696 ms**  | 104.150 ms     |
-| AOT           | **89.348 ms**  | 104.050 ms     |
-
-Server: HTTP/2 Google Server
-Payload: Google Chrome Debian Package
-
-| Mode          | package:cronet | dart:io        |
-| :-----------: |:-------------: |:--------------:|
-| JIT           | 51.5 sec       | **47.02 sec**  |
-| AOT           | **47.003 sec** | 47.75 sec      |
+| Mode          | package:cronet     | dart:io        |
+| :-----------: |:-------------:     | :------------: |
+| JIT           | **296.429 ms**     | 402.200 ms     |
+| AOT           | **262.625 ms**     | 432.200 ms     |
 
 ### Throughput (Parallel Requests)
 
-Server: HTTP/2 example.com Server
-Payload: example.com index.html page
-
+Throughput Test Results (Duration: 1s).
 Considering the best appearing value only
-| Mode | package:cronet               | dart:io                      |
-| :--: |:-------------------------:   | :----------------------:     |
-| JIT  | 855 (Parallel Requests: 256) | 1078 (Parallel Requests: 256)|
-| AOT  | 789 (Parallel Requests: 128) | 1306 (Parallel Requests: 512)|
+| Mode | package:cronet               | dart:io                   |
+| :--: |:-------------------------:   | :----------------------:  |
+| JIT  | 225 (Parallel Requests: 128) | 5 (Parallel Requests: 32) |
+| AOT  | 227 (Parallel Requests:  128)| 2 (Parallel Requests: 4)  |
+
+## Size comparison
+
+We can notice a size increment of `2MB` (on avg.) in Flutter (Android) apps if we use `package:cronet` instead of `dart:io`. We're working on reducing it. The progress can be tracked at <https://github.com/google/cronet.dart/issues/30>.
