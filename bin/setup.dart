@@ -138,6 +138,7 @@ void buildWrapper() {
     print(result.stderr);
   } catch (error) {
     Directory.current = pwd;
+    logger.stdout(error.toString());
     logger.stdout("${ansi.red}Build failed.${ansi.none}");
     if (Platform.isWindows) {
       logger.stdout(

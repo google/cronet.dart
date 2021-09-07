@@ -1,0 +1,22 @@
+PODS:
+  - cronet (0.0.1):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+
+DEPENDENCIES:
+  - cronet (from `Flutter/ephemeral/.symlinks/plugins/cronet/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+
+EXTERNAL SOURCES:
+  cronet:
+    :path: Flutter/ephemeral/.symlinks/plugins/cronet/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+
+SPEC CHECKSUMS:
+  cronet: 46b78b64ddef212111e5f5e6089bdb666bd329db
+  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
+
+PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
+
+COCOAPODS: 1.10.2
