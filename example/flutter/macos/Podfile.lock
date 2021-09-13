@@ -1,5 +1,5 @@
 PODS:
-  - cronet (0.0.1):
+  - cronet (0.0.6):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
 
@@ -14,7 +14,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
 
 SPEC CHECKSUMS:
-  cronet: 46b78b64ddef212111e5f5e6089bdb666bd329db
+  cronet: 2c609b33a988deeb54c7c60aae3cd5e0087b95ae
   FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
 
 PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
