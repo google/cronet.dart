@@ -28,7 +28,7 @@ Currently, Android and Desktop Platforms (Linux, Windows and MacOS) are supporte
 
    We need to use `flutter pub` even if we want to use it with Dart CLI. See <https://github.com/dart-lang/pub/issues/2606> for further details.
 
-   ***Note for Android:** Remember to Add the following permissions in `AndroidManifest.xml` file.
+   **Note for Android:** Remember to Add the following permissions in `AndroidManifest.xml` file.
 
    ```xml
     <uses-permission android:name="android.permission.INTERNET" />
@@ -36,6 +36,15 @@ Currently, Android and Desktop Platforms (Linux, Windows and MacOS) are supporte
    ```
 
    Optionally, enable cleartext traffic by adding `android:usesCleartextTraffic="true"` to `AndroidManifest.xml` file.
+
+   ***Note for MacOS (Flutter):** Remember to add the following lines to `macos/Runner/Release.entitlements` and `macos/Runner/DebugProfile.entitlements` to enable networking in MacOS (Flutter).
+
+   ```xml
+   <key>com.apple.security.network.client</key>
+   <true/>
+   ```
+
+   _There is no need to do these for creating a Dart CLI application._
 
 3. Import
 
