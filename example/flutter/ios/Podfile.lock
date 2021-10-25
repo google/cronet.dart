@@ -1,0 +1,29 @@
+PODS:
+  - cronet (0.0.1):
+    - Cronet (~> 86.0.4240.93)
+    - Flutter
+  - Cronet (86.0.4240.93)
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - cronet (from `.symlinks/plugins/cronet/ios`)
+  - Flutter (from `Flutter`)
+
+SPEC REPOS:
+  trunk:
+    - Cronet
+
+EXTERNAL SOURCES:
+  cronet:
+    :path: ".symlinks/plugins/cronet/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  Cronet: 393245d1d0e75276f55cf7294cd03d09324d8441
+  cronet: c4ccab291322842bf950d3c67aa80a1a71dfd726
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+
+PODFILE CHECKSUM: db665d4786d732c90a10348d6956e673950ce0cb
+
+COCOAPODS: 1.10.1
