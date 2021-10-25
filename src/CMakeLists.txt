@@ -8,17 +8,28 @@ set(CMAKE_CXX_STANDARD 11)
 # not be changed
 set(PLUGIN_NAME "wrapper")
 
-if(NOT ANDROID)
+if(NOT ( ANDROID AND IOS ))
   add_compile_definitions(DART_SHARED_LIB)
-endif (NOT ANDROID)
+endif ()
 
-add_library(${PLUGIN_NAME} SHARED
-  "wrapper.cc"
-  "wrapper_utils.cc"
-  "upload_data_provider.cc"
-  "../third_party/cronet_impl/sample_executor.cc"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk/dart_api_dl.c"
-)
+if(IOS)
+    add_library(${PLUGIN_NAME} STATIC
+    "wrapper.cc"
+    "wrapper_utils.cc"
+    "upload_data_provider.cc"
+    "../third_party/cronet_impl/sample_executor.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk/dart_api_dl.c"
+    )
+else()
+    add_library(${PLUGIN_NAME} SHARED
+    "wrapper.cc"
+    "wrapper_utils.cc"
+    "upload_data_provider.cc"
+    "../third_party/cronet_impl/sample_executor.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/dart-sdk/dart_api_dl.c"
+    )
+endif()
+
 
 set_target_properties(${PLUGIN_NAME} PROPERTIES
   CXX_VISIBILITY_PRESET hidden)
