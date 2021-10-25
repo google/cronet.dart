@@ -19,10 +19,9 @@ A new flutter plugin project.
   s.platform = :ios, '8.0'
   
   s.vendored_libraries = 'lib/libwrapper.a'
-  s.vendored_frameworks = 'lib/Cronet.framework'
   s.libraries = 'wrapper','c++','resolv'
-  s.frameworks = 'SystemConfiguration'
-  
+
+  s.dependency 'Cronet', '~> 86.0.4240.93'
   s.user_target_xcconfig = { 'OTHER_LDFLAGS' => '-framework Cronet -ObjC -all_load' }
 
   # Flutter.framework does not contain a i386 slice.
