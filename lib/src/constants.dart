@@ -41,7 +41,10 @@ String getDylibName(String name, [String platform = '']) {
     ext = '.dll';
   } else if (Platform.isMacOS || platform.startsWith('macos')) {
     ext = '.dylib';
-  } else if (!(Platform.isLinux ||
+  } else if (Platform.isIOS || platform.startsWith('ios')) {
+    ext = '.framework';
+  } 
+  else if (!(Platform.isLinux ||
       platform.startsWith('linux') ||
       Platform.isAndroid)) {
     // If NOT even linux, then unsupported.
