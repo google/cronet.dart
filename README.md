@@ -6,7 +6,9 @@ This is a [GSoC 2021 project](https://summerofcode.withgoogle.com/projects/#4757
 
 ## Supported Platforms
 
-Currently, Android and Desktop Platforms (Linux, Windows and MacOS) are supported.
+Currently, Mobile and Desktop Platforms (Linux, Windows and MacOS<sup>\*</sup>) are supported.
+
+<sup>\*</sup>MacOS is supported in `Dart CLI` platform only. Flutter compatible version coming soon.
 
 ## Requirements
 
@@ -28,7 +30,7 @@ Currently, Android and Desktop Platforms (Linux, Windows and MacOS) are supporte
 
    We need to use `flutter pub` even if we want to use it with Dart CLI. See <https://github.com/dart-lang/pub/issues/2606> for further details.
 
-   ***Note for Android:** Remember to Add the following permissions in `AndroidManifest.xml` file.
+   **Note for Android:** Remember to Add the following permissions in `AndroidManifest.xml` file.
 
    ```xml
     <uses-permission android:name="android.permission.INTERNET" />
