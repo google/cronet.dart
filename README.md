@@ -30,7 +30,7 @@ Currently, Mobile and Desktop Platforms (Linux, Windows and MacOS<sup>\*</sup>) 
 
    We need to use `flutter pub` even if we want to use it with Dart CLI. See <https://github.com/dart-lang/pub/issues/2606> for further details.
 
-   **\*Note for Android:** Remember to Add the following permissions in `AndroidManifest.xml` file.
+   **Note for Android:** Remember to Add the following permissions in `AndroidManifest.xml` file.
 
    ```xml
     <uses-permission android:name="android.permission.INTERNET" />
