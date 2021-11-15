@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Added support for Flutter Desktop - MacOS.
+
 ## 0.0.6
 
 * Added data upload feature for `POST`, `PUT` and similar requests.

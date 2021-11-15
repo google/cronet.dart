@@ -3,7 +3,7 @@
 # BSD-style license that can be found in the LICENSE file.
 
 name: cronet
-version: 0.0.6
+version: 0.0.7
 homepage: https://github.com/google/cronet.dart
 description: Experimental Cronet dart bindings.
 
@@ -36,4 +36,6 @@ flutter:
       linux:
         pluginClass: CronetPlugin
       windows:
+        pluginClass: CronetPlugin
+      macos:
         pluginClass: CronetPlugin
