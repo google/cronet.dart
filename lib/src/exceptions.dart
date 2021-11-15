@@ -18,7 +18,9 @@ class HttpException implements IOException {
 
   @override
   String toString() {
-    final b = StringBuffer()..write('HttpException: ')..write(message);
+    final b = StringBuffer()
+      ..write('HttpException: ')
+      ..write(message);
     final uri = this.uri;
     if (uri != null) {
       b.write(', uri = $uri');
