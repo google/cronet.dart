@@ -69,7 +69,7 @@ class HttpClient {
     final engineParams = cronet.Cronet_EngineParams_Create();
     if (engineParams == nullptr) throw Error();
     cronet.Cronet_EngineParams_user_agent_set(
-        engineParams, userAgent.toNativeUtf8().cast<Int8>());
+        engineParams, userAgent.toNativeUtf8().cast<Char>());
 
     switch (protocol) {
       case HttpProtocol.quic:
@@ -93,7 +93,7 @@ class HttpClient {
       final hint = cronet.Cronet_QuicHint_Create();
       if (hint == nullptr) throw Error();
       cronet.Cronet_QuicHint_host_set(
-          hint, quicHint.host.toNativeUtf8().cast<Int8>());
+          hint, quicHint.host.toNativeUtf8().cast<Char>());
       cronet.Cronet_QuicHint_port_set(hint, quicHint.port);
       cronet.Cronet_QuicHint_alternate_port_set(hint, quicHint.alternatePort);
       cronet.Cronet_EngineParams_quic_hints_add(engineParams, hint);
@@ -102,7 +102,7 @@ class HttpClient {
 
     cronet.Cronet_EngineParams_enable_brotli_set(engineParams, brotli);
     cronet.Cronet_EngineParams_accept_language_set(
-        engineParams, acceptLanguage.toNativeUtf8().cast<Int8>());
+        engineParams, acceptLanguage.toNativeUtf8().cast<Char>());
 
     final res =
         cronet.Cronet_Engine_StartWithParams(_cronetEngine, engineParams);

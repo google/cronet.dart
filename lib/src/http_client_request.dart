@@ -120,7 +120,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
     if (_requestParams == nullptr) throw Error();
     // TODO: ISSUE https://github.com/dart-lang/ffigen/issues/22
     cronet.Cronet_UrlRequestParams_http_method_set(
-        _requestParams, _method.toNativeUtf8().cast<Int8>());
+        _requestParams, _method.toNativeUtf8().cast<Char>());
     wrapper.InitSampleExecutor(_callbackHandler.executor);
     final cronetCallbacks = cronet.Cronet_UrlRequestCallback_CreateWith(
       wrapper.addresses.OnRedirectReceived.cast(),
@@ -152,7 +152,7 @@ class HttpClientRequestImpl implements HttpClientRequest {
     final res = cronet.Cronet_UrlRequest_InitWithParams(
         _request,
         _cronetEngine,
-        _uri.toString().toNativeUtf8().cast<Int8>(),
+        _uri.toString().toNativeUtf8().cast<Char>(),
         _requestParams,
         cronetCallbacks,
         wrapper.SampleExecutor_Cronet_ExecutorPtr_get(_callbackHandler.executor)
