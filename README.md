@@ -1,3 +1,5 @@
+⚠️ This project has been superseeded by https://pub.dev/packages/cronet_http.
+
 # Experimental Cronet Dart bindings
 
 This package binds to Cronet's [native API](https://chromium.googlesource.com/chromium/src/+/master/components/cronet/native/test_instructions.md) to expose them in Dart.
